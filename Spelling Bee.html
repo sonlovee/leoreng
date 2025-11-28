@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>兒童英文拼字學習機 (Pro Plus) 🐝</title>
+    <style>
+        /* --- 🎨 視覺設計 --- */
+        :root {
+            --primary-yellow: #FFD700;
+            --primary-blue: #40E0D0;
+            --text-dark: #2C3E50;
+            --bg-color: #F7F9FC;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
+            /* 文字顏色定義 */
+            --color-vowel: #FF4500;      /* 紅色：短母音/一般母音 */
+            --color-consonant: #1E90FF;  /* 藍色：子音 */
+            --color-irregular: #9932CC;  /* 紫色：不規則/長母音/特殊發音/不發音字母 */
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF8C00;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #FFE4B5;
+        }
+
+        .app-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            border: 5px solid var(--primary-yellow);
+        }
+
+        /* --- 🎛️ 控制列 --- */
+        .controls-bar {
+            background-color: #E0F7FA;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        select {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        label { font-weight: bold; color: #00796B; }
+
+        /* --- 📑 分頁籤 --- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #ddd;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+            margin-bottom: -3px;
+        }
+
+        .tab-btn:hover { color: var(--primary-blue); }
+        .tab-btn.active {
+            color: var(--text-dark);
+            border-bottom: 4px solid var(--primary-yellow);
+        }
+
+        /* --- 🏫 學習區域 --- */
+        .mode-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .mode-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .word-card {
+            padding: 30px;
+            background: #FFF9C4;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .big-word {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        /* 字元顏色樣式 */
+        .char-vowel { color: var(--color-vowel); }
+        .char-consonant { color: var(--color-consonant); }
+        .char-irregular { color: var(--color-irregular); font-weight: 900; text-shadow: 1px 1px 0px #eee; }
+
+        .info-text {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .example-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .example-text {
+            font-style: italic;
+            color: #555;
+            font-size: 1.2rem;
+        }
+
+        /* 例句播放按鈕 */
+        .btn-sm-speak {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .btn-sm-speak:active { transform: scale(0.9); }
+
+        .syllable-box {
+            background: white;
+            display: block; /* 預設顯示 */
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px dashed #aaa;
+            margin: 15px auto;
+            font-size: 1.2rem;
+            color: #666;
+            width: fit-content;
+        }
+
+        /* --- 🎮 互動按鈕 --- */
+        button.action-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #008B8B;
+            transition: transform 0.1s;
+            margin: 5px;
+        }
+        button.action-btn:active { transform: translateY(4px); box-shadow: none; }
+        button.secondary-btn { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
+        button.speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; padding: 15px 30px; }
+
+        /* --- 🧩 積木與聽寫 --- */
+        .letter-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            min-height: 60px;
+        }
+        .letter-block {
+            background: white;
+            border: 3px solid var(--primary-yellow);
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #ccc;
+            user-select: none;
+        }
+        .answer-area {
+            min-height: 60px;
+            border-bottom: 4px solid #333;
+            margin: 0 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            font-size: 3rem;
+            font-family: monospace;
+        }
+        input[type="text"] {
+            font-size: 2rem;
+            padding: 10px;
+            width: 80%;
+            text-align: center;
+            border: 3px solid var(--primary-blue);
+            border-radius: 15px;
+            outline: none;
+        }
+        .feedback-msg {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 1.5em;
+        }
+        .correct { color: #2ecc71; }
+        .wrong { color: #e74c3c; }
+
+        @media (max-width: 600px) {
+            .big-word { font-size: 3rem; }
+            .controls-bar { flex-direction: column; }
+            select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>🐝 拼字小蜜蜂 Pro+</h1>
+
+    <!-- 控制區 -->
+    <div class="controls-bar">
+        <div>
+            <label>📚 等級：</label>
+            <select id="levelSelect" onchange="changeLevel()"></select>
+        </div>
+        <div>
+            <label>🗣️ 發音：</label>
+            <select id="voiceSelect">
+                <option value="">正在載入語音...</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- 頁籤 -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (學習)</button>
+        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (練習)</button>
+        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (測驗)</button>
+    </div>
+
+    <!-- 模式 A：學習卡 -->
+    <div id="modeA" class="mode-section active">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 單字發音</button>
+            
+            <div id="wordDisplay" class="big-word"></div>
+            
+            <div id="chineseDisplay" class="info-text"></div>
+            
+            <!-- 例句區塊 (含播放按鈕) -->
+            <div class="example-container">
+                <div id="exampleDisplay" class="example-text"></div>
+                <button class="btn-sm-speak" onclick="speakText(currentWordObj.example)" title="朗讀例句">🔈</button>
+            </div>
+            
+            <!-- 音節顯示 (預設開啟) -->
+            <div id="syllableBox" class="syllable-box"></div>
+            <div style="margin-top: 10px;">
+                <button id="btnToggleSyllable" class="action-btn secondary-btn" style="font-size: 1rem; padding: 8px 16px;" onclick="toggleSyllables()">隱藏音節</button>
+            </div>
+        </div>
+        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+    <!-- 模式 B：積木重組 -->
+    <div id="modeB" class="mode-section">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
+            <div class="info-text" id="chineseHintB"></div>
+            
+            <div id="puzzleAnswer" class="answer-area"></div>
+            <div id="puzzlePieces" class="letter-container"></div>
+            <div id="feedbackB" class="feedback-msg"></div>
+        </div>
+        <button class="action-btn secondary-btn" onclick="resetPuzzle()">🔄 重置</button>
+        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+    <!-- 模式 C：聽寫 -->
+    <div id="modeC" class="mode-section">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
+            <div class="info-text" id="chineseHintC"></div>
+            
+            <input type="text" id="dictationInput" placeholder="輸入單字..." autocomplete="off">
+            <div id="feedbackC" class="feedback-msg"></div>
+        </div>
+        <button class="action-btn secondary-btn" onclick="checkDictation()">✅ 檢查答案</button>
+        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. 資料來源 (Data Source) ---
+    // irregularIndices: 標示為紫色的索引位置 (從 0 開始)
+    // 包含規則：R-controlled, Vowel Teams, Long Vowels, Silent Letters
+    const rawData = [
+        // --- 原始單字 ---
+        { word: "cube", syllables: ["cube"], chinese: "立方體", example: "The toy is shaped like a cube.", irregularIndices: [1, 3] },
+        { word: "cute", syllables: ["cute"], chinese: "可愛的", example: "The puppy is very cute.", irregularIndices: [1, 3] },
+        { word: "mule", syllables: ["mule"], chinese: "騾子", example: "The farmer uses a mule to carry supplies.", irregularIndices: [1, 3] },
+        { word: "flute", syllables: ["flute"], chinese: "長笛", example: "She plays the flute every day.", irregularIndices: [2, 4] },
+        { word: "ruler", syllables: ["ru", "ler"], chinese: "尺；統治者", example: "Please use a ruler to draw a straight line.", irregularIndices: [1] },
+        { word: "tube", syllables: ["tube"], chinese: "管子", example: "Water flows through the tube.", irregularIndices: [1, 3] },
+        { word: "tune", syllables: ["tune"], chinese: "旋律；調音", example: "This tune is easy to sing.", irregularIndices: [1, 3] },
+        { word: "again", syllables: ["a", "gain"], chinese: "再次", example: "Please try again.", irregularIndices: [2, 3] },
+        { word: "cold", syllables: ["cold"], chinese: "冷的", example: "The water is very cold.", irregularIndices: [1] },
+        { word: "hot", syllables: ["hot"], chinese: "熱的", example: "Be careful, the soup is hot.", irregularIndices: [] },
+        { word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where are you going?", irregularIndices: [2, 4] },
+        { word: "went", syllables: ["went"], chinese: "去（go 的過去式）", example: "She went to school early.", irregularIndices: [] },
+        { word: "away", syllables: ["a", "way"], chinese: "離開；遠處", example: "The bird flew away.", irregularIndices: [2, 3] },
+        { word: "take", syllables: ["take"], chinese: "拿；帶走", example: "Please take your bag with you.", irregularIndices: [1, 3] },
+        { word: "night", syllables: ["night"], chinese: "夜晚", example: "The stars are bright at night.", irregularIndices: [1, 2, 3] },
+        { word: "at", syllables: ["at"], chinese: "在…", example: "She is at home.", irregularIndices: [] },
+        { word: "they", syllables: ["they"], chinese: "他們", example: "They are playing outside.", irregularIndices: [2, 3] },
+        { word: "me", syllables: ["me"], chinese: "我（受格）", example: "Please give the book to me.", irregularIndices: [1] },
+        
+        // --- 新增單字 (已加入發音規則分析) ---
+        { word: "across", syllables: ["a", "cross"], chinese: "穿過；橫越", example: "He walked across the street.", irregularIndices: [0] }, // a (schwa)
+        { word: "around", syllables: ["a", "round"], chinese: "到處", example: "Kids were running around in the playground.", irregularIndices: [0, 2, 3] }, // a (schwa), ou (diphthong)
+        { word: "belong", syllables: ["be", "long"], chinese: "屬於", example: "This book belongs to me.", irregularIndices: [1] }, // e (long)
+        { word: "boxer", syllables: ["box", "er"], chinese: "拳擊手", example: "The boxer trained hard every day.", irregularIndices: [3, 4] }, // er (r-controlled)
+        { word: "creep", syllables: ["creep"], chinese: "悄悄移動；爬行", example: "The spider crept along the wall.", irregularIndices: [2, 3] }, // ee (vowel team)
+        { word: "afternoon", syllables: ["af", "ter", "noon"], chinese: "下午", example: "We meet in the afternoon.", irregularIndices: [3, 4, 6, 7] }, // er, oo
+        { word: "baboon", syllables: ["ba", "boon"], chinese: "狒狒", example: "A baboon jumped onto the rock.", irregularIndices: [1, 3, 4] }, // a (schwa), oo
+        { word: "beyond", syllables: ["be", "yond"], chinese: "在…之外；在更遠處", example: "The mountains are beyond the river.", irregularIndices: [1] }, // e (long)
+        { word: "bully", syllables: ["bul", "ly"], chinese: "惡霸", example: "A bully was picking on smaller kids.", irregularIndices: [4] }, // y (long e sound)
+        { word: "cricket", syllables: ["crick", "et"], chinese: "板球；蟋蟀", example: "A cricket is chirping outside.", irregularIndices: [] }, // regular short vowels mostly
+        { word: "airport", syllables: ["air", "port"], chinese: "機場", example: "We arrived at the airport early.", irregularIndices: [0, 1, 2, 4, 5] }, // air, or
+        { word: "baseball", syllables: ["base", "ball"], chinese: "棒球", example: "He plays baseball on weekends.", irregularIndices: [1, 3, 5] }, // a (long), e (silent), a (all)
+        { word: "blood", syllables: ["blood"], chinese: "血液", example: "Blood carries oxygen through the body.", irregularIndices: [2, 3] }, // oo (short u - irregular)
+        { word: "circus", syllables: ["cir", "cus"], chinese: "馬戲團", example: "We watched a circus show yesterday.", irregularIndices: [1, 2] }, // ir (r-controlled)
+        { word: "dairy", syllables: ["dai", "ry"], chinese: "乳製品；乳品店", example: "She avoids dairy because of allergies.", irregularIndices: [1, 2, 4] }, // ai, y
+        { word: "alligator", syllables: ["al", "li", "ga", "tor"], chinese: "短吻鱷", example: "An alligator lives in the swamp.", irregularIndices: [6, 8] }, // a (long), or (schwa/r)
+        { word: "become", syllables: ["be", "come"], chinese: "成為", example: "He wants to become a pilot.", irregularIndices: [1, 3, 5] }, // e, o (schwa), e (silent)
+        { word: "boom", syllables: ["boom"], chinese: "繁榮；轟隆聲", example: "There was a boom in construction.", irregularIndices: [1, 2] }, // oo
+        { word: "claw", syllables: ["claw"], chinese: "爪子", example: "The cat scratched the tree with its claw.", irregularIndices: [2, 3] }, // aw
+        { word: "desert", syllables: ["des", "ert"], chinese: "沙漠", example: "Camels live in the desert.", irregularIndices: [3, 4] }, // er
+        { word: "another", syllables: ["a", "no", "ther"], chinese: "另一個", example: "He took another cookie.", irregularIndices: [0, 2, 5, 6] }, // a, o, er
+        { word: "beetle", syllables: ["bee", "tle"], chinese: "甲蟲", example: "A beetle crawled on the leaf.", irregularIndices: [1, 2, 5] }, // ee, e(silent)
+        { word: "bottom", syllables: ["bot", "tom"], chinese: "底部", example: "The treasure is at the bottom of the sea.", irregularIndices: [4] }, // o (schwa)
+        { word: "cobra", syllables: ["co", "bra"], chinese: "眼鏡蛇", example: "A cobra raised its hood.", irregularIndices: [1, 4] }, // o (long), a (schwa)
+        { word: "drown", syllables: ["drown"], chinese: "溺死；淹沒", example: "Be careful not to drown in deep water.", irregularIndices: [2, 3] }, // ow
+        { word: "dumb", syllables: ["dumb"], chinese: "笨的；無言的", example: "That was a dumb mistake.", irregularIndices: [3] }, // b (silent)
+        { word: "flake", syllables: ["flake"], chinese: "薄片；剝落", example: "Snowflakes fell from the sky.", irregularIndices: [2, 4] }, // a (long), e (silent)
+        { word: "guide", syllables: ["guide"], chinese: "引導；導遊", example: "The guide showed us the way.", irregularIndices: [1, 2, 4] }, // ui (long i), e (silent)
+        { word: "honor", syllables: ["hon", "or"], chinese: "榮譽；尊敬", example: "It is an honor to meet you.", irregularIndices: [0, 3, 4] }, // h (silent), or (schwa)
+        { word: "lack", syllables: ["lack"], chinese: "缺乏", example: "They lack clean water.", irregularIndices: [] }, 
+        { word: "during", syllables: ["dur", "ing"], chinese: "在…期間", example: "Do not talk during the movie.", irregularIndices: [1] }, // u (long/yoo)
+        { word: "forest", syllables: ["for", "est"], chinese: "森林", example: "We hiked through the forest.", irregularIndices: [1, 2] }, // or
+        { word: "guitar", syllables: ["gui", "tar"], chinese: "吉他", example: "She plays the guitar well.", irregularIndices: [1, 2, 4, 5] }, // ui (silent u), ar
+        { word: "hoof", syllables: ["hoof"], chinese: "蹄", example: "A horse has four hooves.", irregularIndices: [1, 2] }, // oo
+        { word: "lift", syllables: ["lift"], chinese: "抬起；提升", example: "Please help me lift the box.", irregularIndices: [] }, 
+        { word: "eagle", syllables: ["ea", "gle"], chinese: "老鷹", example: "An eagle flew overhead.", irregularIndices: [0, 1, 4] }, // ea, e
+        { word: "fuss", syllables: ["fuss"], chinese: "大驚小怪；忙亂", example: "Don’t make a fuss over nothing.", irregularIndices: [] },
+        { word: "gym", syllables: ["gym"], chinese: "體育館；健身房", example: "He works out at the gym.", irregularIndices: [1] }, // y (short i)
+        { word: "huge", syllables: ["huge"], chinese: "巨大的", example: "The elephant is huge.", irregularIndices: [1, 3] }, // u (long), e
+        { word: "lizard", syllables: ["liz", "ard"], chinese: "蜥蜴", example: "A lizard ran across the rock.", irregularIndices: [3, 4] }, // ar (schwa)
+        { word: "earth", syllables: ["earth"], chinese: "地球；土地", example: "The Earth rotates around the sun.", irregularIndices: [0, 1, 2] }, // ear
+        { word: "gear", syllables: ["gear"], chinese: "齒輪；裝備", example: "He packed his camping gear.", irregularIndices: [1, 2, 3] }, // ear
+        { word: "half", syllables: ["half"], chinese: "一半", example: "I ate half of the cake.", irregularIndices: [2] }, // l (silent)
+        { word: "interest", syllables: ["in", "ter", "est"], chinese: "興趣；利益", example: "This book caught my interest.", irregularIndices: [3, 4] }, // er
+        { word: "magic", syllables: ["ma", "gic"], chinese: "魔法；神奇", example: "He performed a magic trick.", irregularIndices: [] }, 
+        { word: "feast", syllables: ["feast"], chinese: "盛宴", example: "They prepared a big feast.", irregularIndices: [1, 2] }, // ea
+        { word: "gorilla", syllables: ["go", "ril", "la"], chinese: "大猩猩", example: "A gorilla sat under the tree.", irregularIndices: [1, 6] }, // o (schwa), a (schwa)
+        { word: "honk", syllables: ["honk"], chinese: "按喇叭；雁叫聲", example: "He honked the car horn.", irregularIndices: [] }, 
+        { word: "karate", syllables: ["ka", "ra", "te"], chinese: "空手道", example: "She practices karate every week.", irregularIndices: [1, 5] }, // a (schwa), e (long/ay)
+        { word: "manner", syllables: ["man", "ner"], chinese: "方式；禮貌", example: "He has good manners at the table.", irregularIndices: [4, 5] } // er
+    ];
+
+    // --- 全域變數 ---
+    let currentLevelWords = [];
+    let currentWordIndex = 0;
+    let currentWordObj = null;
+    let voices = [];
+    let synth = window.speechSynthesis;
+    let isSyllableVisible = true; // 預設顯示音節
+
+    // --- 2. 初始化與設定 ---
+    window.onload = function() {
+        initLevelSystem();
+        initVoiceSystem();
+        loadWord(0);
+    };
+
+    function initLevelSystem() {
+        const levelSelect = document.getElementById('levelSelect');
+        const totalWords = rawData.length;
+        const levelSize = 10;
+        const totalLevels = Math.ceil(totalWords / levelSize);
+
+        for (let i = 0; i < totalLevels; i++) {
+            let option = document.createElement('option');
+            option.value = i;
+            option.text = `Level ${i + 1} (${i * levelSize + 1} - ${Math.min((i + 1) * levelSize, totalWords)})`;
+            levelSelect.appendChild(option);
+        }
+        
+        let allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.text = "全部單字 (All)";
+        levelSelect.appendChild(allOption);
+
+        changeLevel();
+    }
+
+    function changeLevel() {
+        const val = document.getElementById('levelSelect').value;
+        if (val === 'all') {
+            currentLevelWords = [...rawData];
+        } else {
+            const levelIndex = parseInt(val);
+            const start = levelIndex * 10;
+            const end = start + 10;
+            currentLevelWords = rawData.slice(start, end);
+        }
+        currentWordIndex = 0;
+        loadWord(0);
+    }
+
+    function initVoiceSystem() {
+        const populateVoices = () => {
+            voices = synth.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            if (voices.length === 0) return;
+
+            voiceSelect.innerHTML = ''; 
+            let defaultIndex = 0;
+            voices.forEach((voice, index) => {
+                let option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.value = index;
+                voiceSelect.appendChild(option);
+
+                if (voice.name.includes('Google US English')) defaultIndex = index;
+                else if (voice.lang === 'en-US' && defaultIndex === 0) defaultIndex = index;
+            });
+            voiceSelect.selectedIndex = defaultIndex;
+        };
+
+        populateVoices();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoices;
+        }
+        setTimeout(() => { if(document.getElementById('voiceSelect').length <= 1) populateVoices(); }, 1000);
+    }
+
+    // 統一發音函式：可發音單字或例句
+    function speakText(text) {
+        if (!text) return;
+        
+        // 取消之前的發音
+        synth.cancel();
+
+        const utterThis = new SpeechSynthesisUtterance(text);
+        const voiceSelect = document.getElementById('voiceSelect');
+        
+        if (voices.length > 0 && voiceSelect.value) {
+            utterThis.voice = voices[voiceSelect.value];
+        }
+
+        utterThis.rate = 0.85; // 適中語速
+        synth.speak(utterThis);
+    }
+
+    // --- 3. 核心邏輯 ---
+    function loadWord(index) {
+        if (index >= currentLevelWords.length) index = 0;
+        currentWordIndex = index;
+        currentWordObj = currentLevelWords[index];
+
+        // 重置 UI
+        document.getElementById('feedbackB').innerText = "";
+        document.getElementById('feedbackC').innerText = "";
+        document.getElementById('dictationInput').value = "";
+
+        // Mode A
+        renderColoredWord(currentWordObj);
+        document.getElementById('chineseDisplay').innerText = currentWordObj.chinese;
+        document.getElementById('exampleDisplay').innerText = currentWordObj.example;
+        document.getElementById('syllableBox').innerText = currentWordObj.syllables.join(" - ");
+        
+        // 音節顯示狀態維持
+        updateSyllableVisibility();
+
+        // Mode B & C Text
+        document.getElementById('chineseHintB').innerText = currentWordObj.chinese;
+        document.getElementById('chineseHintC').innerText = currentWordObj.chinese;
+
+        // Mode B Setup
+        initPuzzleMode(currentWordObj.word);
+    }
+
+    function nextWord() {
+        currentWordIndex++;
+        if (currentWordIndex >= currentLevelWords.length) currentWordIndex = 0;
+        loadWord(currentWordIndex);
+        speakText(currentWordObj.word);
+    }
+
+    function switchTab(modeId) {
+        document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
+        document.getElementById(modeId).classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    // --- 渲染顏色邏輯 ---
+    function renderColoredWord(wordObj) {
+        const display = document.getElementById('wordDisplay');
+        display.innerHTML = '';
+        const vowels = ['a','e','i','o','u'];
+        const word = wordObj.word;
+        const irregulars = wordObj.irregularIndices || []; // 取得紫色標記清單
+
+        for (let i = 0; i < word.length; i++) {
+            let char = word[i];
+            let span = document.createElement('span');
+            span.innerText = char;
+
+            // 優先檢查：是否在特殊標記清單中？ -> 紫色
+            if (irregulars.includes(i)) {
+                span.className = 'char-irregular';
+            } 
+            // 其次檢查：是否為母音？ -> 紅色
+            else if (vowels.includes(char.toLowerCase())) {
+                span.className = 'char-vowel';
+            } 
+            // 剩下：子音 -> 藍色
+            else {
+                span.className = 'char-consonant';
+            }
+            display.appendChild(span);
+        }
+    }
+
+    // --- 音節開關邏輯 ---
+    function toggleSyllables() {
+        isSyllableVisible = !isSyllableVisible;
+        updateSyllableVisibility();
+    }
+
+    function updateSyllableVisibility() {
+        const box = document.getElementById('syllableBox');
+        const btn = document.getElementById('btnToggleSyllable');
+        if (isSyllableVisible) {
+            box.style.display = 'inline-block';
+            btn.innerText = '隱藏音節';
+        } else {
+            box.style.display = 'none';
+            btn.innerText = '顯示音節';
+        }
+    }
+
+    // --- Mode B: 積木邏輯 ---
+    let puzzleCurrentAnswer = [];
+    function initPuzzleMode(word) {
+        const container = document.getElementById('puzzlePieces');
+        const answerArea = document.getElementById('puzzleAnswer');
+        container.innerHTML = '';
+        answerArea.innerHTML = '';
+        puzzleCurrentAnswer = [];
+
+        let letters = word.split('').sort(() => Math.random() - 0.5);
+
+        letters.forEach((char) => {
+            let btn = document.createElement('div');
+            btn.className = 'letter-block';
+            btn.innerText = char;
+            btn.onclick = () => {
+                let ansSpan = document.createElement('span');
+                ansSpan.innerText = char;
+                answerArea.appendChild(ansSpan);
+                puzzleCurrentAnswer.push(char);
+                btn.style.visibility = 'hidden';
+                checkPuzzle(word);
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function resetPuzzle() {
+        initPuzzleMode(currentWordObj.word);
+        document.getElementById('feedbackB').innerText = "";
+    }
+
+    function checkPuzzle(correctWord) {
+        const userWord = puzzleCurrentAnswer.join('');
+        if (userWord.length === correctWord.length) {
+            const feedback = document.getElementById('feedbackB');
+            if (userWord === correctWord) {
+                feedback.innerHTML = "<span class='correct'>🎉 答對了！</span>";
+                speakText(correctWord);
+            } else {
+                feedback.innerHTML = "<span class='wrong'>❌ 再試一次！</span>";
+            }
+        }
+    }
+
+    // --- Mode C: 聽寫邏輯 ---
+    function checkDictation() {
+        const input = document.getElementById('dictationInput');
+        const feedback = document.getElementById('feedbackC');
+        
+        if (input.value.trim().toLowerCase() === currentWordObj.word.toLowerCase()) {
+            feedback.innerHTML = "<span class='correct'>🌟 完全正確！</span>";
+            speakText(currentWordObj.word);
+        } else {
+            feedback.innerHTML = `<span class='wrong'>❌ 正確是：${currentWordObj.word}</span>`;
+        }
+    }
+</script>
+
+</body>
+</html>
