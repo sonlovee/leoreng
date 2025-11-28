@@ -260,7 +260,6 @@
 <div class="app-container">
     <h1>🐝 拼字小蜜蜂 Pro+</h1>
 
-    <!-- 控制區 -->
     <div class="controls-bar">
         <div>
             <label>📚 等級：</label>
@@ -274,14 +273,12 @@
         </div>
     </div>
 
-    <!-- 頁籤 -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (學習)</button>
         <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (練習)</button>
         <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (測驗)</button>
     </div>
 
-    <!-- 模式 A：學習卡 -->
     <div id="modeA" class="mode-section active">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 單字發音</button>
@@ -290,13 +287,11 @@
             
             <div id="chineseDisplay" class="info-text"></div>
             
-            <!-- 例句區塊 (含播放按鈕) -->
             <div class="example-container">
                 <div id="exampleDisplay" class="example-text"></div>
                 <button class="btn-sm-speak" onclick="speakText(currentWordObj.example)" title="朗讀例句">🔈</button>
             </div>
             
-            <!-- 音節顯示 (預設開啟) -->
             <div id="syllableBox" class="syllable-box"></div>
             <div style="margin-top: 10px;">
                 <button id="btnToggleSyllable" class="action-btn secondary-btn" style="font-size: 1rem; padding: 8px 16px;" onclick="toggleSyllables()">隱藏音節</button>
@@ -305,7 +300,6 @@
         <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
     </div>
 
-    <!-- 模式 B：積木重組 -->
     <div id="modeB" class="mode-section">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
@@ -319,7 +313,6 @@
         <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
     </div>
 
-    <!-- 模式 C：聽寫 -->
     <div id="modeC" class="mode-section">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
@@ -351,8 +344,7 @@
         { word: "cold", syllables: ["cold"], chinese: "冷的", example: "The water is very cold.", irregularIndices: [1] },
         { word: "hot", syllables: ["hot"], chinese: "熱的", example: "Be careful, the soup is hot.", irregularIndices: [] },
         { word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where are you going?", irregularIndices: [2, 4] },
-        { word: "went", syllables: ["went"], chinese: "去（go 的過去式）", example: "She went to school early.", irregularIndices: [] },
-        { word: "away", syllables: ["a", "way"], chinese: "離開；遠處", example: "The bird flew away.", irregularIndices: [2, 3] },
+        { word: "went away", syllables: ["went", "a", "way"], chinese: "離開；走掉", example: "He went away quickly." },
         { word: "take", syllables: ["take"], chinese: "拿；帶走", example: "Please take your bag with you.", irregularIndices: [1, 3] },
         { word: "night", syllables: ["night"], chinese: "夜晚", example: "The stars are bright at night.", irregularIndices: [1, 2, 3] },
         { word: "at", syllables: ["at"], chinese: "在…", example: "She is at home.", irregularIndices: [] },
@@ -462,31 +454,80 @@
         loadWord(0);
     }
 
+    // ⭐ 修正版：完美支援 iOS (Siri/Samantha) 與 Android/PC (Google)
     function initVoiceSystem() {
+        const voiceSelect = document.getElementById('voiceSelect');
+        
         const populateVoices = () => {
             voices = synth.getVoices();
-            const voiceSelect = document.getElementById('voiceSelect');
-            if (voices.length === 0) return;
+            if (voices.length === 0) {
+                // iOS 有時需要一點時間載入，這裡保留等待提示
+                voiceSelect.innerHTML = '<option value="">等待語音載入...</option>';
+                return;
+            }
 
-            voiceSelect.innerHTML = ''; 
-            let defaultIndex = 0;
+            voiceSelect.innerHTML = '';
+            
+            // 用來記錄最佳語音的 index
+            let bestVoiceIndex = 0; 
+            let bestPriority = 0; // 權重分數：分數越高越優先
+
             voices.forEach((voice, index) => {
                 let option = document.createElement('option');
                 option.textContent = `${voice.name} (${voice.lang})`;
                 option.value = index;
                 voiceSelect.appendChild(option);
 
-                if (voice.name.includes('Google US English')) defaultIndex = index;
-                else if (voice.lang === 'en-US' && defaultIndex === 0) defaultIndex = index;
+                // --- 🎯 語音選擇權重邏輯 ---
+                let currentPriority = 0;
+
+                // 基礎門檻：必須是英文
+                if (voice.lang.startsWith('en')) {
+                    currentPriority = 1; // 是英文就有 1 分
+
+                    if (voice.lang === 'en-US' || voice.lang === 'en_US') {
+                        currentPriority += 2; // 美式英文 +2 分 (共3分)
+                    }
+
+                    // 針對 iOS 的優化 (分數最高)
+                    if (voice.name.includes('Siri')) {
+                        currentPriority += 10; // Siri 語音 (iOS 16+)
+                    } else if (voice.name === 'Samantha') {
+                        currentPriority += 9;  // Samantha (iOS 經典標準音)
+                    } else if (voice.name === 'Aaron') {
+                        currentPriority += 8;  // Aaron (iOS 優質男聲)
+                    }
+
+                    // 針對 Android/PC Chrome 的優化
+                    if (voice.name.includes('Google US English')) {
+                        currentPriority += 7; // Google 美式英文
+                    }
+                }
+
+                // 如果當前語音的分數比之前找到的高，就更新最佳選擇
+                if (currentPriority > bestPriority) {
+                    bestPriority = currentPriority;
+                    bestVoiceIndex = index;
+                }
             });
-            voiceSelect.selectedIndex = defaultIndex;
+
+            // 選中計算出分數最高的語音
+            if (voices.length > 0) {
+                voiceSelect.selectedIndex = bestVoiceIndex;
+            }
         };
 
-        populateVoices();
+        // 監聽語音列表變更事件
         if (speechSynthesis.onvoiceschanged !== undefined) {
-            speechSynthesis.onvoiceschanged = populateVoices;
+             speechSynthesis.onvoiceschanged = populateVoices;
         }
-        setTimeout(() => { if(document.getElementById('voiceSelect').length <= 1) populateVoices(); }, 1000);
+
+        populateVoices();
+        
+        // iOS 防呆機制：強制在 0.5秒、1秒、2秒後重試，確保語音列表載入
+        setTimeout(populateVoices, 500);
+        setTimeout(populateVoices, 1000);
+        setTimeout(populateVoices, 2000);
     }
 
     // 統一發音函式：可發音單字或例句
