@@ -350,58 +350,50 @@
         { word: "at", syllables: ["at"], chinese: "在…", example: "She is at home.", irregularIndices: [] },
         { word: "they", syllables: ["they"], chinese: "他們", example: "They are playing outside.", irregularIndices: [2, 3] },
         { word: "me", syllables: ["me"], chinese: "我（受格）", example: "Please give the book to me.", irregularIndices: [1] },
-        
-        // --- 新增單字 (已加入發音規則分析) ---
-        { word: "across", syllables: ["a", "cross"], chinese: "穿過；橫越", example: "He walked across the street.", irregularIndices: [0] }, // a (schwa)
-        { word: "around", syllables: ["a", "round"], chinese: "到處", example: "Kids were running around in the playground.", irregularIndices: [0, 2, 3] }, // a (schwa), ou (diphthong)
-        { word: "belong", syllables: ["be", "long"], chinese: "屬於", example: "This book belongs to me.", irregularIndices: [1] }, // e (long)
-        { word: "boxer", syllables: ["box", "er"], chinese: "拳擊手", example: "The boxer trained hard every day.", irregularIndices: [3, 4] }, // er (r-controlled)
-        { word: "creep", syllables: ["creep"], chinese: "悄悄移動；爬行", example: "The spider crept along the wall.", irregularIndices: [2, 3] }, // ee (vowel team)
-        { word: "afternoon", syllables: ["af", "ter", "noon"], chinese: "下午", example: "We meet in the afternoon.", irregularIndices: [3, 4, 6, 7] }, // er, oo
-        { word: "baboon", syllables: ["ba", "boon"], chinese: "狒狒", example: "A baboon jumped onto the rock.", irregularIndices: [1, 3, 4] }, // a (schwa), oo
-        { word: "beyond", syllables: ["be", "yond"], chinese: "在…之外；在更遠處", example: "The mountains are beyond the river.", irregularIndices: [1] }, // e (long)
-        { word: "bully", syllables: ["bul", "ly"], chinese: "惡霸", example: "A bully was picking on smaller kids.", irregularIndices: [4] }, // y (long e sound)
-        { word: "cricket", syllables: ["crick", "et"], chinese: "板球；蟋蟀", example: "A cricket is chirping outside.", irregularIndices: [] }, // regular short vowels mostly
-        { word: "airport", syllables: ["air", "port"], chinese: "機場", example: "We arrived at the airport early.", irregularIndices: [0, 1, 2, 4, 5] }, // air, or
-        { word: "baseball", syllables: ["base", "ball"], chinese: "棒球", example: "He plays baseball on weekends.", irregularIndices: [1, 3, 5] }, // a (long), e (silent), a (all)
-        { word: "blood", syllables: ["blood"], chinese: "血液", example: "Blood carries oxygen through the body.", irregularIndices: [2, 3] }, // oo (short u - irregular)
-        { word: "circus", syllables: ["cir", "cus"], chinese: "馬戲團", example: "We watched a circus show yesterday.", irregularIndices: [1, 2] }, // ir (r-controlled)
-        { word: "dairy", syllables: ["dai", "ry"], chinese: "乳製品；乳品店", example: "She avoids dairy because of allergies.", irregularIndices: [1, 2, 4] }, // ai, y
-        { word: "alligator", syllables: ["al", "li", "ga", "tor"], chinese: "短吻鱷", example: "An alligator lives in the swamp.", irregularIndices: [6, 8] }, // a (long), or (schwa/r)
-        { word: "become", syllables: ["be", "come"], chinese: "成為", example: "He wants to become a pilot.", irregularIndices: [1, 3, 5] }, // e, o (schwa), e (silent)
-        { word: "boom", syllables: ["boom"], chinese: "繁榮；轟隆聲", example: "There was a boom in construction.", irregularIndices: [1, 2] }, // oo
-        { word: "claw", syllables: ["claw"], chinese: "爪子", example: "The cat scratched the tree with its claw.", irregularIndices: [2, 3] }, // aw
-        { word: "desert", syllables: ["des", "ert"], chinese: "沙漠", example: "Camels live in the desert.", irregularIndices: [3, 4] }, // er
-        { word: "another", syllables: ["a", "no", "ther"], chinese: "另一個", example: "He took another cookie.", irregularIndices: [0, 2, 5, 6] }, // a, o, er
-        { word: "beetle", syllables: ["bee", "tle"], chinese: "甲蟲", example: "A beetle crawled on the leaf.", irregularIndices: [1, 2, 5] }, // ee, e(silent)
-        { word: "bottom", syllables: ["bot", "tom"], chinese: "底部", example: "The treasure is at the bottom of the sea.", irregularIndices: [4] }, // o (schwa)
-        { word: "cobra", syllables: ["co", "bra"], chinese: "眼鏡蛇", example: "A cobra raised its hood.", irregularIndices: [1, 4] }, // o (long), a (schwa)
-        { word: "drown", syllables: ["drown"], chinese: "溺死；淹沒", example: "Be careful not to drown in deep water.", irregularIndices: [2, 3] }, // ow
-        { word: "dumb", syllables: ["dumb"], chinese: "笨的；無言的", example: "That was a dumb mistake.", irregularIndices: [3] }, // b (silent)
-        { word: "flake", syllables: ["flake"], chinese: "薄片；剝落", example: "Snowflakes fell from the sky.", irregularIndices: [2, 4] }, // a (long), e (silent)
-        { word: "guide", syllables: ["guide"], chinese: "引導；導遊", example: "The guide showed us the way.", irregularIndices: [1, 2, 4] }, // ui (long i), e (silent)
-        { word: "honor", syllables: ["hon", "or"], chinese: "榮譽；尊敬", example: "It is an honor to meet you.", irregularIndices: [0, 3, 4] }, // h (silent), or (schwa)
-        { word: "lack", syllables: ["lack"], chinese: "缺乏", example: "They lack clean water.", irregularIndices: [] }, 
-        { word: "during", syllables: ["dur", "ing"], chinese: "在…期間", example: "Do not talk during the movie.", irregularIndices: [1] }, // u (long/yoo)
-        { word: "forest", syllables: ["for", "est"], chinese: "森林", example: "We hiked through the forest.", irregularIndices: [1, 2] }, // or
-        { word: "guitar", syllables: ["gui", "tar"], chinese: "吉他", example: "She plays the guitar well.", irregularIndices: [1, 2, 4, 5] }, // ui (silent u), ar
-        { word: "hoof", syllables: ["hoof"], chinese: "蹄", example: "A horse has four hooves.", irregularIndices: [1, 2] }, // oo
-        { word: "lift", syllables: ["lift"], chinese: "抬起；提升", example: "Please help me lift the box.", irregularIndices: [] }, 
-        { word: "eagle", syllables: ["ea", "gle"], chinese: "老鷹", example: "An eagle flew overhead.", irregularIndices: [0, 1, 4] }, // ea, e
-        { word: "fuss", syllables: ["fuss"], chinese: "大驚小怪；忙亂", example: "Don’t make a fuss over nothing.", irregularIndices: [] },
-        { word: "gym", syllables: ["gym"], chinese: "體育館；健身房", example: "He works out at the gym.", irregularIndices: [1] }, // y (short i)
-        { word: "huge", syllables: ["huge"], chinese: "巨大的", example: "The elephant is huge.", irregularIndices: [1, 3] }, // u (long), e
-        { word: "lizard", syllables: ["liz", "ard"], chinese: "蜥蜴", example: "A lizard ran across the rock.", irregularIndices: [3, 4] }, // ar (schwa)
-        { word: "earth", syllables: ["earth"], chinese: "地球；土地", example: "The Earth rotates around the sun.", irregularIndices: [0, 1, 2] }, // ear
-        { word: "gear", syllables: ["gear"], chinese: "齒輪；裝備", example: "He packed his camping gear.", irregularIndices: [1, 2, 3] }, // ear
-        { word: "half", syllables: ["half"], chinese: "一半", example: "I ate half of the cake.", irregularIndices: [2] }, // l (silent)
-        { word: "interest", syllables: ["in", "ter", "est"], chinese: "興趣；利益", example: "This book caught my interest.", irregularIndices: [3, 4] }, // er
-        { word: "magic", syllables: ["ma", "gic"], chinese: "魔法；神奇", example: "He performed a magic trick.", irregularIndices: [] }, 
-        { word: "feast", syllables: ["feast"], chinese: "盛宴", example: "They prepared a big feast.", irregularIndices: [1, 2] }, // ea
-        { word: "gorilla", syllables: ["go", "ril", "la"], chinese: "大猩猩", example: "A gorilla sat under the tree.", irregularIndices: [1, 6] }, // o (schwa), a (schwa)
-        { word: "honk", syllables: ["honk"], chinese: "按喇叭；雁叫聲", example: "He honked the car horn.", irregularIndices: [] }, 
-        { word: "karate", syllables: ["ka", "ra", "te"], chinese: "空手道", example: "She practices karate every week.", irregularIndices: [1, 5] }, // a (schwa), e (long/ay)
-        { word: "manner", syllables: ["man", "ner"], chinese: "方式；禮貌", example: "He has good manners at the table.", irregularIndices: [4, 5] } // er
+        // --- 新增單字清單 (Y結尾、片語、常見字) ---
+    { word: "too", syllables: ["too"], chinese: "也；太", example: "I like ice cream too.", irregularIndices: [1, 2] }, // oo (long u)
+    { word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向...；跑上去", example: "The dog ran up the hill.", irregularIndices: [] }, // regular short vowels
+    { word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "They ran out of milk.", irregularIndices: [4, 5] }, // ou (diphthong)
+    { word: "ball", syllables: ["ball"], chinese: "球", example: "He kicked the ball.", irregularIndices: [1] }, // a (all sound)
+    { word: "get", syllables: ["get"], chinese: "得到", example: "Did you get my email?", irregularIndices: [] }, // regular short e
+    { word: "are", syllables: ["are"], chinese: "是（複數/第二人稱）", example: "You are my best friend.", irregularIndices: [0, 1, 2] }, // r-controlled / sight word
+    { word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I saw a little bird.", irregularIndices: [4, 5] }, // le (syllabic l), e silent
+    { word: "get out", syllables: ["get", " ", "out"], chinese: "離開；出去", example: "Please get out of the car.", irregularIndices: [4, 5] }, // ou
+    { word: "her", syllables: ["her"], chinese: "她的", example: "This is her bag.", irregularIndices: [1, 2] }, // er (r-controlled)
+    { word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel is eating a nut.", irregularIndices: [3, 4] }, // ir (r-controlled)
+    { word: "live", syllables: ["live"], chinese: "居住", example: "I live in a big city.", irregularIndices: [3] }, // i (short), e (silent - irregular rule)
+    { word: "that", syllables: ["that"], chinese: "那個", example: "Look at that bird!", irregularIndices: [] }, // regular short a
+    { word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] }, // ay (long a)
+    { word: "car", syllables: ["car"], chinese: "車子", example: "My dad drives a red car.", irregularIndices: [1, 2] }, // ar (r-controlled)
+    { word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "He waved goodbye to his friends.", irregularIndices: [1, 2, 5, 6] }, // oo, ye (long i)
+    { word: "your", syllables: ["your"], chinese: "你的", example: "What is your name?", irregularIndices: [1, 2, 3] }, // our (r-controlled/sight word)
+    
+    // --- Y 當母音系列 (/i/ sound) ---
+    { word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is sleeping.", irregularIndices: [1, 3] }, // a(open), y(long e)
+    { word: "city", syllables: ["cit", "y"], chinese: "城市", example: "New York is a big city.", irregularIndices: [3] }, // y(long e)
+    { word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like peanut butter and jelly.", irregularIndices: [4] }, // y(long e)
+    { word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "A nice lady helped me.", irregularIndices: [1, 3] }, // a(open), y(long e)
+    { word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "She rode a pony at the farm.", irregularIndices: [1, 3] }, // o(open), y(long e)
+    { word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] }, // y(long e)
+    
+    // --- Y 當母音系列 (/ai/ sound) ---
+    { word: "cry", syllables: ["cry"], chinese: "哭泣", example: "Don't cry, it's okay.", irregularIndices: [2] }, // y(long i)
+    { word: "dry", syllables: ["dry"], chinese: "乾的", example: "Is your shirt dry yet?", irregularIndices: [2] }, // y(long i)
+    { word: "fly", syllables: ["fly"], chinese: "飛；蒼蠅", example: "Birds can fly high.", irregularIndices: [2] }, // y(long i)
+    { word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry some eggs.", irregularIndices: [2] }, // y(long i)
+    { word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue today.", irregularIndices: [2] }, // y(long i)
+    
+    // --- 其他混合單字 ---
+    { word: "meow", syllables: ["me", "ow"], chinese: "喵 (貓叫聲)", example: "The cat said meow.", irregularIndices: [1, 2, 3] }, // e(long), ow
+    { word: "running", syllables: ["run", "ning"], chinese: "跑步中", example: "He is running fast.", irregularIndices: [] }, // regular short vowels
+    { word: "string", syllables: ["string"], chinese: "繩子", example: "Tie the box with a string.", irregularIndices: [] }, // regular short i
+    { word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We slept in a tent.", irregularIndices: [] }, // regular short e
+    { word: "ran", syllables: ["ran"], chinese: "跑 (run的過去式)", example: "He ran to the bus stop.", irregularIndices: [] }, // regular short a
+    { word: "come", syllables: ["come"], chinese: "來", example: "Please come here.", irregularIndices: [1, 3] }, // o (irregular /uh/), e (silent)
+    { word: "walk", syllables: ["walk"], chinese: "走路", example: "I walk to school.", irregularIndices: [1, 2] }, // al (sounds like /aw/)
+    { word: "home", syllables: ["home"], chinese: "家", example: "Let's go home.", irregularIndices: [1, 3] }, // o (long), e (silent)
+    { word: "am", syllables: ["am"], chinese: "是 (第一人稱)", example: "I am happy.", irregularIndices: [] } // regular short a
+
     ];
 
     // --- 全域變數 ---
@@ -698,3 +690,4 @@
 
 </body>
 </html>
+
