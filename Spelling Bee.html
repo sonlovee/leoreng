@@ -27,6 +27,8 @@
             padding: 20px;
             color: var(--text-dark);
             text-align: center;
+            /* 防止手機雙擊縮放 */
+            touch-action: manipulation; 
         }
 
         h1 {
@@ -82,4 +84,718 @@
         .tab-btn {
             background: none;
             border: none;
-            padding: 15px
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+            margin-bottom: -3px;
+        }
+
+        .tab-btn:hover { color: var(--primary-blue); }
+        .tab-btn.active {
+            color: var(--text-dark);
+            border-bottom: 4px solid var(--primary-yellow);
+        }
+
+        /* --- 🏫 學習區域 --- */
+        .mode-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .mode-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .word-card {
+            padding: 30px;
+            background: #FFF9C4;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .big-word {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 10px 0;
+            letter-spacing: 2px;
+        }
+
+        /* 字元顏色樣式 */
+        .char-vowel { color: var(--color-vowel); }
+        .char-consonant { color: var(--color-consonant); }
+        .char-irregular { color: var(--color-irregular); font-weight: 900; text-shadow: 1px 1px 0px #eee; }
+
+        .info-text {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #555;
+        }
+        
+        .example-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .example-text {
+            font-style: italic;
+            color: #555;
+            font-size: 1.2rem;
+        }
+
+        /* 例句播放按鈕 */
+        .btn-sm-speak {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .btn-sm-speak:active { transform: scale(0.9); }
+
+        .syllable-box {
+            background: white;
+            display: block; /* 預設顯示 */
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px dashed #aaa;
+            margin: 15px auto;
+            font-size: 1.2rem;
+            color: #666;
+            width: fit-content;
+        }
+
+        /* --- 🎮 互動按鈕 --- */
+        button.action-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #008B8B;
+            transition: transform 0.1s;
+            margin: 5px;
+        }
+        button.action-btn:active { transform: translateY(4px); box-shadow: none; }
+        button.secondary-btn { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
+        button.speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; padding: 15px 30px; }
+
+        /* --- 🧩 積木與聽寫 --- */
+        .letter-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            min-height: 60px;
+        }
+        .letter-block {
+            background: white;
+            border: 3px solid var(--primary-yellow);
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #ccc;
+            user-select: none;
+        }
+        .answer-area {
+            min-height: 60px;
+            border-bottom: 4px solid #333;
+            margin: 0 20px;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            font-size: 3rem;
+            font-family: monospace;
+        }
+        input[type="text"] {
+            font-size: 2rem;
+            padding: 10px;
+            width: 80%;
+            text-align: center;
+            border: 3px solid var(--primary-blue);
+            border-radius: 15px;
+            outline: none;
+            margin-bottom: 15px;
+        }
+        .feedback-msg {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 1.5em;
+        }
+        .correct { color: #2ecc71; }
+        .wrong { color: #e74c3c; }
+
+        /* --- ⌨️ 虛擬鍵盤樣式 --- */
+        .keyboard-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        .keyboard-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .key-btn {
+            background: white;
+            border: 1px solid #ccc;
+            border-bottom: 3px solid #bbb;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+            min-width: 30px;
+            transition: all 0.1s;
+        }
+        .key-btn:active {
+            transform: translateY(2px);
+            border-bottom: 1px solid #bbb;
+            background: #f0f0f0;
+        }
+        .key-special {
+            background: #eee;
+            font-size: 1rem;
+            padding: 10px 10px;
+        }
+        .key-space {
+            width: 150px;
+        }
+
+        @media (max-width: 600px) {
+            .big-word { font-size: 3rem; }
+            .controls-bar { flex-direction: column; }
+            select { width: 100%; }
+            .key-btn { padding: 8px 6px; font-size: 1.1rem; min-width: 25px; } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h1>🐝 拼字小蜜蜂 Pro+</h1>
+
+    <div class="controls-bar">
+        <div>
+            <label>📚 等級：</label>
+            <select id="levelSelect" onchange="changeLevel()"></select>
+        </div>
+        <div>
+            <label>🗣️ 發音：</label>
+            <select id="voiceSelect">
+                <option value="">正在載入語音...</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (學習)</button>
+        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (練習)</button>
+        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (測驗)</button>
+    </div>
+
+    <div id="modeA" class="mode-section active">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 單字發音</button>
+            
+            <div id="wordDisplay" class="big-word"></div>
+            
+            <div id="chineseDisplay" class="info-text"></div>
+            
+            <div class="example-container">
+                <div id="exampleDisplay" class="example-text"></div>
+                <button class="btn-sm-speak" onclick="speakText(currentWordObj.example)" title="朗讀例句">🔈</button>
+            </div>
+            
+            <div id="syllableBox" class="syllable-box"></div>
+            <div style="margin-top: 10px;">
+                <button id="btnToggleSyllable" class="action-btn secondary-btn" style="font-size: 1rem; padding: 8px 16px;" onclick="toggleSyllables()">隱藏音節</button>
+            </div>
+        </div>
+        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+    <div id="modeB" class="mode-section">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
+            <div class="info-text" id="chineseHintB"></div>
+            
+            <div id="puzzleAnswer" class="answer-area"></div>
+            <div id="puzzlePieces" class="letter-container"></div>
+            <div id="feedbackB" class="feedback-msg"></div>
+        </div>
+        <button class="action-btn secondary-btn" onclick="resetPuzzle()">🔄 重置</button>
+        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+    <div id="modeC" class="mode-section">
+        <div class="word-card">
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
+            <div class="info-text" id="chineseHintC"></div>
+            
+            <input type="text" id="dictationInput" placeholder="點擊按鈕或打字..." autocomplete="off">
+            
+            <div id="virtualKeyboard" class="keyboard-area"></div>
+
+            <div id="feedbackC" class="feedback-msg"></div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <button class="action-btn secondary-btn" onclick="resetDictation()">🔄 清除重寫</button>
+            <button class="action-btn" onclick="checkDictation()">✅ 檢查答案</button>
+        </div>
+        
+        <button class="action-btn" style="margin-top: 10px; background-color: #333;" onclick="nextWord()">➡️ 下一個單字</button>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. 資料來源 (Data Source) ---
+    const rawData = [
+        // --- 原始單字 ---
+        { word: "cube", syllables: ["cube"], chinese: "立方體", example: "The toy is shaped like a cube.", irregularIndices: [1, 3] },
+        { word: "cute", syllables: ["cute"], chinese: "可愛的", example: "The puppy is very cute.", irregularIndices: [1, 3] },
+        { word: "mule", syllables: ["mule"], chinese: "騾子", example: "The farmer uses a mule to carry supplies.", irregularIndices: [1, 3] },
+        { word: "flute", syllables: ["flute"], chinese: "長笛", example: "She plays the flute every day.", irregularIndices: [2, 4] },
+        { word: "ruler", syllables: ["ru", "ler"], chinese: "尺；統治者", example: "Please use a ruler to draw a straight line.", irregularIndices: [1] },
+        { word: "tube", syllables: ["tube"], chinese: "管子", example: "Water flows through the tube.", irregularIndices: [1, 3] },
+        { word: "tune", syllables: ["tune"], chinese: "旋律；調音", example: "This tune is easy to sing.", irregularIndices: [1, 3] },
+        { word: "again", syllables: ["a", "gain"], chinese: "再次", example: "Please try again.", irregularIndices: [2, 3] },
+        { word: "cold", syllables: ["cold"], chinese: "冷的", example: "The water is very cold.", irregularIndices: [1] },
+        { word: "hot", syllables: ["hot"], chinese: "熱的", example: "Be careful, the soup is hot.", irregularIndices: [] },
+        { word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where are you going?", irregularIndices: [2, 4] },
+        { word: "went away", syllables: ["went", "a", "way"], chinese: "離開；走掉", example: "He went away quickly." },
+        { word: "take", syllables: ["take"], chinese: "拿；帶走", example: "Please take your bag with you.", irregularIndices: [1, 3] },
+        { word: "night", syllables: ["night"], chinese: "夜晚", example: "The stars are bright at night.", irregularIndices: [1, 2, 3] },
+        { word: "at", syllables: ["at"], chinese: "在…", example: "She is at home.", irregularIndices: [] },
+        { word: "they", syllables: ["they"], chinese: "他們", example: "They are playing outside.", irregularIndices: [2, 3] },
+        { word: "me", syllables: ["me"], chinese: "我（受格）", example: "Please give the book to me.", irregularIndices: [1] },
+        // --- 新增單字清單 (Y結尾、片語、常見字) ---
+        { word: "too", syllables: ["too"], chinese: "也；太", example: "I like ice cream too.", irregularIndices: [1, 2] },
+        { word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向...；跑上去", example: "The dog ran up the hill.", irregularIndices: [] },
+        { word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "They ran out of milk.", irregularIndices: [4, 5] },
+        { word: "ball", syllables: ["ball"], chinese: "球", example: "He kicked the ball.", irregularIndices: [1] },
+        { word: "get", syllables: ["get"], chinese: "得到", example: "Did you get my email?", irregularIndices: [] },
+        { word: "are", syllables: ["are"], chinese: "是（複數/第二人稱）", example: "You are my best friend.", irregularIndices: [0, 1, 2] },
+        { word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I saw a little bird.", irregularIndices: [4, 5] },
+        { word: "get out", syllables: ["get", " ", "out"], chinese: "離開；出去", example: "Please get out of the car.", irregularIndices: [4, 5] },
+        { word: "her", syllables: ["her"], chinese: "她的", example: "This is her bag.", irregularIndices: [1, 2] },
+        { word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel is eating a nut.", irregularIndices: [3, 4] },
+        { word: "live", syllables: ["live"], chinese: "居住", example: "I live in a big city.", irregularIndices: [3] },
+        { word: "that", syllables: ["that"], chinese: "那個", example: "Look at that bird!", irregularIndices: [] },
+        { word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] },
+        { word: "car", syllables: ["car"], chinese: "車子", example: "My dad drives a red car.", irregularIndices: [1, 2] },
+        { word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "He waved goodbye to his friends.", irregularIndices: [1, 2, 5, 6] },
+        { word: "your", syllables: ["your"], chinese: "你的", example: "What is your name?", irregularIndices: [1, 2, 3] },
+        { word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is sleeping.", irregularIndices: [1, 3] },
+        { word: "city", syllables: ["cit", "y"], chinese: "城市", example: "New York is a big city.", irregularIndices: [3] },
+        { word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like peanut butter and jelly.", irregularIndices: [4] },
+        { word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "A nice lady helped me.", irregularIndices: [1, 3] },
+        { word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "She rode a pony at the farm.", irregularIndices: [1, 3] },
+        { word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] },
+        { word: "cry", syllables: ["cry"], chinese: "哭泣", example: "Don't cry, it's okay.", irregularIndices: [2] },
+        { word: "dry", syllables: ["dry"], chinese: "乾的", example: "Is your shirt dry yet?", irregularIndices: [2] },
+        { word: "fly", syllables: ["fly"], chinese: "飛；蒼蠅", example: "Birds can fly high.", irregularIndices: [2] },
+        { word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry some eggs.", irregularIndices: [2] },
+        { word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue today.", irregularIndices: [2] },
+        { word: "meow", syllables: ["me", "ow"], chinese: "喵 (貓叫聲)", example: "The cat said meow.", irregularIndices: [1, 2, 3] },
+        { word: "running", syllables: ["run", "ning"], chinese: "跑步中", example: "He is running fast.", irregularIndices: [] },
+        { word: "string", syllables: ["string"], chinese: "繩子", example: "Tie the box with a string.", irregularIndices: [] },
+        { word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We slept in a tent.", irregularIndices: [] },
+        { word: "ran", syllables: ["ran"], chinese: "跑 (run的過去式)", example: "He ran to the bus stop.", irregularIndices: [] },
+        { word: "come", syllables: ["come"], chinese: "來", example: "Please come here.", irregularIndices: [1, 3] },
+        { word: "walk", syllables: ["walk"], chinese: "走路", example: "I walk to school.", irregularIndices: [1, 2] },
+        { word: "home", syllables: ["home"], chinese: "家", example: "Let's go home.", irregularIndices: [1, 3] },
+        { word: "am", syllables: ["am"], chinese: "是 (第一人稱)", example: "I am happy.", irregularIndices: [] }
+    ];
+
+    // --- 2. 全域變數 ---
+    let currentLevelWords = [];
+    let currentWordIndex = 0;
+    let currentWordObj = null;
+    let voices = [];
+    let synth = window.speechSynthesis;
+    let isSyllableVisible = true;
+    let audioCtx = null; // 音效系統上下文
+
+    // --- 3. 初始化與設定 ---
+    window.onload = function() {
+        initLevelSystem();
+        initVoiceSystem();
+        initKeyboard(); 
+        initAudio(); // 初始化音效
+        loadWord(0);
+    };
+
+    // --- 音效系統 (Web Audio API) ---
+    function initAudio() {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+            audioCtx = new AudioContext();
+        }
+    }
+
+    function playSound(type) {
+        if (!audioCtx) initAudio();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (type === 'correct') {
+            // 叮咚聲 (高音正弦波)
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        } else {
+            // 錯誤聲 (低音鋸齒波)
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+            oscillator.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.3);
+        }
+    }
+
+    function initLevelSystem() {
+        const levelSelect = document.getElementById('levelSelect');
+        const totalWords = rawData.length;
+        const levelSize = 10;
+        const totalLevels = Math.ceil(totalWords / levelSize);
+
+        for (let i = 0; i < totalLevels; i++) {
+            let option = document.createElement('option');
+            option.value = i;
+            option.text = `Level ${i + 1} (${i * levelSize + 1} - ${Math.min((i + 1) * levelSize, totalWords)})`;
+            levelSelect.appendChild(option);
+        }
+        
+        let allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.text = "全部單字 (All)";
+        levelSelect.appendChild(allOption);
+
+        changeLevel();
+    }
+
+    function changeLevel() {
+        const val = document.getElementById('levelSelect').value;
+        if (val === 'all') {
+            currentLevelWords = [...rawData];
+        } else {
+            const levelIndex = parseInt(val);
+            const start = levelIndex * 10;
+            const end = start + 10;
+            currentLevelWords = rawData.slice(start, end);
+        }
+        currentWordIndex = 0;
+        loadWord(0);
+    }
+
+    function initVoiceSystem() {
+        const voiceSelect = document.getElementById('voiceSelect');
+        
+        const populateVoices = () => {
+            voices = synth.getVoices();
+            if (voices.length === 0) {
+                voiceSelect.innerHTML = '<option value="">等待語音載入...</option>';
+                return;
+            }
+
+            voiceSelect.innerHTML = '';
+            let bestVoiceIndex = 0; 
+            let bestPriority = 0;
+
+            voices.forEach((voice, index) => {
+                let option = document.createElement('option');
+                option.textContent = `${voice.name} (${voice.lang})`;
+                option.value = index;
+                voiceSelect.appendChild(option);
+
+                let currentPriority = 0;
+                if (voice.lang.startsWith('en')) {
+                    currentPriority = 1;
+                    if (voice.lang === 'en-US' || voice.lang === 'en_US') currentPriority += 2;
+                    if (voice.name.includes('Siri')) currentPriority += 10;
+                    else if (voice.name === 'Samantha') currentPriority += 9;
+                    else if (voice.name === 'Aaron') currentPriority += 8;
+                    else if (voice.name.includes('Google US English')) currentPriority += 7;
+                }
+
+                if (currentPriority > bestPriority) {
+                    bestPriority = currentPriority;
+                    bestVoiceIndex = index;
+                }
+            });
+
+            if (voices.length > 0) voiceSelect.selectedIndex = bestVoiceIndex;
+        };
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+             speechSynthesis.onvoiceschanged = populateVoices;
+        }
+        populateVoices();
+        setTimeout(populateVoices, 500);
+        setTimeout(populateVoices, 1000);
+    }
+
+    function speakText(text) {
+        if (!text) return;
+        synth.cancel();
+        const utterThis = new SpeechSynthesisUtterance(text);
+        const voiceSelect = document.getElementById('voiceSelect');
+        if (voices.length > 0 && voiceSelect.value) {
+            utterThis.voice = voices[voiceSelect.value];
+        }
+        utterThis.rate = 0.85;
+        synth.speak(utterThis);
+    }
+
+    // --- ⌨️ 虛擬鍵盤邏輯 ---
+    function initKeyboard() {
+        const keyboardContainer = document.getElementById('virtualKeyboard');
+        const rows = [
+            ["q","w","e","r","t","y","u","i","o","p"],
+            ["a","s","d","f","g","h","j","k","l"],
+            ["z","x","c","v","b","n","m"]
+        ];
+
+        rows.forEach(rowKeys => {
+            let rowDiv = document.createElement('div');
+            rowDiv.className = 'keyboard-row';
+            rowKeys.forEach(char => {
+                let btn = document.createElement('button');
+                btn.className = 'key-btn';
+                btn.innerText = char;
+                btn.onclick = () => typeKey(char);
+                rowDiv.appendChild(btn);
+            });
+            keyboardContainer.appendChild(rowDiv);
+        });
+
+        let funcRow = document.createElement('div');
+        funcRow.className = 'keyboard-row';
+        
+        let spaceBtn = document.createElement('button');
+        spaceBtn.className = 'key-btn key-special key-space';
+        spaceBtn.innerText = 'Space (空白)';
+        spaceBtn.onclick = () => typeKey(' ');
+        funcRow.appendChild(spaceBtn);
+
+        let backBtn = document.createElement('button');
+        backBtn.className = 'key-btn key-special';
+        backBtn.innerText = '⌫';
+        backBtn.onclick = () => backspaceKey();
+        funcRow.appendChild(backBtn);
+
+        keyboardContainer.appendChild(funcRow);
+    }
+
+    function typeKey(char) {
+        const input = document.getElementById('dictationInput');
+        input.value += char;
+        input.focus();
+    }
+
+    function backspaceKey() {
+        const input = document.getElementById('dictationInput');
+        input.value = input.value.slice(0, -1);
+        input.focus();
+    }
+
+    // --- 4. 核心邏輯 ---
+    function loadWord(index) {
+        if (index >= currentLevelWords.length) index = 0;
+        currentWordIndex = index;
+        currentWordObj = currentLevelWords[index];
+
+        document.getElementById('feedbackB').innerText = "";
+        document.getElementById('feedbackC').innerText = "";
+        
+        // 切換單字時清空聽寫輸入
+        document.getElementById('dictationInput').value = "";
+
+        // Mode A
+        renderColoredWord(currentWordObj);
+        document.getElementById('chineseDisplay').innerText = currentWordObj.chinese;
+        document.getElementById('exampleDisplay').innerText = currentWordObj.example;
+        document.getElementById('syllableBox').innerText = currentWordObj.syllables.join(" - ");
+        updateSyllableVisibility();
+
+        // Mode B & C Text
+        document.getElementById('chineseHintB').innerText = currentWordObj.chinese;
+        document.getElementById('chineseHintC').innerText = currentWordObj.chinese;
+
+        // Mode B Setup
+        initPuzzleMode(currentWordObj.word);
+    }
+
+    function nextWord() {
+        currentWordIndex++;
+        if (currentWordIndex >= currentLevelWords.length) currentWordIndex = 0;
+        loadWord(currentWordIndex);
+        speakText(currentWordObj.word);
+    }
+
+    function switchTab(modeId) {
+        document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
+        document.getElementById(modeId).classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+    }
+
+    function renderColoredWord(wordObj) {
+        const display = document.getElementById('wordDisplay');
+        display.innerHTML = '';
+        const vowels = ['a','e','i','o','u'];
+        const word = wordObj.word;
+        const irregulars = wordObj.irregularIndices || [];
+
+        for (let i = 0; i < word.length; i++) {
+            let char = word[i];
+            let span = document.createElement('span');
+            span.innerText = char;
+
+            if (irregulars.includes(i)) {
+                span.className = 'char-irregular';
+            } else if (vowels.includes(char.toLowerCase())) {
+                span.className = 'char-vowel';
+            } else {
+                span.className = 'char-consonant';
+            }
+            display.appendChild(span);
+        }
+    }
+
+    function toggleSyllables() {
+        isSyllableVisible = !isSyllableVisible;
+        updateSyllableVisibility();
+    }
+
+    function updateSyllableVisibility() {
+        const box = document.getElementById('syllableBox');
+        const btn = document.getElementById('btnToggleSyllable');
+        if (isSyllableVisible) {
+            box.style.display = 'inline-block';
+            btn.innerText = '隱藏音節';
+        } else {
+            box.style.display = 'none';
+            btn.innerText = '顯示音節';
+        }
+    }
+
+    // --- Mode B: 積木邏輯 ---
+    let puzzleCurrentAnswer = [];
+    function initPuzzleMode(word) {
+        const container = document.getElementById('puzzlePieces');
+        const answerArea = document.getElementById('puzzleAnswer');
+        container.innerHTML = '';
+        answerArea.innerHTML = '';
+        puzzleCurrentAnswer = [];
+
+        let letters = word.split('').sort(() => Math.random() - 0.5);
+
+        letters.forEach((char) => {
+            let btn = document.createElement('div');
+            btn.className = 'letter-block';
+            btn.innerText = char;
+            btn.onclick = () => {
+                let ansSpan = document.createElement('span');
+                ansSpan.innerText = char;
+                answerArea.appendChild(ansSpan);
+                puzzleCurrentAnswer.push(char);
+                btn.style.visibility = 'hidden';
+                checkPuzzle(word);
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    function resetPuzzle() {
+        initPuzzleMode(currentWordObj.word);
+        document.getElementById('feedbackB').innerText = "";
+    }
+
+    function checkPuzzle(correctWord) {
+        const userWord = puzzleCurrentAnswer.join('');
+        if (userWord.length === correctWord.length) {
+            const feedback = document.getElementById('feedbackB');
+            if (userWord === correctWord) {
+                feedback.innerHTML = "<span class='correct'>🎉 答對了！</span>";
+                playSound('correct'); // 播放正確音效
+                speakText(correctWord);
+            } else {
+                feedback.innerHTML = "<span class='wrong'>❌ 再試一次！</span>";
+                playSound('wrong'); // 播放錯誤音效
+            }
+        }
+    }
+
+    // --- Mode C: 聽寫邏輯 ---
+    function checkDictation() {
+        const input = document.getElementById('dictationInput');
+        const feedback = document.getElementById('feedbackC');
+        
+        if (input.value.trim().toLowerCase() === currentWordObj.word.toLowerCase()) {
+            feedback.innerHTML = "<span class='correct'>🌟 完全正確！</span>";
+            playSound('correct'); // 播放正確音效
+            speakText(currentWordObj.word);
+        } else {
+            feedback.innerHTML = `<span class='wrong'>❌ 正確是：${currentWordObj.word}</span>`;
+            playSound('wrong'); // 播放錯誤音效
+        }
+    }
+
+    // 新增：清除重寫功能
+    function resetDictation() {
+        const input = document.getElementById('dictationInput');
+        const feedback = document.getElementById('feedbackC');
+        input.value = ""; // 清空輸入框
+        feedback.innerText = ""; // 清空回饋訊息
+        input.focus(); // 讓游標回到輸入框
+    }
+</script>
+
+</body>
+</html>
