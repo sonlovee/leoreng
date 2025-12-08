@@ -15,9 +15,9 @@
             --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             
             /* 文字顏色定義 */
-            --color-vowel: #FF4500;      /* 紅色：短母音/一般母音 */
-            --color-consonant: #1E90FF;  /* 藍色：子音 */
-            --color-irregular: #9932CC;  /* 紫色：不規則/長母音/特殊發音/不發音字母 */
+            --color-vowel: #FF4500;       /* 紅色：短母音/一般母音 */
+            --color-consonant: #1E90FF;   /* 藍色：子音 */
+            --color-irregular: #9932CC;   /* 紫色：不規則/長母音/特殊發音/不發音字母 */
         }
 
         body {
@@ -238,6 +238,7 @@
             border: 3px solid var(--primary-blue);
             border-radius: 15px;
             outline: none;
+            margin-bottom: 15px;
         }
         .feedback-msg {
             font-size: 1.5rem;
@@ -248,10 +249,52 @@
         .correct { color: #2ecc71; }
         .wrong { color: #e74c3c; }
 
+        /* --- ⌨️ 虛擬鍵盤樣式 (新增) --- */
+        .keyboard-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        .keyboard-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        .key-btn {
+            background: white;
+            border: 1px solid #ccc;
+            border-bottom: 3px solid #bbb;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+            min-width: 30px;
+            transition: all 0.1s;
+        }
+        .key-btn:active {
+            transform: translateY(2px);
+            border-bottom: 1px solid #bbb;
+            background: #f0f0f0;
+        }
+        .key-special {
+            background: #eee;
+            font-size: 1rem;
+            padding: 10px 10px;
+        }
+        .key-space {
+            width: 150px;
+        }
+
         @media (max-width: 600px) {
             .big-word { font-size: 3rem; }
             .controls-bar { flex-direction: column; }
             select { width: 100%; }
+            .key-btn { padding: 8px 6px; font-size: 1.1rem; min-width: 25px; } /* 手機版鍵盤縮小 */
         }
     </style>
 </head>
@@ -318,7 +361,10 @@
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
             <div class="info-text" id="chineseHintC"></div>
             
-            <input type="text" id="dictationInput" placeholder="輸入單字..." autocomplete="off">
+            <input type="text" id="dictationInput" placeholder="點擊按鈕或打字..." autocomplete="off">
+            
+            <div id="virtualKeyboard" class="keyboard-area"></div>
+
             <div id="feedbackC" class="feedback-msg"></div>
         </div>
         <button class="action-btn secondary-btn" onclick="checkDictation()">✅ 檢查答案</button>
@@ -330,7 +376,6 @@
 <script>
     // --- 1. 資料來源 (Data Source) ---
     // irregularIndices: 標示為紫色的索引位置 (從 0 開始)
-    // 包含規則：R-controlled, Vowel Teams, Long Vowels, Silent Letters
     const rawData = [
         // --- 原始單字 ---
         { word: "cube", syllables: ["cube"], chinese: "立方體", example: "The toy is shaped like a cube.", irregularIndices: [1, 3] },
@@ -351,48 +396,48 @@
         { word: "they", syllables: ["they"], chinese: "他們", example: "They are playing outside.", irregularIndices: [2, 3] },
         { word: "me", syllables: ["me"], chinese: "我（受格）", example: "Please give the book to me.", irregularIndices: [1] },
         // --- 新增單字清單 (Y結尾、片語、常見字) ---
-    { word: "too", syllables: ["too"], chinese: "也；太", example: "I like ice cream too.", irregularIndices: [1, 2] }, // oo (long u)
-    { word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向...；跑上去", example: "The dog ran up the hill.", irregularIndices: [] }, // regular short vowels
-    { word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "They ran out of milk.", irregularIndices: [4, 5] }, // ou (diphthong)
-    { word: "ball", syllables: ["ball"], chinese: "球", example: "He kicked the ball.", irregularIndices: [1] }, // a (all sound)
-    { word: "get", syllables: ["get"], chinese: "得到", example: "Did you get my email?", irregularIndices: [] }, // regular short e
-    { word: "are", syllables: ["are"], chinese: "是（複數/第二人稱）", example: "You are my best friend.", irregularIndices: [0, 1, 2] }, // r-controlled / sight word
-    { word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I saw a little bird.", irregularIndices: [4, 5] }, // le (syllabic l), e silent
-    { word: "get out", syllables: ["get", " ", "out"], chinese: "離開；出去", example: "Please get out of the car.", irregularIndices: [4, 5] }, // ou
-    { word: "her", syllables: ["her"], chinese: "她的", example: "This is her bag.", irregularIndices: [1, 2] }, // er (r-controlled)
-    { word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel is eating a nut.", irregularIndices: [3, 4] }, // ir (r-controlled)
-    { word: "live", syllables: ["live"], chinese: "居住", example: "I live in a big city.", irregularIndices: [3] }, // i (short), e (silent - irregular rule)
-    { word: "that", syllables: ["that"], chinese: "那個", example: "Look at that bird!", irregularIndices: [] }, // regular short a
-    { word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] }, // ay (long a)
-    { word: "car", syllables: ["car"], chinese: "車子", example: "My dad drives a red car.", irregularIndices: [1, 2] }, // ar (r-controlled)
-    { word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "He waved goodbye to his friends.", irregularIndices: [1, 2, 5, 6] }, // oo, ye (long i)
-    { word: "your", syllables: ["your"], chinese: "你的", example: "What is your name?", irregularIndices: [1, 2, 3] }, // our (r-controlled/sight word)
+    { word: "too", syllables: ["too"], chinese: "也；太", example: "I like ice cream too.", irregularIndices: [1, 2] },
+    { word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向...；跑上去", example: "The dog ran up the hill.", irregularIndices: [] },
+    { word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "They ran out of milk.", irregularIndices: [4, 5] },
+    { word: "ball", syllables: ["ball"], chinese: "球", example: "He kicked the ball.", irregularIndices: [1] },
+    { word: "get", syllables: ["get"], chinese: "得到", example: "Did you get my email?", irregularIndices: [] },
+    { word: "are", syllables: ["are"], chinese: "是（複數/第二人稱）", example: "You are my best friend.", irregularIndices: [0, 1, 2] },
+    { word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I saw a little bird.", irregularIndices: [4, 5] },
+    { word: "get out", syllables: ["get", " ", "out"], chinese: "離開；出去", example: "Please get out of the car.", irregularIndices: [4, 5] },
+    { word: "her", syllables: ["her"], chinese: "她的", example: "This is her bag.", irregularIndices: [1, 2] },
+    { word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel is eating a nut.", irregularIndices: [3, 4] },
+    { word: "live", syllables: ["live"], chinese: "居住", example: "I live in a big city.", irregularIndices: [3] },
+    { word: "that", syllables: ["that"], chinese: "那個", example: "Look at that bird!", irregularIndices: [] },
+    { word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] },
+    { word: "car", syllables: ["car"], chinese: "車子", example: "My dad drives a red car.", irregularIndices: [1, 2] },
+    { word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "He waved goodbye to his friends.", irregularIndices: [1, 2, 5, 6] },
+    { word: "your", syllables: ["your"], chinese: "你的", example: "What is your name?", irregularIndices: [1, 2, 3] },
     
     // --- Y 當母音系列 (/i/ sound) ---
-    { word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is sleeping.", irregularIndices: [1, 3] }, // a(open), y(long e)
-    { word: "city", syllables: ["cit", "y"], chinese: "城市", example: "New York is a big city.", irregularIndices: [3] }, // y(long e)
-    { word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like peanut butter and jelly.", irregularIndices: [4] }, // y(long e)
-    { word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "A nice lady helped me.", irregularIndices: [1, 3] }, // a(open), y(long e)
-    { word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "She rode a pony at the farm.", irregularIndices: [1, 3] }, // o(open), y(long e)
-    { word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] }, // y(long e)
+    { word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is sleeping.", irregularIndices: [1, 3] },
+    { word: "city", syllables: ["cit", "y"], chinese: "城市", example: "New York is a big city.", irregularIndices: [3] },
+    { word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like peanut butter and jelly.", irregularIndices: [4] },
+    { word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "A nice lady helped me.", irregularIndices: [1, 3] },
+    { word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "She rode a pony at the farm.", irregularIndices: [1, 3] },
+    { word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] },
     
     // --- Y 當母音系列 (/ai/ sound) ---
-    { word: "cry", syllables: ["cry"], chinese: "哭泣", example: "Don't cry, it's okay.", irregularIndices: [2] }, // y(long i)
-    { word: "dry", syllables: ["dry"], chinese: "乾的", example: "Is your shirt dry yet?", irregularIndices: [2] }, // y(long i)
-    { word: "fly", syllables: ["fly"], chinese: "飛；蒼蠅", example: "Birds can fly high.", irregularIndices: [2] }, // y(long i)
-    { word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry some eggs.", irregularIndices: [2] }, // y(long i)
-    { word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue today.", irregularIndices: [2] }, // y(long i)
+    { word: "cry", syllables: ["cry"], chinese: "哭泣", example: "Don't cry, it's okay.", irregularIndices: [2] },
+    { word: "dry", syllables: ["dry"], chinese: "乾的", example: "Is your shirt dry yet?", irregularIndices: [2] },
+    { word: "fly", syllables: ["fly"], chinese: "飛；蒼蠅", example: "Birds can fly high.", irregularIndices: [2] },
+    { word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry some eggs.", irregularIndices: [2] },
+    { word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue today.", irregularIndices: [2] },
     
     // --- 其他混合單字 ---
-    { word: "meow", syllables: ["me", "ow"], chinese: "喵 (貓叫聲)", example: "The cat said meow.", irregularIndices: [1, 2, 3] }, // e(long), ow
-    { word: "running", syllables: ["run", "ning"], chinese: "跑步中", example: "He is running fast.", irregularIndices: [] }, // regular short vowels
-    { word: "string", syllables: ["string"], chinese: "繩子", example: "Tie the box with a string.", irregularIndices: [] }, // regular short i
-    { word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We slept in a tent.", irregularIndices: [] }, // regular short e
-    { word: "ran", syllables: ["ran"], chinese: "跑 (run的過去式)", example: "He ran to the bus stop.", irregularIndices: [] }, // regular short a
-    { word: "come", syllables: ["come"], chinese: "來", example: "Please come here.", irregularIndices: [1, 3] }, // o (irregular /uh/), e (silent)
-    { word: "walk", syllables: ["walk"], chinese: "走路", example: "I walk to school.", irregularIndices: [1, 2] }, // al (sounds like /aw/)
-    { word: "home", syllables: ["home"], chinese: "家", example: "Let's go home.", irregularIndices: [1, 3] }, // o (long), e (silent)
-    { word: "am", syllables: ["am"], chinese: "是 (第一人稱)", example: "I am happy.", irregularIndices: [] } // regular short a
+    { word: "meow", syllables: ["me", "ow"], chinese: "喵 (貓叫聲)", example: "The cat said meow.", irregularIndices: [1, 2, 3] },
+    { word: "running", syllables: ["run", "ning"], chinese: "跑步中", example: "He is running fast.", irregularIndices: [] },
+    { word: "string", syllables: ["string"], chinese: "繩子", example: "Tie the box with a string.", irregularIndices: [] },
+    { word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We slept in a tent.", irregularIndices: [] },
+    { word: "ran", syllables: ["ran"], chinese: "跑 (run的過去式)", example: "He ran to the bus stop.", irregularIndices: [] },
+    { word: "come", syllables: ["come"], chinese: "來", example: "Please come here.", irregularIndices: [1, 3] },
+    { word: "walk", syllables: ["walk"], chinese: "走路", example: "I walk to school.", irregularIndices: [1, 2] },
+    { word: "home", syllables: ["home"], chinese: "家", example: "Let's go home.", irregularIndices: [1, 3] },
+    { word: "am", syllables: ["am"], chinese: "是 (第一人稱)", example: "I am happy.", irregularIndices: [] }
 
     ];
 
@@ -402,12 +447,13 @@
     let currentWordObj = null;
     let voices = [];
     let synth = window.speechSynthesis;
-    let isSyllableVisible = true; // 預設顯示音節
+    let isSyllableVisible = true;
 
     // --- 2. 初始化與設定 ---
     window.onload = function() {
         initLevelSystem();
         initVoiceSystem();
+        initKeyboard(); // 初始化虛擬鍵盤
         loadWord(0);
     };
 
@@ -446,23 +492,19 @@
         loadWord(0);
     }
 
-    // ⭐ 修正版：完美支援 iOS (Siri/Samantha) 與 Android/PC (Google)
     function initVoiceSystem() {
         const voiceSelect = document.getElementById('voiceSelect');
         
         const populateVoices = () => {
             voices = synth.getVoices();
             if (voices.length === 0) {
-                // iOS 有時需要一點時間載入，這裡保留等待提示
                 voiceSelect.innerHTML = '<option value="">等待語音載入...</option>';
                 return;
             }
 
             voiceSelect.innerHTML = '';
-            
-            // 用來記錄最佳語音的 index
             let bestVoiceIndex = 0; 
-            let bestPriority = 0; // 權重分數：分數越高越優先
+            let bestPriority = 0;
 
             voices.forEach((voice, index) => {
                 let option = document.createElement('option');
@@ -470,74 +512,99 @@
                 option.value = index;
                 voiceSelect.appendChild(option);
 
-                // --- 🎯 語音選擇權重邏輯 ---
                 let currentPriority = 0;
-
-                // 基礎門檻：必須是英文
                 if (voice.lang.startsWith('en')) {
-                    currentPriority = 1; // 是英文就有 1 分
-
-                    if (voice.lang === 'en-US' || voice.lang === 'en_US') {
-                        currentPriority += 2; // 美式英文 +2 分 (共3分)
-                    }
-
-                    // 針對 iOS 的優化 (分數最高)
-                    if (voice.name.includes('Siri')) {
-                        currentPriority += 10; // Siri 語音 (iOS 16+)
-                    } else if (voice.name === 'Samantha') {
-                        currentPriority += 9;  // Samantha (iOS 經典標準音)
-                    } else if (voice.name === 'Aaron') {
-                        currentPriority += 8;  // Aaron (iOS 優質男聲)
-                    }
-
-                    // 針對 Android/PC Chrome 的優化
-                    if (voice.name.includes('Google US English')) {
-                        currentPriority += 7; // Google 美式英文
-                    }
+                    currentPriority = 1;
+                    if (voice.lang === 'en-US' || voice.lang === 'en_US') currentPriority += 2;
+                    if (voice.name.includes('Siri')) currentPriority += 10;
+                    else if (voice.name === 'Samantha') currentPriority += 9;
+                    else if (voice.name === 'Aaron') currentPriority += 8;
+                    else if (voice.name.includes('Google US English')) currentPriority += 7;
                 }
 
-                // 如果當前語音的分數比之前找到的高，就更新最佳選擇
                 if (currentPriority > bestPriority) {
                     bestPriority = currentPriority;
                     bestVoiceIndex = index;
                 }
             });
 
-            // 選中計算出分數最高的語音
-            if (voices.length > 0) {
-                voiceSelect.selectedIndex = bestVoiceIndex;
-            }
+            if (voices.length > 0) voiceSelect.selectedIndex = bestVoiceIndex;
         };
 
-        // 監聽語音列表變更事件
         if (speechSynthesis.onvoiceschanged !== undefined) {
              speechSynthesis.onvoiceschanged = populateVoices;
         }
-
         populateVoices();
-        
-        // iOS 防呆機制：強制在 0.5秒、1秒、2秒後重試，確保語音列表載入
         setTimeout(populateVoices, 500);
         setTimeout(populateVoices, 1000);
-        setTimeout(populateVoices, 2000);
     }
 
-    // 統一發音函式：可發音單字或例句
     function speakText(text) {
         if (!text) return;
-        
-        // 取消之前的發音
         synth.cancel();
-
         const utterThis = new SpeechSynthesisUtterance(text);
         const voiceSelect = document.getElementById('voiceSelect');
-        
         if (voices.length > 0 && voiceSelect.value) {
             utterThis.voice = voices[voiceSelect.value];
         }
-
-        utterThis.rate = 0.85; // 適中語速
+        utterThis.rate = 0.85;
         synth.speak(utterThis);
+    }
+
+    // --- ⌨️ 虛擬鍵盤邏輯 (新功能) ---
+    function initKeyboard() {
+        const keyboardContainer = document.getElementById('virtualKeyboard');
+        // QWERTY 排列
+        const rows = [
+            ["q","w","e","r","t","y","u","i","o","p"],
+            ["a","s","d","f","g","h","j","k","l"],
+            ["z","x","c","v","b","n","m"]
+        ];
+
+        rows.forEach(rowKeys => {
+            let rowDiv = document.createElement('div');
+            rowDiv.className = 'keyboard-row';
+            rowKeys.forEach(char => {
+                let btn = document.createElement('button');
+                btn.className = 'key-btn';
+                btn.innerText = char;
+                btn.onclick = () => typeKey(char);
+                rowDiv.appendChild(btn);
+            });
+            keyboardContainer.appendChild(rowDiv);
+        });
+
+        // 增加功能鍵行 (空白與倒退)
+        let funcRow = document.createElement('div');
+        funcRow.className = 'keyboard-row';
+        
+        // 空白鍵
+        let spaceBtn = document.createElement('button');
+        spaceBtn.className = 'key-btn key-special key-space';
+        spaceBtn.innerText = 'Space (空白)';
+        spaceBtn.onclick = () => typeKey(' ');
+        funcRow.appendChild(spaceBtn);
+
+        // 刪除鍵
+        let backBtn = document.createElement('button');
+        backBtn.className = 'key-btn key-special';
+        backBtn.innerText = '⌫';
+        backBtn.onclick = () => backspaceKey();
+        funcRow.appendChild(backBtn);
+
+        keyboardContainer.appendChild(funcRow);
+    }
+
+    function typeKey(char) {
+        const input = document.getElementById('dictationInput');
+        input.value += char;
+        input.focus(); // 保持焦點方便繼續輸入
+    }
+
+    function backspaceKey() {
+        const input = document.getElementById('dictationInput');
+        input.value = input.value.slice(0, -1);
+        input.focus();
     }
 
     // --- 3. 核心邏輯 ---
@@ -546,7 +613,6 @@
         currentWordIndex = index;
         currentWordObj = currentLevelWords[index];
 
-        // 重置 UI
         document.getElementById('feedbackB').innerText = "";
         document.getElementById('feedbackC').innerText = "";
         document.getElementById('dictationInput').value = "";
@@ -556,8 +622,6 @@
         document.getElementById('chineseDisplay').innerText = currentWordObj.chinese;
         document.getElementById('exampleDisplay').innerText = currentWordObj.example;
         document.getElementById('syllableBox').innerText = currentWordObj.syllables.join(" - ");
-        
-        // 音節顯示狀態維持
         updateSyllableVisibility();
 
         // Mode B & C Text
@@ -582,36 +646,29 @@
         event.target.classList.add('active');
     }
 
-    // --- 渲染顏色邏輯 ---
     function renderColoredWord(wordObj) {
         const display = document.getElementById('wordDisplay');
         display.innerHTML = '';
         const vowels = ['a','e','i','o','u'];
         const word = wordObj.word;
-        const irregulars = wordObj.irregularIndices || []; // 取得紫色標記清單
+        const irregulars = wordObj.irregularIndices || [];
 
         for (let i = 0; i < word.length; i++) {
             let char = word[i];
             let span = document.createElement('span');
             span.innerText = char;
 
-            // 優先檢查：是否在特殊標記清單中？ -> 紫色
             if (irregulars.includes(i)) {
                 span.className = 'char-irregular';
-            } 
-            // 其次檢查：是否為母音？ -> 紅色
-            else if (vowels.includes(char.toLowerCase())) {
+            } else if (vowels.includes(char.toLowerCase())) {
                 span.className = 'char-vowel';
-            } 
-            // 剩下：子音 -> 藍色
-            else {
+            } else {
                 span.className = 'char-consonant';
             }
             display.appendChild(span);
         }
     }
 
-    // --- 音節開關邏輯 ---
     function toggleSyllables() {
         isSyllableVisible = !isSyllableVisible;
         updateSyllableVisibility();
@@ -690,4 +747,3 @@
 
 </body>
 </html>
-
