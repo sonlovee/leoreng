@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>兒童英文拼字學習機 (Pro Plus) 🐝</title>
+    <title>兒童英文拼字學習機 (Weekly Edition) 🐝</title>
     <style>
         /* --- 🎨 視覺設計 --- */
         :root {
@@ -17,7 +17,7 @@
             /* 文字顏色定義 */
             --color-vowel: #FF4500;       /* 紅色：短母音/一般母音 */
             --color-consonant: #1E90FF;   /* 藍色：子音 */
-            --color-irregular: #9932CC;   /* 紫色：不規則/長母音/特殊發音/不發音字母 */
+            --color-irregular: #9932CC;   /* 紫色：不規則/長母音/特殊發音 */
         }
 
         body {
@@ -27,7 +27,6 @@
             padding: 20px;
             color: var(--text-dark);
             text-align: center;
-            /* 防止手機雙擊縮放 */
             touch-action: manipulation; 
         }
 
@@ -152,7 +151,6 @@
             font-size: 1.2rem;
         }
 
-        /* 例句播放按鈕 */
         .btn-sm-speak {
             background: #FF6B6B;
             color: white;
@@ -172,7 +170,7 @@
 
         .syllable-box {
             background: white;
-            display: block; /* 預設顯示 */
+            display: block; 
             padding: 5px 15px;
             border-radius: 20px;
             border: 2px dashed #aaa;
@@ -223,6 +221,13 @@
             box-shadow: 0 4px 0 #ccc;
             user-select: none;
         }
+        /* 處理空格積木的樣式 */
+        .letter-block.space-block {
+            border: 2px dashed #ccc;
+            background: #f0f0f0;
+            width: 30px;
+        }
+
         .answer-area {
             min-height: 60px;
             border-bottom: 4px solid #333;
@@ -232,7 +237,12 @@
             gap: 5px;
             font-size: 3rem;
             font-family: monospace;
+            flex-wrap: wrap;
         }
+        .answer-area span {
+             min-width: 20px;
+        }
+
         input[type="text"] {
             font-size: 2rem;
             padding: 10px;
@@ -304,11 +314,11 @@
 <body>
 
 <div class="app-container">
-    <h1>🐝 拼字小蜜蜂 Pro+</h1>
+    <h1>🐝 拼字小蜜蜂 Weekly</h1>
 
     <div class="controls-bar">
         <div>
-            <label>📚 等級：</label>
+            <label>📅 進度：</label>
             <select id="levelSelect" onchange="changeLevel()"></select>
         </div>
         <div>
@@ -383,62 +393,138 @@
 
 <script>
     // --- 1. 資料來源 (Data Source) ---
+    // week屬性用來做下拉選單分類
     const rawData = [
-        // --- 原始單字 ---
-        { word: "cube", syllables: ["cube"], chinese: "立方體", example: "The toy is shaped like a cube.", irregularIndices: [1, 3] },
-        { word: "cute", syllables: ["cute"], chinese: "可愛的", example: "The puppy is very cute.", irregularIndices: [1, 3] },
-        { word: "mule", syllables: ["mule"], chinese: "騾子", example: "The farmer uses a mule to carry supplies.", irregularIndices: [1, 3] },
-        { word: "flute", syllables: ["flute"], chinese: "長笛", example: "She plays the flute every day.", irregularIndices: [2, 4] },
-        { word: "ruler", syllables: ["ru", "ler"], chinese: "尺；統治者", example: "Please use a ruler to draw a straight line.", irregularIndices: [1] },
-        { word: "tube", syllables: ["tube"], chinese: "管子", example: "Water flows through the tube.", irregularIndices: [1, 3] },
-        { word: "tune", syllables: ["tune"], chinese: "旋律；調音", example: "This tune is easy to sing.", irregularIndices: [1, 3] },
-        { word: "again", syllables: ["a", "gain"], chinese: "再次", example: "Please try again.", irregularIndices: [2, 3] },
-        { word: "cold", syllables: ["cold"], chinese: "冷的", example: "The water is very cold.", irregularIndices: [1] },
-        { word: "hot", syllables: ["hot"], chinese: "熱的", example: "Be careful, the soup is hot.", irregularIndices: [] },
-        { word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where are you going?", irregularIndices: [2, 4] },
-        { word: "went away", syllables: ["went", "a", "way"], chinese: "離開；走掉", example: "He went away quickly." },
-        { word: "take", syllables: ["take"], chinese: "拿；帶走", example: "Please take your bag with you.", irregularIndices: [1, 3] },
-        { word: "night", syllables: ["night"], chinese: "夜晚", example: "The stars are bright at night.", irregularIndices: [1, 2, 3] },
-        { word: "at", syllables: ["at"], chinese: "在…", example: "She is at home.", irregularIndices: [] },
-        { word: "they", syllables: ["they"], chinese: "他們", example: "They are playing outside.", irregularIndices: [2, 3] },
-        { word: "me", syllables: ["me"], chinese: "我（受格）", example: "Please give the book to me.", irregularIndices: [1] },
-        // --- 新增單字清單 (Y結尾、片語、常見字) ---
-        { word: "too", syllables: ["too"], chinese: "也；太", example: "I like ice cream too.", irregularIndices: [1, 2] },
-        { word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向...；跑上去", example: "The dog ran up the hill.", irregularIndices: [] },
-        { word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "They ran out of milk.", irregularIndices: [4, 5] },
-        { word: "ball", syllables: ["ball"], chinese: "球", example: "He kicked the ball.", irregularIndices: [1] },
-        { word: "get", syllables: ["get"], chinese: "得到", example: "Did you get my email?", irregularIndices: [] },
-        { word: "are", syllables: ["are"], chinese: "是（複數/第二人稱）", example: "You are my best friend.", irregularIndices: [0, 1, 2] },
-        { word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I saw a little bird.", irregularIndices: [4, 5] },
-        { word: "get out", syllables: ["get", " ", "out"], chinese: "離開；出去", example: "Please get out of the car.", irregularIndices: [4, 5] },
-        { word: "her", syllables: ["her"], chinese: "她的", example: "This is her bag.", irregularIndices: [1, 2] },
-        { word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel is eating a nut.", irregularIndices: [3, 4] },
-        { word: "live", syllables: ["live"], chinese: "居住", example: "I live in a big city.", irregularIndices: [3] },
-        { word: "that", syllables: ["that"], chinese: "那個", example: "Look at that bird!", irregularIndices: [] },
-        { word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] },
-        { word: "car", syllables: ["car"], chinese: "車子", example: "My dad drives a red car.", irregularIndices: [1, 2] },
-        { word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "He waved goodbye to his friends.", irregularIndices: [1, 2, 5, 6] },
-        { word: "your", syllables: ["your"], chinese: "你的", example: "What is your name?", irregularIndices: [1, 2, 3] },
-        { word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is sleeping.", irregularIndices: [1, 3] },
-        { word: "city", syllables: ["cit", "y"], chinese: "城市", example: "New York is a big city.", irregularIndices: [3] },
-        { word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like peanut butter and jelly.", irregularIndices: [4] },
-        { word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "A nice lady helped me.", irregularIndices: [1, 3] },
-        { word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "She rode a pony at the farm.", irregularIndices: [1, 3] },
-        { word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] },
-        { word: "cry", syllables: ["cry"], chinese: "哭泣", example: "Don't cry, it's okay.", irregularIndices: [2] },
-        { word: "dry", syllables: ["dry"], chinese: "乾的", example: "Is your shirt dry yet?", irregularIndices: [2] },
-        { word: "fly", syllables: ["fly"], chinese: "飛；蒼蠅", example: "Birds can fly high.", irregularIndices: [2] },
-        { word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry some eggs.", irregularIndices: [2] },
-        { word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue today.", irregularIndices: [2] },
-        { word: "meow", syllables: ["me", "ow"], chinese: "喵 (貓叫聲)", example: "The cat said meow.", irregularIndices: [1, 2, 3] },
-        { word: "running", syllables: ["run", "ning"], chinese: "跑步中", example: "He is running fast.", irregularIndices: [] },
-        { word: "string", syllables: ["string"], chinese: "繩子", example: "Tie the box with a string.", irregularIndices: [] },
-        { word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We slept in a tent.", irregularIndices: [] },
-        { word: "ran", syllables: ["ran"], chinese: "跑 (run的過去式)", example: "He ran to the bus stop.", irregularIndices: [] },
-        { word: "come", syllables: ["come"], chinese: "來", example: "Please come here.", irregularIndices: [1, 3] },
-        { word: "walk", syllables: ["walk"], chinese: "走路", example: "I walk to school.", irregularIndices: [1, 2] },
-        { word: "home", syllables: ["home"], chinese: "家", example: "Let's go home.", irregularIndices: [1, 3] },
-        { word: "am", syllables: ["am"], chinese: "是 (第一人稱)", example: "I am happy.", irregularIndices: [] }
+        // --- Week 13: Long U & Magic E ---
+        { week: "13", word: "cube", syllables: ["cube"], chinese: "立方體", example: "The ice is a cube.", irregularIndices: [1, 3] },
+        { week: "13", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "That puppy is so cute.", irregularIndices: [1, 3] },
+        { week: "13", word: "mule", syllables: ["mule"], chinese: "騾子", example: "A mule is very strong.", irregularIndices: [1, 3] },
+        { week: "13", word: "flute", syllables: ["flute"], chinese: "長笛", example: "She plays the flute.", irregularIndices: [2, 4] },
+        { week: "13", word: "ruler", syllables: ["rul", "er"], chinese: "尺", example: "Use a ruler to measure.", irregularIndices: [1] },
+        { week: "13", word: "tube", syllables: ["tube"], chinese: "管子", example: "Water flows in the tube.", irregularIndices: [1, 3] },
+        { week: "13", word: "tune", syllables: ["tune"], chinese: "曲調", example: "Whistle a happy tune.", irregularIndices: [1, 3] },
+        { week: "13", word: "again", syllables: ["a", "gain"], chinese: "再一次", example: "Can we play again?", irregularIndices: [2, 3] },
+        { week: "13", word: "cold", syllables: ["cold"], chinese: "寒冷的", example: "It is cold in winter.", irregularIndices: [1] },
+        { week: "13", word: "hot", syllables: ["hot"], chinese: "熱的", example: "The soup is hot.", irregularIndices: [] },
+        { week: "13", word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where is my book?", irregularIndices: [2, 4] },
+        { week: "13", word: "went away", syllables: ["went", " ", "a", "way"], chinese: "離開了", example: "The bird went away.", irregularIndices: [] },
+        { week: "13", word: "take", syllables: ["take"], chinese: "拿取", example: "Please take one.", irregularIndices: [1, 3] },
+        { week: "13", word: "night", syllables: ["night"], chinese: "夜晚", example: "Good night, sleep tight.", irregularIndices: [1, 2, 3] },
+        { week: "13", word: "at", syllables: ["at"], chinese: "在...", example: "Look at the stars.", irregularIndices: [] },
+        { week: "13", word: "they", syllables: ["they"], chinese: "他們", example: "They are my friends.", irregularIndices: [2, 3] },
+        { week: "13", word: "me", syllables: ["me"], chinese: "我(受格)", example: "Give it to me.", irregularIndices: [1] },
+
+        // --- Week 14: Phrases & Position ---
+        { week: "14", word: "next", syllables: ["next"], chinese: "下一個", example: "Who is next?", irregularIndices: [] },
+        { week: "14", word: "too", syllables: ["too"], chinese: "也；太", example: "It is too hot.", irregularIndices: [1, 2] },
+        { week: "14", word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向；跑上去", example: "He ran up the hill.", irregularIndices: [] },
+        { week: "14", word: "ran out", syllables: ["ran", " ", "out"], chinese: "跑出去；用完", example: "We ran out of milk.", irregularIndices: [4, 5] },
+        { week: "14", word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where are you?", irregularIndices: [2, 4] },
+        { week: "14", word: "ball", syllables: ["ball"], chinese: "球", example: "Kick the ball.", irregularIndices: [1] },
+        { week: "14", word: "get", syllables: ["get"], chinese: "得到", example: "Go get the ball.", irregularIndices: [] },
+        { week: "14", word: "are", syllables: ["are"], chinese: "是(複數)", example: "We are happy.", irregularIndices: [0, 1, 2] },
+        { week: "14", word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I have a little cat.", irregularIndices: [4, 5] },
+
+        // --- Week 15: Nature & Questions ---
+        { week: "15", word: "get out", syllables: ["get", " ", "out"], chinese: "出去；拿出", example: "Get out your pencil.", irregularIndices: [4, 5] },
+        { week: "15", word: "her", syllables: ["her"], chinese: "她的", example: "That is her bag.", irregularIndices: [1, 2] },
+        { week: "15", word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel eats nuts.", irregularIndices: [3, 4] },
+        { week: "15", word: "live", syllables: ["live"], chinese: "居住", example: "I live in a house.", irregularIndices: [3] },
+        { week: "15", word: "that", syllables: ["that"], chinese: "那個", example: "What is that?", irregularIndices: [] },
+        { week: "15", word: "where", syllables: ["where"], chinese: "在哪裡", example: "Where do you live?", irregularIndices: [2, 4] },
+        { week: "15", word: "say", syllables: ["say"], chinese: "說", example: "What did you say?", irregularIndices: [1, 2] },
+        { week: "15", word: "too", syllables: ["too"], chinese: "也", example: "I want to go too.", irregularIndices: [1, 2] },
+        { week: "15", word: "car", syllables: ["car"], chinese: "汽車", example: "My dad drives a car.", irregularIndices: [1, 2] },
+        { week: "15", word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "Say goodbye to teacher.", irregularIndices: [1, 2, 5, 6] },
+        { week: "15", word: "your", syllables: ["your"], chinese: "你的", example: "Is this your book?", irregularIndices: [1, 2, 3] },
+
+        // --- Week 16: Y as Vowel & Suffixes (-ed, -ing) ---
+        { week: "16", word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is crying.", irregularIndices: [1, 3] },
+        { week: "16", word: "city", syllables: ["cit", "y"], chinese: "城市", example: "Taipei is a big city.", irregularIndices: [3] },
+        { week: "16", word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like grape jelly.", irregularIndices: [4] },
+        { week: "16", word: "lady", syllables: ["la", "dy"], chinese: "女士", example: "She is a nice lady.", irregularIndices: [1, 3] },
+        { week: "16", word: "pony", syllables: ["po", "ny"], chinese: "小馬", example: "I rode a pony.", irregularIndices: [1, 3] },
+        { week: "16", word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "I have twenty dollars.", irregularIndices: [5] },
+        { week: "16", word: "cry", syllables: ["cry"], chinese: "哭", example: "Don't cry.", irregularIndices: [2] },
+        { week: "16", word: "dry", syllables: ["dry"], chinese: "乾的", example: "Keep your feet dry.", irregularIndices: [2] },
+        { week: "16", word: "fly", syllables: ["fly"], chinese: "飛", example: "Birds can fly.", irregularIndices: [2] },
+        { week: "16", word: "fry", syllables: ["fry"], chinese: "油炸", example: "Let's fry an egg.", irregularIndices: [2] },
+        { week: "16", word: "sky", syllables: ["sky"], chinese: "天空", example: "The sky is blue.", irregularIndices: [2] },
+        { week: "16", word: "helped", syllables: ["helped"], chinese: "幫忙(過去式)", example: "He helped his mom.", irregularIndices: [4, 5] },
+        { week: "16", word: "helping", syllables: ["help", "ing"], chinese: "正在幫忙", example: "She is helping me.", irregularIndices: [] },
+        { week: "16", word: "jumped", syllables: ["jumped"], chinese: "跳(過去式)", example: "The frog jumped.", irregularIndices: [4, 5] },
+        { week: "16", word: "jumping", syllables: ["jump", "ing"], chinese: "正在跳", example: "He is jumping high.", irregularIndices: [] },
+        { week: "16", word: "looked", syllables: ["looked"], chinese: "看(過去式)", example: "She looked at the picture.", irregularIndices: [1, 2, 4, 5] },
+        { week: "16", word: "looking", syllables: ["look", "ing"], chinese: "正在看", example: "What are you looking at?", irregularIndices: [1, 2] },
+        { week: "16", word: "passed", syllables: ["passed"], chinese: "經過/通過(過去式)", example: "He passed the ball.", irregularIndices: [4, 5] },
+        { week: "16", word: "passing", syllables: ["pass", "ing"], chinese: "正在經過", example: "Time is passing fast.", irregularIndices: [] },
+        { week: "16", word: "tossed", syllables: ["tossed"], chinese: "拋/投(過去式)", example: "He tossed the coin.", irregularIndices: [4, 5] },
+        { week: "16", word: "tossing", syllables: ["toss", "ing"], chinese: "正在拋", example: "They are tossing the ball.", irregularIndices: [] },
+        { week: "16", word: "worked", syllables: ["worked"], chinese: "工作(過去式)", example: "Dad worked late.", irregularIndices: [4, 5] },
+        { week: "16", word: "working", syllables: ["work", "ing"], chinese: "正在工作", example: "I am working hard.", irregularIndices: [] },
+        { week: "16", word: "cleaned", syllables: ["cleaned"], chinese: "打掃(過去式)", example: "I cleaned my room.", irregularIndices: [2, 3, 5, 6] },
+        { week: "16", word: "cleaning", syllables: ["clean", "ing"], chinese: "正在打掃", example: "Mom is cleaning.", irregularIndices: [2, 3] },
+        { week: "16", word: "stayed", syllables: ["stayed"], chinese: "停留(過去式)", example: "We stayed home.", irregularIndices: [2, 3, 4, 5] },
+        { week: "16", word: "staying", syllables: ["stay", "ing"], chinese: "正在停留", example: "Are you staying here?", irregularIndices: [2, 3] },
+        { week: "16", word: "waited", syllables: ["wait", "ed"], chinese: "等待(過去式)", example: "We waited for the bus.", irregularIndices: [1, 2] },
+        { week: "16", word: "waiting", syllables: ["wait", "ing"], chinese: "正在等", example: "I am waiting for you.", irregularIndices: [1, 2] },
+        { week: "16", word: "wanted", syllables: ["want", "ed"], chinese: "想要(過去式)", example: "She wanted a doll.", irregularIndices: [] },
+        { week: "16", word: "wanting", syllables: ["want", "ing"], chinese: "正想要", example: "He is wanting some water.", irregularIndices: [] },
+        { week: "16", word: "meow", syllables: ["me", "ow"], chinese: "喵(貓叫聲)", example: "The cat says meow.", irregularIndices: [1, 2, 3] },
+        { week: "16", word: "running", syllables: ["run", "ning"], chinese: "跑步", example: "Running is fun.", irregularIndices: [] },
+        { week: "16", word: "string", syllables: ["string"], chinese: "繩子", example: "Tie it with string.", irregularIndices: [] },
+        { week: "16", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We sleep in a tent.", irregularIndices: [] },
+        { week: "16", word: "ran", syllables: ["ran"], chinese: "跑(過去式)", example: "The dog ran fast.", irregularIndices: [] },
+        { week: "16", word: "come", syllables: ["come"], chinese: "來", example: "Come here.", irregularIndices: [1, 3] },
+        { week: "16", word: "walk", syllables: ["walk"], chinese: "走路", example: "Let's walk together.", irregularIndices: [1, 2] },
+        { week: "16", word: "home", syllables: ["home"], chinese: "家", example: "Go home.", irregularIndices: [1, 3] },
+        { week: "16", word: "am", syllables: ["am"], chinese: "是(第一人稱)", example: "I am a student.", irregularIndices: [] },
+
+        // --- Week 17: Plurals (-s, -es) ---
+        { week: "17", word: "cans", syllables: ["cans"], chinese: "罐子(複數)", example: "Two cans of soda.", irregularIndices: [] },
+        { week: "17", word: "hats", syllables: ["hats"], chinese: "帽子(複數)", example: "Red hats are nice.", irregularIndices: [] },
+        { week: "17", word: "tops", syllables: ["tops"], chinese: "上衣/陀螺(複數)", example: "Spinning tops.", irregularIndices: [] },
+        { week: "17", word: "trees", syllables: ["trees"], chinese: "樹(複數)", example: "Green trees.", irregularIndices: [2, 3] },
+        { week: "17", word: "axes", syllables: ["ax", "es"], chinese: "斧頭(複數)", example: "Woodcutters use axes.", irregularIndices: [] },
+        { week: "17", word: "buses", syllables: ["bus", "es"], chinese: "公車(複數)", example: "School buses are yellow.", irregularIndices: [] },
+        { week: "17", word: "dishes", syllables: ["dish", "es"], chinese: "盤子(複數)", example: "Wash the dishes.", irregularIndices: [2, 3] },
+        { week: "17", word: "dresses", syllables: ["dress", "es"], chinese: "洋裝(複數)", example: "Pretty dresses.", irregularIndices: [] },
+        { week: "17", word: "inches", syllables: ["inch", "es"], chinese: "英吋(複數)", example: "Twelve inches make a foot.", irregularIndices: [2, 3] },
+        { week: "17", word: "lunches", syllables: ["lunch", "es"], chinese: "午餐(複數)", example: "Pack the lunches.", irregularIndices: [3, 4] },
+        { week: "17", word: "mixes", syllables: ["mix", "es"], chinese: "混合(複數)", example: "She mixes the paint.", irregularIndices: [] },
+        { week: "17", word: "wishes", syllables: ["wish", "es"], chinese: "願望(複數)", example: "Make three wishes.", irregularIndices: [2, 3] },
+        { week: "17", word: "around", syllables: ["a", "round"], chinese: "在周圍", example: "Turn around.", irregularIndices: [2, 3] },
+        { week: "17", word: "ball", syllables: ["ball"], chinese: "球", example: "Catch the ball.", irregularIndices: [1] },
+        { week: "17", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite.", irregularIndices: [1, 3] },
+        { week: "17", word: "way", syllables: ["way"], chinese: "道路/方式", example: "Which way to go?", irregularIndices: [1, 2] },
+        { week: "17", word: "faster", syllables: ["fas", "ter"], chinese: "更快", example: "Run faster!", irregularIndices: [] },
+        { week: "17", word: "pretty", syllables: ["pret", "ty"], chinese: "漂亮的", example: "A pretty flower.", irregularIndices: [1, 4, 5] },
+        { week: "17", word: "yellow", syllables: ["yel", "low"], chinese: "黃色", example: "A yellow banana.", irregularIndices: [3, 4, 5] },
+        { week: "17", word: "look", syllables: ["look"], chinese: "看", example: "Look at me.", irregularIndices: [1, 2] },
+        { week: "17", word: "picture", syllables: ["pic", "ture"], chinese: "圖片", example: "Draw a picture.", irregularIndices: [3, 4, 5, 6] },
+        { week: "17", word: "ride", syllables: ["ride"], chinese: "騎/搭乘", example: "Ride a bike.", irregularIndices: [1, 3] },
+
+        // --- Week 18: Contractions ---
+        { week: "18", word: "aren't", syllables: ["aren't"], chinese: "不是 (are not)", example: "We aren't late.", irregularIndices: [3, 4, 5] },
+        { week: "18", word: "doesn't", syllables: ["does", "n't"], chinese: "不 (does not)", example: "He doesn't know.", irregularIndices: [1, 2, 5, 6] },
+        { week: "18", word: "didn't", syllables: ["did", "n't"], chinese: "沒有 (did not)", example: "I didn't do it.", irregularIndices: [4, 5] },
+        { week: "18", word: "hasn't", syllables: ["has", "n't"], chinese: "還沒 (has not)", example: "She hasn't eaten.", irregularIndices: [4, 5] },
+        { week: "18", word: "isn't", syllables: ["is", "n't"], chinese: "不是 (is not)", example: "It isn't raining.", irregularIndices: [3, 4] },
+        { week: "18", word: "haven't", syllables: ["have", "n't"], chinese: "還沒 (have not)", example: "I haven't seen him.", irregularIndices: [5, 6] },
+        { week: "18", word: "he's", syllables: ["he's"], chinese: "他是 (he is)", example: "He's my brother.", irregularIndices: [2, 3] },
+        { week: "18", word: "i'm", syllables: ["i'm"], chinese: "我是 (I am)", example: "I'm happy.", irregularIndices: [1, 2] },
+        { week: "18", word: "it's", syllables: ["it's"], chinese: "它是 (it is)", example: "It's a cat.", irregularIndices: [2, 3] },
+        { week: "18", word: "she's", syllables: ["she's"], chinese: "她是 (she is)", example: "She's tall.", irregularIndices: [3, 4] },
+        { week: "18", word: "wasn't", syllables: ["was", "n't"], chinese: "不是 (was not)", example: "He wasn't there.", irregularIndices: [4, 5] },
+        { week: "18", word: "coming", syllables: ["com", "ing"], chinese: "正在來", example: "The bus is coming.", irregularIndices: [1] },
+        { week: "18", word: "look up", syllables: ["look", " ", "up"], chinese: "查閱；向上看", example: "Look up the word.", irregularIndices: [1, 2] },
+        { week: "18", word: "look out", syllables: ["look", " ", "out"], chinese: "小心；向外看", example: "Look out for cars!", irregularIndices: [1, 2, 5, 6] },
+        { week: "18", word: "bee", syllables: ["bee"], chinese: "蜜蜂", example: "A busy bee.", irregularIndices: [1, 2] },
+        { week: "18", word: "here", syllables: ["here"], chinese: "這裡", example: "Come here.", irregularIndices: [1, 3] },
+        { week: "18", word: "when", syllables: ["when"], chinese: "何時", example: "When is lunch?", irregularIndices: [2] },
+        { week: "18", word: "does", syllables: ["does"], chinese: "做/助動詞", example: "Does he like it?", irregularIndices: [1, 2] },
+        { week: "18", word: "put", syllables: ["put"], chinese: "放置", example: "Put it down.", irregularIndices: [1] },
+        { week: "18", word: "came", syllables: ["came"], chinese: "來 (come過去式)", example: "He came yesterday.", irregularIndices: [1, 3] }
     ];
 
     // --- 2. 全域變數 ---
@@ -448,18 +534,17 @@
     let voices = [];
     let synth = window.speechSynthesis;
     let isSyllableVisible = true;
-    let audioCtx = null; // 音效系統上下文
+    let audioCtx = null;
 
     // --- 3. 初始化與設定 ---
     window.onload = function() {
         initLevelSystem();
         initVoiceSystem();
         initKeyboard(); 
-        initAudio(); // 初始化音效
-        loadWord(0);
+        initAudio();
     };
 
-    // --- 音效系統 (Web Audio API) ---
+    // --- 音效系統 ---
     function initAudio() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
@@ -478,7 +563,6 @@
         gainNode.connect(audioCtx.destination);
 
         if (type === 'correct') {
-            // 叮咚聲 (高音正弦波)
             oscillator.type = 'sine';
             oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
             oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
@@ -487,7 +571,6 @@
             oscillator.start();
             oscillator.stop(audioCtx.currentTime + 0.5);
         } else {
-            // 錯誤聲 (低音鋸齒波)
             oscillator.type = 'sawtooth';
             oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
             oscillator.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
@@ -498,22 +581,23 @@
         }
     }
 
+    // --- 修改：依據 Week 來建立選單 ---
     function initLevelSystem() {
         const levelSelect = document.getElementById('levelSelect');
-        const totalWords = rawData.length;
-        const levelSize = 10;
-        const totalLevels = Math.ceil(totalWords / levelSize);
+        // 找出所有不重複的 Week
+        const weeks = [...new Set(rawData.map(item => item.week))].sort();
 
-        for (let i = 0; i < totalLevels; i++) {
+        weeks.forEach(wk => {
             let option = document.createElement('option');
-            option.value = i;
-            option.text = `Level ${i + 1} (${i * levelSize + 1} - ${Math.min((i + 1) * levelSize, totalWords)})`;
+            option.value = wk;
+            option.text = `📅 Week ${wk}`;
             levelSelect.appendChild(option);
-        }
+        });
         
+        // 預設全部選項
         let allOption = document.createElement('option');
         allOption.value = 'all';
-        allOption.text = "全部單字 (All)";
+        allOption.text = "📚 全部複習 (All Weeks)";
         levelSelect.appendChild(allOption);
 
         changeLevel();
@@ -524,10 +608,8 @@
         if (val === 'all') {
             currentLevelWords = [...rawData];
         } else {
-            const levelIndex = parseInt(val);
-            const start = levelIndex * 10;
-            const end = start + 10;
-            currentLevelWords = rawData.slice(start, end);
+            // 篩選出該 Week 的單字
+            currentLevelWords = rawData.filter(item => item.week === val);
         }
         currentWordIndex = 0;
         loadWord(0);
@@ -598,7 +680,7 @@
         const rows = [
             ["q","w","e","r","t","y","u","i","o","p"],
             ["a","s","d","f","g","h","j","k","l"],
-            ["z","x","c","v","b","n","m"]
+            ["z","x","c","v","b","n","m", "'"] // 新增一撇 (')
         ];
 
         rows.forEach(rowKeys => {
@@ -653,7 +735,6 @@
         document.getElementById('feedbackB').innerText = "";
         document.getElementById('feedbackC').innerText = "";
         
-        // 切換單字時清空聽寫輸入
         document.getElementById('dictationInput').value = "";
 
         // Mode A
@@ -697,7 +778,10 @@
             let span = document.createElement('span');
             span.innerText = char;
 
-            if (irregulars.includes(i)) {
+            if (char === ' ') {
+                span.style.width = "15px";
+                span.style.display = "inline-block";
+            } else if (irregulars.includes(i)) {
                 span.className = 'char-irregular';
             } else if (vowels.includes(char.toLowerCase())) {
                 span.className = 'char-vowel';
@@ -734,15 +818,26 @@
         answerArea.innerHTML = '';
         puzzleCurrentAnswer = [];
 
+        // 將單字拆解，但保留空白鍵作為一個"透明積木"
         let letters = word.split('').sort(() => Math.random() - 0.5);
 
         letters.forEach((char) => {
             let btn = document.createElement('div');
             btn.className = 'letter-block';
-            btn.innerText = char;
+            
+            if (char === ' ') {
+                btn.classList.add('space-block');
+                btn.innerText = '_'; // 給空白一個提示符號
+            } else {
+                btn.innerText = char;
+            }
+
             btn.onclick = () => {
                 let ansSpan = document.createElement('span');
-                ansSpan.innerText = char;
+                ansSpan.innerText = char === ' ' ? ' ' : char;
+                // 如果是空白，保持間距
+                if (char === ' ') ansSpan.style.width = '20px';
+                
                 answerArea.appendChild(ansSpan);
                 puzzleCurrentAnswer.push(char);
                 btn.style.visibility = 'hidden';
@@ -763,11 +858,11 @@
             const feedback = document.getElementById('feedbackB');
             if (userWord === correctWord) {
                 feedback.innerHTML = "<span class='correct'>🎉 答對了！</span>";
-                playSound('correct'); // 播放正確音效
+                playSound('correct'); 
                 speakText(correctWord);
             } else {
                 feedback.innerHTML = "<span class='wrong'>❌ 再試一次！</span>";
-                playSound('wrong'); // 播放錯誤音效
+                playSound('wrong'); 
             }
         }
     }
@@ -777,23 +872,23 @@
         const input = document.getElementById('dictationInput');
         const feedback = document.getElementById('feedbackC');
         
+        // 忽略大小寫比較
         if (input.value.trim().toLowerCase() === currentWordObj.word.toLowerCase()) {
             feedback.innerHTML = "<span class='correct'>🌟 完全正確！</span>";
-            playSound('correct'); // 播放正確音效
+            playSound('correct'); 
             speakText(currentWordObj.word);
         } else {
             feedback.innerHTML = `<span class='wrong'>❌ 正確是：${currentWordObj.word}</span>`;
-            playSound('wrong'); // 播放錯誤音效
+            playSound('wrong'); 
         }
     }
 
-    // 新增：清除重寫功能
     function resetDictation() {
         const input = document.getElementById('dictationInput');
         const feedback = document.getElementById('feedbackC');
-        input.value = ""; // 清空輸入框
-        feedback.innerText = ""; // 清空回饋訊息
-        input.focus(); // 讓游標回到輸入框
+        input.value = ""; 
+        feedback.innerText = ""; 
+        input.focus(); 
     }
 </script>
 
