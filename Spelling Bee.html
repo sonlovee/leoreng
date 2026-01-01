@@ -79,7 +79,7 @@
             justify-content: center;
             margin-bottom: 20px;
             border-bottom: 3px solid #ddd;
-            flex-wrap: wrap; /* 手機版自動換行 */
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -132,7 +132,7 @@
         .char-vowel { color: var(--color-vowel); }
         .char-consonant { color: var(--color-consonant); }
         .char-irregular { color: var(--color-irregular); font-weight: 900; text-shadow: 1px 1px 0px #eee; }
-        .char-symbol { color: var(--color-symbol); font-weight: normal; } /* 新增符號樣式 */
+        .char-symbol { color: var(--color-symbol); font-weight: normal; }
 
         .info-text {
             font-size: 1.5rem;
@@ -200,7 +200,6 @@
         button.secondary-btn { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
         button.speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; padding: 15px 30px; }
         
-        /* 導航按鈕群組 */
         .nav-buttons {
             display: flex;
             justify-content: center;
@@ -369,10 +368,10 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字</button>
-        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木</button>
-        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考</button>
-        <button class="tab-btn" onclick="switchTab('modeList')">📋 單字表</button>
+        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (有序)</button>
+        <button class="tab-btn" onclick="switchTab('modeList')">📋 單字表 (有序)</button>
+        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (亂數)</button>
+        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (亂數)</button>
     </div>
 
     <div id="modeA" class="mode-section active">
@@ -392,6 +391,13 @@
         <div class="nav-buttons">
             <button class="action-btn secondary-btn" onclick="prevWord()">⬅️ 上一個</button>
             <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
+        </div>
+    </div>
+
+    <div id="modeList" class="mode-section">
+        <div class="word-card" style="background: white; border: 2px solid #eee;">
+            <h2>本週單字列表 (點擊學習)</h2>
+            <div id="fullWordList" class="word-list-grid"></div>
         </div>
     </div>
 
@@ -429,19 +435,12 @@
         </div>
     </div>
 
-    <div id="modeList" class="mode-section">
-        <div class="word-card" style="background: white; border: 2px solid #eee;">
-            <h2>本週單字列表</h2>
-            <div id="fullWordList" class="word-list-grid"></div>
-        </div>
-    </div>
-
 </div>
 
 <script>
     // --- 1. 資料來源 (Data Source) ---
     const rawData = [
-        // --- Week 13: Long U & Magic E ---
+        // --- Week 13 ---
         { week: "13", word: "cube", syllables: ["cube"], chinese: "立方體", example: "The ice is a cube.", irregularIndices: [1, 3] },
         { week: "13", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "That puppy is so cute.", irregularIndices: [1, 3] },
         { week: "13", word: "mule", syllables: ["mule"], chinese: "騾子", example: "A mule is very strong.", irregularIndices: [1, 3] },
@@ -460,7 +459,7 @@
         { week: "13", word: "they", syllables: ["they"], chinese: "他們", example: "They are my friends.", irregularIndices: [2, 3] },
         { week: "13", word: "me", syllables: ["me"], chinese: "我(受格)", example: "Give it to me.", irregularIndices: [1] },
 
-        // --- Week 14: Phrases & Position ---
+        // --- Week 14 ---
         { week: "14", word: "next", syllables: ["next"], chinese: "下一個", example: "Who is next?", irregularIndices: [] },
         { week: "14", word: "too", syllables: ["too"], chinese: "也；太", example: "It is too hot.", irregularIndices: [1, 2] },
         { week: "14", word: "ran up", syllables: ["ran", " ", "up"], chinese: "跑向；跑上去", example: "He ran up the hill.", irregularIndices: [] },
@@ -471,7 +470,7 @@
         { week: "14", word: "are", syllables: ["are"], chinese: "是(複數)", example: "We are happy.", irregularIndices: [0, 1, 2] },
         { week: "14", word: "little", syllables: ["lit", "tle"], chinese: "小的", example: "I have a little cat.", irregularIndices: [4, 5] },
 
-        // --- Week 15: Nature & Questions ---
+        // --- Week 15 ---
         { week: "15", word: "get out", syllables: ["get", " ", "out"], chinese: "出去；拿出", example: "Get out your pencil.", irregularIndices: [4, 5] },
         { week: "15", word: "her", syllables: ["her"], chinese: "她的", example: "That is her bag.", irregularIndices: [1, 2] },
         { week: "15", word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel eats nuts.", irregularIndices: [3, 4] },
@@ -484,7 +483,7 @@
         { week: "15", word: "goodbye", syllables: ["good", "bye"], chinese: "再見", example: "Say goodbye to teacher.", irregularIndices: [1, 2, 5, 6] },
         { week: "15", word: "your", syllables: ["your"], chinese: "你的", example: "Is this your book?", irregularIndices: [1, 2, 3] },
 
-        // --- Week 16: Y as Vowel & Suffixes (-ed, -ing) ---
+        // --- Week 16 ---
         { week: "16", word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is crying.", irregularIndices: [1, 3] },
         { week: "16", word: "city", syllables: ["cit", "y"], chinese: "城市", example: "Taipei is a big city.", irregularIndices: [3] },
         { week: "16", word: "jelly", syllables: ["jel", "ly"], chinese: "果凍", example: "I like grape jelly.", irregularIndices: [4] },
@@ -526,7 +525,7 @@
         { week: "16", word: "home", syllables: ["home"], chinese: "家", example: "Go home.", irregularIndices: [1, 3] },
         { week: "16", word: "am", syllables: ["am"], chinese: "是(第一人稱)", example: "I am a student.", irregularIndices: [] },
 
-        // --- Week 17: Plurals (-s, -es) ---
+        // --- Week 17 ---
         { week: "17", word: "cans", syllables: ["cans"], chinese: "罐子(複數)", example: "Two cans of soda.", irregularIndices: [] },
         { week: "17", word: "hats", syllables: ["hats"], chinese: "帽子(複數)", example: "Red hats are nice.", irregularIndices: [] },
         { week: "17", word: "tops", syllables: ["tops"], chinese: "上衣/陀螺(複數)", example: "Spinning tops.", irregularIndices: [] },
@@ -550,7 +549,7 @@
         { week: "17", word: "picture", syllables: ["pic", "ture"], chinese: "圖片", example: "Draw a picture.", irregularIndices: [3, 4, 5, 6] },
         { week: "17", word: "ride", syllables: ["ride"], chinese: "騎/搭乘", example: "Ride a bike.", irregularIndices: [1, 3] },
 
-        // --- Week 18: Contractions ---
+        // --- Week 18 ---
         { week: "18", word: "aren't", syllables: ["aren't"], chinese: "不是 (are not)", example: "We aren't late.", irregularIndices: [3, 4, 5] },
         { week: "18", word: "doesn't", syllables: ["does", "n't"], chinese: "不 (does not)", example: "He doesn't know.", irregularIndices: [1, 2, 5, 6] },
         { week: "18", word: "didn't", syllables: ["did", "n't"], chinese: "沒有 (did not)", example: "I didn't do it.", irregularIndices: [4, 5] },
@@ -615,10 +614,18 @@
         { week: "19", word: "in", syllables: ["in"], chinese: "在...裡面", example: "In the box.", irregularIndices: [] }
     ];
 
-    // --- 2. 全域變數 ---
-    let currentLevelWords = [];
-    let currentWordIndex = 0;
+    // --- 2. 全域變數 (雙軌制) ---
+    // 有序清單 (A & List)
+    let wordListOrdered = [];
+    let idxOrdered = 0;
+
+    // 亂數清單 (B & C)
+    let wordListShuffled = [];
+    let idxShuffled = 0;
+
     let currentWordObj = null;
+    let activeTab = 'modeA'; // 預設
+
     let voices = [];
     let synth = window.speechSynthesis;
     let isSyllableVisible = true;
@@ -669,16 +676,17 @@
         }
     }
 
-    // --- Helper: 陣列洗牌 (Shuffle) ---
+    // --- Shuffle Helper ---
     function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
+        const arr = [...array]; // 複製一份，不影響原陣列
+        for (let i = arr.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
+            [arr[i], arr[j]] = [arr[j], arr[i]];
         }
-        return array;
+        return arr;
     }
 
-    // --- 依據 Week 來建立選單 ---
+    // --- Level System ---
     function initLevelSystem() {
         const levelSelect = document.getElementById('levelSelect');
         const weeks = [...new Set(rawData.map(item => item.week))].sort();
@@ -700,18 +708,24 @@
 
     function changeLevel() {
         const val = document.getElementById('levelSelect').value;
+        let baseList = [];
+
         if (val === 'all') {
-            currentLevelWords = [...rawData];
+            baseList = [...rawData];
         } else {
-            currentLevelWords = rawData.filter(item => item.week === val);
+            baseList = rawData.filter(item => item.week === val);
         }
         
-        // 🌟 亂數出題：每次切換 Level 都洗牌
-        currentLevelWords = shuffleArray(currentLevelWords);
+        // 建立雙軌資料
+        wordListOrdered = [...baseList]; // 保持原序
+        wordListShuffled = shuffleArray(baseList); // 隨機洗牌
 
-        currentWordIndex = 0;
-        loadWord(0);
-        renderWordList(); // 更新列表
+        // 重置索引
+        idxOrdered = 0;
+        idxShuffled = 0;
+
+        loadWord();
+        renderWordList(); 
     }
 
     function initVoiceSystem() {
@@ -773,7 +787,7 @@
         synth.speak(utterThis);
     }
 
-    // --- ⌨️ 虛擬鍵盤邏輯 ---
+    // --- ⌨️ 虛擬鍵盤 ---
     function initKeyboard() {
         const keyboardContainer = document.getElementById('virtualKeyboard');
         const rows = [
@@ -825,17 +839,23 @@
         input.focus();
     }
 
-    // --- 4. 核心邏輯 ---
-    function loadWord(index) {
-        if (index >= currentLevelWords.length) index = 0;
-        if (index < 0) index = currentLevelWords.length - 1; // 循環處理
-        
-        currentWordIndex = index;
-        currentWordObj = currentLevelWords[index];
+    // --- 4. 核心邏輯 (雙軌制) ---
+    // 取得當前模式應該用的 List 和 Index
+    function getCurrentContext() {
+        if (activeTab === 'modeA' || activeTab === 'modeList') {
+            return { list: wordListOrdered, index: idxOrdered, isRandom: false };
+        } else {
+            return { list: wordListShuffled, index: idxShuffled, isRandom: true };
+        }
+    }
 
+    function loadWord() {
+        const ctx = getCurrentContext();
+        currentWordObj = ctx.list[ctx.index];
+
+        // 清空介面狀態
         document.getElementById('feedbackB').innerText = "";
         document.getElementById('feedbackC').innerText = "";
-        
         document.getElementById('dictationInput').value = "";
 
         // Mode A
@@ -852,43 +872,61 @@
         // Mode B Setup
         initPuzzleMode(currentWordObj.word);
 
-        // Update List Highlight (如果單字表是開啟的)
-        updateListHighlight();
+        // Highlight List (只有在有序模式才更新列表亮點)
+        if (!ctx.isRandom) {
+            updateListHighlight();
+        }
     }
 
-    // --- 上/下一個單字功能 ---
+    // --- 上/下一個單字 (更新對應的 Index) ---
     function nextWord() {
-        let nextIndex = currentWordIndex + 1;
-        if (nextIndex >= currentLevelWords.length) nextIndex = 0;
-        loadWord(nextIndex);
+        if (activeTab === 'modeA' || activeTab === 'modeList') {
+            idxOrdered++;
+            if (idxOrdered >= wordListOrdered.length) idxOrdered = 0;
+        } else {
+            idxShuffled++;
+            if (idxShuffled >= wordListShuffled.length) idxShuffled = 0;
+        }
+        loadWord();
         speakText(currentWordObj.word);
     }
 
     function prevWord() {
-        let prevIndex = currentWordIndex - 1;
-        if (prevIndex < 0) prevIndex = currentLevelWords.length - 1;
-        loadWord(prevIndex);
+        if (activeTab === 'modeA' || activeTab === 'modeList') {
+            idxOrdered--;
+            if (idxOrdered < 0) idxOrdered = wordListOrdered.length - 1;
+        } else {
+            idxShuffled--;
+            if (idxShuffled < 0) idxShuffled = wordListShuffled.length - 1;
+        }
+        loadWord();
         speakText(currentWordObj.word);
     }
 
     function switchTab(modeId) {
+        activeTab = modeId; // 更新當前分頁狀態
+        
         document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
         document.getElementById(modeId).classList.add('active');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
+
+        loadWord(); // 切換分頁時重新載入該模式的當前單字
     }
 
-    // --- Mode List (單字總覽) 渲染邏輯 ---
+    // --- Mode List (單字總覽) ---
     function renderWordList() {
         const listContainer = document.getElementById('fullWordList');
         listContainer.innerHTML = '';
-        currentLevelWords.forEach((item, index) => {
+        wordListOrdered.forEach((item, index) => {
             let btn = document.createElement('button');
             btn.className = 'list-btn';
             btn.innerText = item.word;
             btn.id = `list-btn-${index}`;
             btn.onclick = () => {
-                loadWord(index);
+                // 點擊列表 -> 切換到 Mode A (有序)，並跳轉到該字
+                activeTab = 'modeA'; 
+                idxOrdered = index;
                 switchTab('modeA');
                 speakText(item.word);
             };
@@ -898,10 +936,8 @@
     }
 
     function updateListHighlight() {
-        // 移除所有 highlight
         document.querySelectorAll('.list-btn').forEach(btn => btn.classList.remove('active-word'));
-        // 加入當前單字的 highlight
-        const currentBtn = document.getElementById(`list-btn-${currentWordIndex}`);
+        const currentBtn = document.getElementById(`list-btn-${idxOrdered}`);
         if (currentBtn) currentBtn.classList.add('active-word');
     }
 
@@ -917,14 +953,13 @@
             let span = document.createElement('span');
             span.innerText = char;
 
-            // 🌟 判斷是否為字母 (regex)
             const isLetter = /[a-zA-Z]/.test(char);
 
             if (char === ' ') {
                 span.style.width = "15px";
                 span.style.display = "inline-block";
             } else if (!isLetter) {
-                // 🌟 非字母 (如 ') 設為灰色
+                // 🌟 符號設為灰色
                 span.className = 'char-symbol';
             } else if (irregulars.includes(i)) {
                 span.className = 'char-irregular';
