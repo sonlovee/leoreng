@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>兒童英文拼字學習機 (Weekly Edition) 🐝</title>
+    <title>兒童英文拼字學習機 (Weekly Edition Pro) 🐝</title>
     <style>
         /* --- 🎨 視覺設計 --- */
         :root {
@@ -18,6 +18,7 @@
             --color-vowel: #FF4500;       /* 紅色：短母音/一般母音 */
             --color-consonant: #1E90FF;   /* 藍色：子音 */
             --color-irregular: #9932CC;   /* 紫色：不規則/長母音/特殊發音 */
+            --color-symbol: #888888;      /* 灰色：標點符號 */
         }
 
         body {
@@ -78,13 +79,14 @@
             justify-content: center;
             margin-bottom: 20px;
             border-bottom: 3px solid #ddd;
+            flex-wrap: wrap; /* 手機版自動換行 */
         }
 
         .tab-btn {
             background: none;
             border: none;
-            padding: 15px 25px;
-            font-size: 1.2rem;
+            padding: 10px 15px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #aaa;
             cursor: pointer;
@@ -130,6 +132,7 @@
         .char-vowel { color: var(--color-vowel); }
         .char-consonant { color: var(--color-consonant); }
         .char-irregular { color: var(--color-irregular); font-weight: 900; text-shadow: 1px 1px 0px #eee; }
+        .char-symbol { color: var(--color-symbol); font-weight: normal; } /* 新增符號樣式 */
 
         .info-text {
             font-size: 1.5rem;
@@ -196,6 +199,41 @@
         button.action-btn:active { transform: translateY(4px); box-shadow: none; }
         button.secondary-btn { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
         button.speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; padding: 15px 30px; }
+        
+        /* 導航按鈕群組 */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        /* --- 📋 單字總覽列表 --- */
+        .word-list-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .list-btn {
+            background: white;
+            border: 2px solid var(--primary-blue);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #333;
+        }
+        .list-btn:hover {
+            background: #E0F7FA;
+            transform: translateY(-2px);
+        }
+        .list-btn.active-word {
+            background: var(--primary-yellow);
+            border-color: #FF8C00;
+            font-weight: bold;
+        }
 
         /* --- 🧩 積木與聽寫 --- */
         .letter-container {
@@ -221,7 +259,6 @@
             box-shadow: 0 4px 0 #ccc;
             user-select: none;
         }
-        /* 處理空格積木的樣式 */
         .letter-block.space-block {
             border: 2px dashed #ccc;
             background: #f0f0f0;
@@ -308,6 +345,8 @@
             .controls-bar { flex-direction: column; }
             select { width: 100%; }
             .key-btn { padding: 8px 6px; font-size: 1.1rem; min-width: 25px; } 
+            .nav-buttons { flex-direction: column; gap: 5px; }
+            button.action-btn { width: 100%; margin: 5px 0; }
         }
     </style>
 </head>
@@ -330,54 +369,53 @@
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (學習)</button>
-        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (練習)</button>
-        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (測驗)</button>
+        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字</button>
+        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木</button>
+        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考</button>
+        <button class="tab-btn" onclick="switchTab('modeList')">📋 單字表</button>
     </div>
 
     <div id="modeA" class="mode-section active">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 單字發音</button>
-            
             <div id="wordDisplay" class="big-word"></div>
-            
             <div id="chineseDisplay" class="info-text"></div>
-            
             <div class="example-container">
                 <div id="exampleDisplay" class="example-text"></div>
                 <button class="btn-sm-speak" onclick="speakText(currentWordObj.example)" title="朗讀例句">🔈</button>
             </div>
-            
             <div id="syllableBox" class="syllable-box"></div>
             <div style="margin-top: 10px;">
                 <button id="btnToggleSyllable" class="action-btn secondary-btn" style="font-size: 1rem; padding: 8px 16px;" onclick="toggleSyllables()">隱藏音節</button>
             </div>
         </div>
-        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+        <div class="nav-buttons">
+            <button class="action-btn secondary-btn" onclick="prevWord()">⬅️ 上一個</button>
+            <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
+        </div>
     </div>
 
     <div id="modeB" class="mode-section">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
             <div class="info-text" id="chineseHintB"></div>
-            
             <div id="puzzleAnswer" class="answer-area"></div>
             <div id="puzzlePieces" class="letter-container"></div>
             <div id="feedbackB" class="feedback-msg"></div>
         </div>
-        <button class="action-btn secondary-btn" onclick="resetPuzzle()">🔄 重置</button>
-        <button class="action-btn" onclick="nextWord()">➡️ 下一個單字</button>
+        <div class="nav-buttons">
+             <button class="action-btn secondary-btn" onclick="resetPuzzle()">🔄 重置</button>
+             <button class="action-btn secondary-btn" onclick="prevWord()">⬅️ 上一個</button>
+             <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
+        </div>
     </div>
 
     <div id="modeC" class="mode-section">
         <div class="word-card">
             <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
             <div class="info-text" id="chineseHintC"></div>
-            
             <input type="text" id="dictationInput" placeholder="點擊按鈕或打字..." autocomplete="off">
-            
             <div id="virtualKeyboard" class="keyboard-area"></div>
-
             <div id="feedbackC" class="feedback-msg"></div>
         </div>
         
@@ -385,15 +423,23 @@
             <button class="action-btn secondary-btn" onclick="resetDictation()">🔄 清除重寫</button>
             <button class="action-btn" onclick="checkDictation()">✅ 檢查答案</button>
         </div>
-        
-        <button class="action-btn" style="margin-top: 10px; background-color: #333;" onclick="nextWord()">➡️ 下一個單字</button>
+        <div class="nav-buttons">
+            <button class="action-btn secondary-btn" onclick="prevWord()">⬅️ 上一個</button>
+            <button class="action-btn" style="background-color: #333;" onclick="nextWord()">下一個 ➡️</button>
+        </div>
+    </div>
+
+    <div id="modeList" class="mode-section">
+        <div class="word-card" style="background: white; border: 2px solid #eee;">
+            <h2>本週單字列表</h2>
+            <div id="fullWordList" class="word-list-grid"></div>
+        </div>
     </div>
 
 </div>
 
 <script>
     // --- 1. 資料來源 (Data Source) ---
-    // week屬性用來做下拉選單分類
     const rawData = [
         // --- Week 13: Long U & Magic E ---
         { week: "13", word: "cube", syllables: ["cube"], chinese: "立方體", example: "The ice is a cube.", irregularIndices: [1, 3] },
@@ -524,7 +570,49 @@
         { week: "18", word: "when", syllables: ["when"], chinese: "何時", example: "When is lunch?", irregularIndices: [2] },
         { week: "18", word: "does", syllables: ["does"], chinese: "做/助動詞", example: "Does he like it?", irregularIndices: [1, 2] },
         { week: "18", word: "put", syllables: ["put"], chinese: "放置", example: "Put it down.", irregularIndices: [1] },
-        { week: "18", word: "came", syllables: ["came"], chinese: "來 (come過去式)", example: "He came yesterday.", irregularIndices: [1, 3] }
+        { week: "18", word: "came", syllables: ["came"], chinese: "來 (come過去式)", example: "He came yesterday.", irregularIndices: [1, 3] },
+        
+        // --- Week 19: Long Vowels Review & More ---
+        { week: "19", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite.", irregularIndices: [1, 3] },
+        { week: "19", word: "ruler", syllables: ["rul", "er"], chinese: "尺", example: "I have a ruler.", irregularIndices: [1] },
+        { week: "19", word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "Count to twenty.", irregularIndices: [5] },
+        { week: "19", word: "nine", syllables: ["nine"], chinese: "九", example: "Number nine.", irregularIndices: [1, 3] },
+        { week: "19", word: "robe", syllables: ["robe"], chinese: "長袍/浴袍", example: "Wear a robe.", irregularIndices: [1, 3] },
+        { week: "19", word: "fire", syllables: ["fire"], chinese: "火", example: "The fire is hot.", irregularIndices: [1, 3] },
+        { week: "19", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "A cute baby.", irregularIndices: [1, 3] },
+        { week: "19", word: "hose", syllables: ["hose"], chinese: "水管", example: "Water the garden with a hose.", irregularIndices: [1, 3] },
+        { week: "19", word: "tune", syllables: ["tune"], chinese: "曲調", example: "Sing a tune.", irregularIndices: [1, 3] },
+        { week: "19", word: "bike", syllables: ["bike"], chinese: "腳踏車", example: "Ride a bike.", irregularIndices: [1, 3] },
+        { week: "19", word: "hive", syllables: ["hive"], chinese: "蜂窩", example: "Bees live in a hive.", irregularIndices: [1, 3] },
+        { week: "19", word: "map", syllables: ["map"], chinese: "地圖", example: "Look at the map.", irregularIndices: [] },
+        { week: "19", word: "cut", syllables: ["cut"], chinese: "切/剪", example: "Cut the paper.", irregularIndices: [] },
+        { week: "19", word: "hole", syllables: ["hole"], chinese: "洞", example: "Dig a hole.", irregularIndices: [1, 3] },
+        { week: "19", word: "dive", syllables: ["dive"], chinese: "潛水/跳水", example: "Dive into the pool.", irregularIndices: [1, 3] },
+        { week: "19", word: "cone", syllables: ["cone"], chinese: "圓錐體/甜筒", example: "Ice cream cone.", irregularIndices: [1, 3] },
+        { week: "19", word: "top", syllables: ["top"], chinese: "頂端/陀螺", example: "Spin the top.", irregularIndices: [] },
+        { week: "19", word: "tube", syllables: ["tube"], chinese: "管子", example: "A plastic tube.", irregularIndices: [1, 3] },
+        { week: "19", word: "gate", syllables: ["gate"], chinese: "大門", example: "Open the gate.", irregularIndices: [1, 3] },
+        { week: "19", word: "mule", syllables: ["mule"], chinese: "騾子", example: "The mule is stubborn.", irregularIndices: [1, 3] },
+        { week: "19", word: "tape", syllables: ["tape"], chinese: "膠帶", example: "Use some tape.", irregularIndices: [1, 3] },
+        { week: "19", word: "vine", syllables: ["vine"], chinese: "藤蔓", example: "Grapes grow on a vine.", irregularIndices: [1, 3] },
+        { week: "19", word: "ride", syllables: ["ride"], chinese: "騎", example: "Ride a horse.", irregularIndices: [1, 3] },
+        { week: "19", word: "rope", syllables: ["rope"], chinese: "繩子", example: "Jump rope.", irregularIndices: [1, 3] },
+        { week: "19", word: "cage", syllables: ["cage"], chinese: "籠子", example: "The bird is in a cage.", irregularIndices: [1, 3] },
+        { week: "19", word: "flute", syllables: ["flute"], chinese: "長笛", example: "Play the flute.", irregularIndices: [2, 4] },
+        { week: "19", word: "poke", syllables: ["poke"], chinese: "戳", example: "Don't poke me.", irregularIndices: [1, 3] },
+        { week: "19", word: "tire", syllables: ["tire"], chinese: "輪胎", example: "A flat tire.", irregularIndices: [1, 3] },
+        { week: "19", word: "net", syllables: ["net"], chinese: "網子", example: "Catch fish with a net.", irregularIndices: [] },
+        { week: "19", word: "nose", syllables: ["nose"], chinese: "鼻子", example: "Touch your nose.", irregularIndices: [1, 3] },
+        { week: "19", word: "short", syllables: ["short"], chinese: "短的/矮的", example: "He is short.", irregularIndices: [2, 3] },
+        { week: "19", word: "old", syllables: ["old"], chinese: "老的/舊的", example: "An old book.", irregularIndices: [0] },
+        { week: "19", word: "fat", syllables: ["fat"], chinese: "胖的", example: "A fat cat.", irregularIndices: [] },
+        { week: "19", word: "thin", syllables: ["thin"], chinese: "瘦的/薄的", example: "The book is thin.", irregularIndices: [] },
+        { week: "19", word: "hot", syllables: ["hot"], chinese: "熱的", example: "It is hot today.", irregularIndices: [] },
+        { week: "19", word: "tall", syllables: ["tall"], chinese: "高的", example: "A tall tree.", irregularIndices: [1] },
+        { week: "19", word: "young", syllables: ["young"], chinese: "年輕的", example: "She is young.", irregularIndices: [1, 2] },
+        { week: "19", word: "on", syllables: ["on"], chinese: "在...上面", example: "It is on the table.", irregularIndices: [] },
+        { week: "19", word: "under", syllables: ["un", "der"], chinese: "在...下面", example: "Under the chair.", irregularIndices: [3, 4] },
+        { week: "19", word: "in", syllables: ["in"], chinese: "在...裡面", example: "In the box.", irregularIndices: [] }
     ];
 
     // --- 2. 全域變數 ---
@@ -581,10 +669,18 @@
         }
     }
 
-    // --- 修改：依據 Week 來建立選單 ---
+    // --- Helper: 陣列洗牌 (Shuffle) ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // --- 依據 Week 來建立選單 ---
     function initLevelSystem() {
         const levelSelect = document.getElementById('levelSelect');
-        // 找出所有不重複的 Week
         const weeks = [...new Set(rawData.map(item => item.week))].sort();
 
         weeks.forEach(wk => {
@@ -594,7 +690,6 @@
             levelSelect.appendChild(option);
         });
         
-        // 預設全部選項
         let allOption = document.createElement('option');
         allOption.value = 'all';
         allOption.text = "📚 全部複習 (All Weeks)";
@@ -608,11 +703,15 @@
         if (val === 'all') {
             currentLevelWords = [...rawData];
         } else {
-            // 篩選出該 Week 的單字
             currentLevelWords = rawData.filter(item => item.week === val);
         }
+        
+        // 🌟 亂數出題：每次切換 Level 都洗牌
+        currentLevelWords = shuffleArray(currentLevelWords);
+
         currentWordIndex = 0;
         loadWord(0);
+        renderWordList(); // 更新列表
     }
 
     function initVoiceSystem() {
@@ -680,7 +779,7 @@
         const rows = [
             ["q","w","e","r","t","y","u","i","o","p"],
             ["a","s","d","f","g","h","j","k","l"],
-            ["z","x","c","v","b","n","m", "'"] // 新增一撇 (')
+            ["z","x","c","v","b","n","m", "'"]
         ];
 
         rows.forEach(rowKeys => {
@@ -729,6 +828,8 @@
     // --- 4. 核心邏輯 ---
     function loadWord(index) {
         if (index >= currentLevelWords.length) index = 0;
+        if (index < 0) index = currentLevelWords.length - 1; // 循環處理
+        
         currentWordIndex = index;
         currentWordObj = currentLevelWords[index];
 
@@ -750,12 +851,23 @@
 
         // Mode B Setup
         initPuzzleMode(currentWordObj.word);
+
+        // Update List Highlight (如果單字表是開啟的)
+        updateListHighlight();
     }
 
+    // --- 上/下一個單字功能 ---
     function nextWord() {
-        currentWordIndex++;
-        if (currentWordIndex >= currentLevelWords.length) currentWordIndex = 0;
-        loadWord(currentWordIndex);
+        let nextIndex = currentWordIndex + 1;
+        if (nextIndex >= currentLevelWords.length) nextIndex = 0;
+        loadWord(nextIndex);
+        speakText(currentWordObj.word);
+    }
+
+    function prevWord() {
+        let prevIndex = currentWordIndex - 1;
+        if (prevIndex < 0) prevIndex = currentLevelWords.length - 1;
+        loadWord(prevIndex);
         speakText(currentWordObj.word);
     }
 
@@ -764,6 +876,33 @@
         document.getElementById(modeId).classList.add('active');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         event.target.classList.add('active');
+    }
+
+    // --- Mode List (單字總覽) 渲染邏輯 ---
+    function renderWordList() {
+        const listContainer = document.getElementById('fullWordList');
+        listContainer.innerHTML = '';
+        currentLevelWords.forEach((item, index) => {
+            let btn = document.createElement('button');
+            btn.className = 'list-btn';
+            btn.innerText = item.word;
+            btn.id = `list-btn-${index}`;
+            btn.onclick = () => {
+                loadWord(index);
+                switchTab('modeA');
+                speakText(item.word);
+            };
+            listContainer.appendChild(btn);
+        });
+        updateListHighlight();
+    }
+
+    function updateListHighlight() {
+        // 移除所有 highlight
+        document.querySelectorAll('.list-btn').forEach(btn => btn.classList.remove('active-word'));
+        // 加入當前單字的 highlight
+        const currentBtn = document.getElementById(`list-btn-${currentWordIndex}`);
+        if (currentBtn) currentBtn.classList.add('active-word');
     }
 
     function renderColoredWord(wordObj) {
@@ -778,9 +917,15 @@
             let span = document.createElement('span');
             span.innerText = char;
 
+            // 🌟 判斷是否為字母 (regex)
+            const isLetter = /[a-zA-Z]/.test(char);
+
             if (char === ' ') {
                 span.style.width = "15px";
                 span.style.display = "inline-block";
+            } else if (!isLetter) {
+                // 🌟 非字母 (如 ') 設為灰色
+                span.className = 'char-symbol';
             } else if (irregulars.includes(i)) {
                 span.className = 'char-irregular';
             } else if (vowels.includes(char.toLowerCase())) {
@@ -818,7 +963,6 @@
         answerArea.innerHTML = '';
         puzzleCurrentAnswer = [];
 
-        // 將單字拆解，但保留空白鍵作為一個"透明積木"
         let letters = word.split('').sort(() => Math.random() - 0.5);
 
         letters.forEach((char) => {
@@ -827,7 +971,7 @@
             
             if (char === ' ') {
                 btn.classList.add('space-block');
-                btn.innerText = '_'; // 給空白一個提示符號
+                btn.innerText = '_';
             } else {
                 btn.innerText = char;
             }
@@ -835,7 +979,6 @@
             btn.onclick = () => {
                 let ansSpan = document.createElement('span');
                 ansSpan.innerText = char === ' ' ? ' ' : char;
-                // 如果是空白，保持間距
                 if (char === ' ') ansSpan.style.width = '20px';
                 
                 answerArea.appendChild(ansSpan);
@@ -872,7 +1015,6 @@
         const input = document.getElementById('dictationInput');
         const feedback = document.getElementById('feedbackC');
         
-        // 忽略大小寫比較
         if (input.value.trim().toLowerCase() === currentWordObj.word.toLowerCase()) {
             feedback.innerHTML = "<span class='correct'>🌟 完全正確！</span>";
             playSound('correct'); 
