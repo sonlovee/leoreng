@@ -440,7 +440,122 @@
 <script>
     // --- 1. 資料來源 (Data Source) ---
     const rawData = [
-        // --- Week 13 ---
+// --- Week 1 ---
+{ week: "1", word: "sandwich", syllables: ["sand", "wich"], chinese: "三明治", example: "I want to eat a sandwich for lunch.", irregularIndices: [] },
+{ week: "1", word: "saw", syllables: ["saw"], chinese: "鋸子", example: "Dad uses a saw to cut the wood.", irregularIndices: [1, 2] },
+{ week: "1", word: "seal", syllables: ["seal"], chinese: "海豹", example: "The seal swims fast in the water.", irregularIndices: [1, 2] },
+{ week: "1", word: "seven", syllables: ["sev", "en"], chinese: "七", example: "I have seven books at home.", irregularIndices: [] },
+{ week: "1", word: "sink", syllables: ["sink"], chinese: "水槽", example: "Please wash your hands in the sink.", irregularIndices: [] },
+{ week: "1", word: "six", syllables: ["six"], chinese: "六", example: "It is six o'clock now.", irregularIndices: [] },
+{ week: "1", word: "soap", syllables: ["soap"], chinese: "肥皂", example: "Wash your hands with soap.", irregularIndices: [1, 2] },
+{ week: "1", word: "socks", syllables: ["socks"], chinese: "襪子", example: "I wear clean socks every day.", irregularIndices: [] },
+{ week: "1", word: "suit", syllables: ["suit"], chinese: "西裝", example: "Dad wears a suit to work.", irregularIndices: [1, 2] },
+{ week: "1", word: "sun", syllables: ["sun"], chinese: "太陽", example: "The sun is bright in the sky.", irregularIndices: [] },
+{ week: "1", word: "mailbox", syllables: ["mail", "box"], chinese: "信箱", example: "I check the mailbox after school.", irregularIndices: [1, 2] },
+{ week: "1", word: "mask", syllables: ["mask"], chinese: "面具", example: "He wears a mask at the party.", irregularIndices: [] },
+{ week: "1", word: "match", syllables: ["match"], chinese: "火柴", example: "She lights a match to see better.", irregularIndices: [2, 3, 4] },
+{ week: "1", word: "milk", syllables: ["milk"], chinese: "牛奶", example: "I drink milk every morning.", irregularIndices: [] },
+{ week: "1", word: "mirror", syllables: ["mir", "ror"], chinese: "鏡子", example: "She looks at herself in the mirror.", irregularIndices: [] },
+{ week: "1", word: "monkey", syllables: ["mon", "key"], chinese: "猴子", example: "The monkey likes to eat bananas.", irregularIndices: [4, 5] },
+{ week: "1", word: "moon", syllables: ["moon"], chinese: "月亮", example: "The moon looks round tonight.", irregularIndices: [1, 2] },
+{ week: "1", word: "mouse", syllables: ["mouse"], chinese: "老鼠", example: "A small mouse runs across the floor.", irregularIndices: [1, 2, 4] },
+{ week: "1", word: "mouth", syllables: ["mouth"], chinese: "嘴巴", example: "Open your mouth and say ah.", irregularIndices: [1, 2] },
+{ week: "1", word: "block", syllables: ["block"], chinese: "積木", example: "The child builds a house with blocks.", irregularIndices: [] },
+{ week: "1", word: "box", syllables: ["box"], chinese: "箱子", example: "Put the toys in the box.", irregularIndices: [] },
+{ week: "1", word: "doll", syllables: ["doll"], chinese: "洋娃娃", example: "She plays with her favorite doll.", irregularIndices: [] },
+{ week: "1", word: "fox", syllables: ["fox"], chinese: "狐狸", example: "The fox runs into the forest.", irregularIndices: [] },
+{ week: "1", word: "lock", syllables: ["lock"], chinese: "鎖", example: "Please lock the door before sleeping.", irregularIndices: [] },
+{ week: "1", word: "mop", syllables: ["mop"], chinese: "拖把", example: "Mom uses a mop to clean the floor.", irregularIndices: [] },
+{ week: "1", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "The soup is hot in the pot.", irregularIndices: [] },
+{ week: "1", word: "rock", syllables: ["rock"], chinese: "岩石", example: "The boy finds a big rock.", irregularIndices: [] },
+{ week: "1", word: "sock", syllables: ["sock"], chinese: "襪子(單數)", example: "I lost one sock this morning.", irregularIndices: [] },
+{ week: "1", word: "top", syllables: ["top"], chinese: "陀螺", example: "The top spins very fast.", irregularIndices: [] },
+{ week: "1", word: "come down", syllables: ["come", " ", "down"], chinese: "倒塌", example: "The old wall came down after the storm.", irregularIndices: [1, 3, 6, 7] },
+{ week: "1", word: "duck", syllables: ["duck"], chinese: "鴨子", example: "The duck swims on the lake.", irregularIndices: [] },
+{ week: "1", word: "here", syllables: ["here"], chinese: "這裡", example: "Please come here and sit down.", irregularIndices: [1, 3] },
+{ week: "1", word: "pretty", syllables: ["pret", "ty"], chinese: "漂亮的", example: "She wears a pretty dress today.", irregularIndices: [4, 5] },
+{ week: "1", word: "something", syllables: ["some", "thing"], chinese: "某物", example: "I hear something outside the door.", irregularIndices: [1, 3] },
+{ week: "1", word: "tree", syllables: ["tree"], chinese: "樹", example: "A bird sits in the tree.", irregularIndices: [2, 3] },
+{ week: "1", word: "turtle", syllables: ["tur", "tle"], chinese: "烏龜", example: "The turtle moves very slowly.", irregularIndices: [1, 2, 4, 5] },
+{ week: "1", word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "The squirrel hides food for winter.", irregularIndices: [2, 3] },
+{ week: "1", word: "him", syllables: ["him"], chinese: "他(受格)", example: "I want to give the gift to him.", irregularIndices: [] },
+{ week: "1", word: "some", syllables: ["some"], chinese: "一些", example: "Can I have some water, please?", irregularIndices: [1, 3] },
+{ week: "1", word: "cake", syllables: ["cake"], chinese: "蛋糕", example: "We eat cake at the party.", irregularIndices: [1, 3] },
+{ week: "1", word: "how", syllables: ["how"], chinese: "如何", example: "How do you go to school?", irregularIndices: [1, 2] },
+{ week: "1", word: "give", syllables: ["give"], chinese: "給/送給", example: "Please give me your hand.", irregularIndices: [1, 3] },
+// --- Week 2 (NEW) ---
+{ week: "2", word: "table", syllables: ["ta", "ble"], chinese: "桌子", example: "We eat dinner at the table.", irregularIndices: [3, 4] },
+{ week: "2", word: "tail", syllables: ["tail"], chinese: "尾巴", example: "The dog moves its tail when it is happy.", irregularIndices: [1, 2] },
+{ week: "2", word: "tape", syllables: ["tape"], chinese: "膠帶", example: "I use tape to fix the paper.", irregularIndices: [1, 3] },
+{ week: "2", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "We sleep in a tent at night.", irregularIndices: [] },
+{ week: "2", word: "toaster", syllables: ["toast", "er"], chinese: "烤麵包機", example: "The toaster makes bread hot.", irregularIndices: [1, 2] },
+{ week: "2", word: "tomato", syllables: ["to", "ma", "to"], chinese: "番茄", example: "I like tomato in my sandwich.", irregularIndices: [] },
+{ week: "2", word: "tooth", syllables: ["tooth"], chinese: "牙齒", example: "I brush my tooth every morning.", irregularIndices: [1, 2] },
+{ week: "2", word: "top", syllables: ["top"], chinese: "陀螺", example: "The top spins on the floor.", irregularIndices: [] },
+{ week: "2", word: "towel", syllables: ["tow", "el"], chinese: "毛巾", example: "I dry my hands with a towel.", irregularIndices: [1, 2] },
+{ week: "2", word: "turtle", syllables: ["tur", "tle"], chinese: "烏龜", example: "The turtle walks very slowly.", irregularIndices: [1, 2, 4, 5] },
+{ week: "2", word: "brush", syllables: ["brush"], chinese: "刷子", example: "I use a brush to clean my shoes.", irregularIndices: [] },
+{ week: "2", word: "bug", syllables: ["bug"], chinese: "蟲", example: "I see a bug on the wall.", irregularIndices: [] },
+{ week: "2", word: "bus", syllables: ["bus"], chinese: "公車", example: "I take the bus to school.", irregularIndices: [] },
+{ week: "2", word: "cup", syllables: ["cup"], chinese: "杯子", example: "There is water in the cup.", irregularIndices: [] },
+{ week: "2", word: "drum", syllables: ["drum"], chinese: "鼓", example: "He plays the drum very loud.", irregularIndices: [] },
+{ week: "2", word: "nut", syllables: ["nut"], chinese: "堅果", example: "The squirrel eats a nut.", irregularIndices: [] },
+{ week: "2", word: "rug", syllables: ["rug"], chinese: "地毯", example: "The cat sleeps on the rug.", irregularIndices: [] },
+{ week: "2", word: "sun", syllables: ["sun"], chinese: "太陽", example: "The sun comes out in the morning.", irregularIndices: [] },
+{ week: "2", word: "truck", syllables: ["truck"], chinese: "卡車", example: "A big truck drives by.", irregularIndices: [] },
+{ week: "2", word: "tub", syllables: ["tub"], chinese: "浴缸", example: "The baby plays in the tub.", irregularIndices: [] },
+{ week: "2", word: "around", syllables: ["a", "round"], chinese: "周圍", example: "The dog runs around the yard.", irregularIndices: [2, 3] },
+{ week: "2", word: "flowers", syllables: ["flow", "ers"], chinese: "花(複數)", example: "There are flowers in the garden.", irregularIndices: [2, 3] },
+{ week: "2", word: "very fast", syllables: ["ver", "y", " ", "fast"], chinese: "非常快", example: "The car goes very fast.", irregularIndices: [] },
+{ week: "2", word: "went", syllables: ["went"], chinese: "去(go 的過去式)", example: "I went to the park yesterday.", irregularIndices: [] },
+{ week: "2", word: "them", syllables: ["them"], chinese: "他們(受詞)", example: "Please give the toys to them.", irregularIndices: [] },
+{ week: "2", word: "mother", syllables: ["moth", "er"], chinese: "媽媽", example: "My mother cooks dinner every day.", irregularIndices: [1] },
+{ week: "2", word: "saw", syllables: ["saw"], chinese: "看見(see 的過去式)", example: "I saw a bird in the tree.", irregularIndices: [1, 2] },
+{ week: "2", word: "every", syllables: ["ev", "er", "y"], chinese: "每個", example: "I brush my teeth every day.", irregularIndices: [4] },
+// --- Week 3 (NEW) ---
+{ week: "3", word: "pan", syllables: ["pan"], chinese: "平底鍋", example: "Mom cooks eggs in a pan.", irregularIndices: [] },
+{ week: "3", word: "peas", syllables: ["peas"], chinese: "豌豆", example: "I do not like peas very much.", irregularIndices: [1, 2] },
+{ week: "3", word: "pen", syllables: ["pen"], chinese: "原子筆", example: "I write my name with a pen.", irregularIndices: [] },
+{ week: "3", word: "pencil", syllables: ["pen", "cil"], chinese: "鉛筆", example: "I use a pencil at school.", irregularIndices: [] },
+{ week: "3", word: "pig", syllables: ["pig"], chinese: "豬", example: "The pig is eating on the farm.", irregularIndices: [] },
+{ week: "3", word: "pillow", syllables: ["pil", "low"], chinese: "枕頭", example: "I sleep with a soft pillow.", irregularIndices: [3, 4, 5] },
+{ week: "3", word: "pin", syllables: ["pin"], chinese: "別針", example: "Be careful with the sharp pin.", irregularIndices: [] },
+{ week: "3", word: "pool", syllables: ["pool"], chinese: "游泳池", example: "We swim in the pool on hot days.", irregularIndices: [1, 2] },
+{ week: "3", word: "pumpkin", syllables: ["pump", "kin"], chinese: "南瓜", example: "We see a big pumpkin in the yard.", irregularIndices: [] },
+{ week: "3", word: "puzzle", syllables: ["puz", "zle"], chinese: "拼圖", example: "I finish the puzzle with my friend.", irregularIndices: [4, 5] },
+{ week: "3", word: "nail", syllables: ["nail"], chinese: "釘子", example: "Dad hits the nail with a hammer.", irregularIndices: [1, 2] },
+{ week: "3", word: "neck", syllables: ["neck"], chinese: "脖子", example: "My neck feels tired today.", irregularIndices: [] },
+{ week: "3", word: "needle", syllables: ["nee", "dle"], chinese: "針", example: "Grandma uses a needle to sew.", irregularIndices: [1, 2, 4, 5] },
+{ week: "3", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "The bird builds a nest in the tree.", irregularIndices: [] },
+{ week: "3", word: "net", syllables: ["net"], chinese: "網子", example: "The boy catches fish with a net.", irregularIndices: [] },
+{ week: "3", word: "newspaper", syllables: ["news", "pa", "per"], chinese: "報紙", example: "My father reads the newspaper every morning.", irregularIndices: [1, 2] },
+{ week: "3", word: "nine", syllables: ["nine"], chinese: "九", example: "She is nine years old.", irregularIndices: [1, 3] },
+{ week: "3", word: "nose", syllables: ["nose"], chinese: "鼻子", example: "My nose feels cold in winter.", irregularIndices: [1, 3] },
+{ week: "3", word: "nurse", syllables: ["nurse"], chinese: "護士", example: "The nurse helps sick people.", irregularIndices: [1, 2, 4] },
+{ week: "3", word: "nuts", syllables: ["nuts"], chinese: "堅果(複數)", example: "The squirrels look for nuts.", irregularIndices: [] },
+{ week: "3", word: "bed", syllables: ["bed"], chinese: "床", example: "I go to bed at nine.", irregularIndices: [] },
+{ week: "3", word: "bell", syllables: ["bell"], chinese: "鈴鐺", example: "The bell rings after class.", irregularIndices: [] },
+{ week: "3", word: "belt", syllables: ["belt"], chinese: "皮帶", example: "He wears a belt with his pants.", irregularIndices: [] },
+{ week: "3", word: "shell", syllables: ["shell"], chinese: "貝殼", example: "We find a shell on the beach.", irregularIndices: [] },
+{ week: "3", word: "sled", syllables: ["sled"], chinese: "雪橇", example: "The kids ride a sled in the snow.", irregularIndices: [] },
+{ week: "3", word: "ten", syllables: ["ten"], chinese: "十", example: "I can count to ten.", irregularIndices: [] },
+{ week: "3", word: "vest", syllables: ["vest"], chinese: "背心", example: "He wears a vest in cold weather.", irregularIndices: [] },
+{ week: "3", word: "web", syllables: ["web"], chinese: "蜘蛛網", example: "I see a spider web in the corner.", irregularIndices: [] },
+{ week: "3", word: "everywhere", syllables: ["ev", "ery", "where"], chinese: "到處", example: "Toys are everywhere in the room.", irregularIndices: [] },
+{ week: "3", word: "go up", syllables: ["go", " ", "up"], chinese: "往上", example: "We go up the stairs together.", irregularIndices: [1] },
+{ week: "3", word: "go back", syllables: ["go", " ", "back"], chinese: "返回", example: "Let's go back home now.", irregularIndices: [1] },
+{ week: "3", word: "stop", syllables: ["stop"], chinese: "停止", example: "Please stop talking and listen.", irregularIndices: [] },
+{ week: "3", word: "faster", syllables: ["fas", "ter"], chinese: "比較快的", example: "Can you run faster than me?", irregularIndices: [] },
+{ week: "3", word: "tag", syllables: ["tag"], chinese: "鬼抓人", example: "We play tag after school.", irregularIndices: [] },
+{ week: "3", word: "then", syllables: ["then"], chinese: "然後", example: "Finish your homework, then play.", irregularIndices: [] },
+{ week: "3", word: "sleep", syllables: ["sleep"], chinese: "睡覺", example: "I want to sleep early tonight.", irregularIndices: [2, 3] },
+{ week: "3", word: "that", syllables: ["that"], chinese: "那個", example: "Is that your bag?", irregularIndices: [] },
+{ week: "3", word: "this", syllables: ["this"], chinese: "這個", example: "This is my favorite book.", irregularIndices: [] },
+{ week: "3", word: "know", syllables: ["know"], chinese: "知道", example: "I know the answer now.", irregularIndices: [0, 1, 2, 3] },
+{ week: "3", word: "bird", syllables: ["bird"], chinese: "鳥", example: "A small bird sits on the tree.", irregularIndices: [1, 2] },
+{ week: "3", word: "fly", syllables: ["fly"], chinese: "飛", example: "Birds fly in the sky.", irregularIndices: [2] },
+
+ // --- Week 13 ---
         { week: "13", word: "cube", syllables: ["cube"], chinese: "立方體", example: "The ice is a cube.", irregularIndices: [1, 3] },
         { week: "13", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "That puppy is so cute.", irregularIndices: [1, 3] },
         { week: "13", word: "mule", syllables: ["mule"], chinese: "騾子", example: "A mule is very strong.", irregularIndices: [1, 3] },
@@ -571,7 +686,7 @@
         { week: "18", word: "put", syllables: ["put"], chinese: "放置", example: "Put it down.", irregularIndices: [1] },
         { week: "18", word: "came", syllables: ["came"], chinese: "來 (come過去式)", example: "He came yesterday.", irregularIndices: [1, 3] },
         
-        // --- Week 19: Long Vowels Review & More ---
+        // --- Week 19 ---
         { week: "19", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite.", irregularIndices: [1, 3] },
         { week: "19", word: "ruler", syllables: ["rul", "er"], chinese: "尺", example: "I have a ruler.", irregularIndices: [1] },
         { week: "19", word: "twenty", syllables: ["twen", "ty"], chinese: "二十", example: "Count to twenty.", irregularIndices: [5] },
@@ -612,6 +727,7 @@
         { week: "19", word: "on", syllables: ["on"], chinese: "在...上面", example: "It is on the table.", irregularIndices: [] },
         { week: "19", word: "under", syllables: ["un", "der"], chinese: "在...下面", example: "Under the chair.", irregularIndices: [3, 4] },
         { week: "19", word: "in", syllables: ["in"], chinese: "在...裡面", example: "In the box.", irregularIndices: [] }
+     
     ];
 
     // --- 2. 全域變數 (雙軌制) ---
@@ -689,7 +805,9 @@
     // --- Level System ---
     function initLevelSystem() {
         const levelSelect = document.getElementById('levelSelect');
-        const weeks = [...new Set(rawData.map(item => item.week))].sort();
+        const weeks = [...new Set(rawData.map(item => item.week))].sort((a,b) => {
+            return parseInt(a) - parseInt(b); // 數字排序
+        });
 
         weeks.forEach(wk => {
             let option = document.createElement('option');
