@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>兒童英文拼字學習機 (Weekly Edition Pro) 🐝</title>
+    <title>兒童英文拼字學習機 (Smart Review Edition) 🐝</title>
     <style>
-        /* --- 🎨 視覺設計 --- */
         :root {
             --primary-yellow: #FFD700;
             --primary-blue: #40E0D0;
@@ -13,29 +12,18 @@
             --bg-color: #F7F9FC;
             --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
             --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            
-            /* 文字顏色定義 */
             --color-vowel: #FF4500;
             --color-consonant: #1E90FF;
             --color-irregular: #9932CC;
-            --color-symbol: #888888;
         }
 
         body {
             font-family: var(--font-main);
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
+            margin: 0; padding: 20px;
             color: var(--text-dark);
             text-align: center;
             touch-action: manipulation; 
-        }
-
-        h1 {
-            color: #FF8C00;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 0px #FFE4B5;
         }
 
         .app-container {
@@ -48,743 +36,408 @@
             border: 5px solid var(--primary-yellow);
         }
 
-        /* --- 🎛️ 控制列 --- */
-        .controls-bar {
+        .selector-box {
             background-color: #E0F7FA;
             padding: 15px;
             border-radius: 15px;
             margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            align-items: center;
         }
 
-        select {
-            padding: 10px 15px;
-            font-size: 1rem;
-            border-radius: 10px;
+        .week-options {
+            display: flex; flex-wrap: wrap;
+            justify-content: center; gap: 10px; margin-top: 10px;
+        }
+
+        .week-checkbox { display: none; }
+        .week-label {
+            padding: 8px 15px; background: white;
             border: 2px solid var(--primary-blue);
-            background: white;
-            cursor: pointer;
-            min-width: 200px;
+            border-radius: 20px; cursor: pointer;
+            font-weight: bold; transition: 0.3s;
+        }
+        .week-checkbox:checked + .week-label {
+            background: var(--primary-blue); color: white;
         }
 
-        label { font-weight: bold; color: #00796B; }
-
-        /* --- 📑 分頁籤 --- */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #ddd;
-            flex-wrap: wrap;
-        }
-
+        .tabs { display: flex; justify-content: center; margin-bottom: 20px; border-bottom: 3px solid #ddd; }
         .tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 15px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            transition: all 0.3s;
-            border-bottom: 4px solid transparent;
-            margin-bottom: -3px;
+            background: none; border: none; padding: 10px 15px;
+            font-size: 1.1rem; font-weight: bold; color: #aaa;
+            cursor: pointer; border-bottom: 4px solid transparent;
         }
+        .tab-btn.active { color: var(--text-dark); border-bottom: 4px solid var(--primary-yellow); }
 
-        .tab-btn:hover { color: var(--primary-blue); }
-        .tab-btn.active {
-            color: var(--text-dark);
-            border-bottom: 4px solid var(--primary-yellow);
-        }
-
-        /* --- 🏫 學習區域 --- */
-        .mode-section {
-            display: none;
-            animation: fadeIn 0.5s;
-        }
+        .mode-section { display: none; animation: fadeIn 0.5s; }
         .mode-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .word-card {
-            padding: 30px;
-            background: #FFF9C4;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .big-word {
-            font-size: 4rem;
-            font-weight: bold;
-            margin: 10px 0;
-            letter-spacing: 2px;
-        }
-
+        .word-card { padding: 30px; background: #FFF9C4; border-radius: 20px; margin-bottom: 20px; position: relative; }
+        .big-word { font-size: 4rem; font-weight: bold; margin: 10px 0; letter-spacing: 2px; }
         .char-vowel { color: var(--color-vowel); }
         .char-consonant { color: var(--color-consonant); }
-        .char-irregular { color: var(--color-irregular); font-weight: 900; text-shadow: 1px 1px 0px #eee; }
-        .char-symbol { color: var(--color-symbol); font-weight: normal; }
+        .char-irregular { color: var(--color-irregular); font-weight: 900; }
+        .info-text { font-size: 1.5rem; margin: 10px 0; color: #555; }
+        .syllable-box { background: white; padding: 5px 15px; border-radius: 20px; border: 2px dashed #aaa; display: inline-block; }
 
-        .info-text {
-            font-size: 1.5rem;
-            margin: 10px 0;
-            color: #555;
-        }
-        
-        .example-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .example-text {
-            font-style: italic;
-            color: #555;
-            font-size: 1.2rem;
-        }
-
-        .btn-sm-speak {
-            background: #FF6B6B;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .syllable-box {
-            background: white;
-            display: block; 
-            padding: 5px 15px;
-            border-radius: 20px;
-            border: 2px dashed #aaa;
-            margin: 15px auto;
-            font-size: 1.2rem;
-            color: #666;
-            width: fit-content;
-        }
-
-        /* --- 🎮 互動按鈕 --- */
-        button.action-btn {
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #008B8B;
-            margin: 5px;
-        }
-        button.action-btn:active { transform: translateY(4px); box-shadow: none; }
-        button.secondary-btn { background-color: #95a5a6; box-shadow: 0 4px 0 #7f8c8d; }
-        button.speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; padding: 15px 30px; }
-        
-        .nav-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        /* --- 📋 單字總覽列表 --- */
-        .word-list-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .word-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 20px; }
         .list-btn {
-            background: white;
-            border: 2px solid #ddd;
-            padding: 12px 8px;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+            background: white; border: 2px solid #ddd; padding: 10px; border-radius: 10px;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center;
         }
-        .error-badge {
-            font-size: 0.75rem;
-            background: rgba(0,0,0,0.1);
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-        .list-btn.active-word {
-            border-color: #FF8C00;
-            box-shadow: 0 0 8px rgba(255,140,0,0.5);
-            font-weight: bold;
-            transform: scale(1.05);
-        }
+        .list-btn.active-word { border-color: #FF8C00; box-shadow: 0 0 8px rgba(255,140,0,0.5); }
 
-        /* --- 🧩 積木與聽寫 --- */
-        .letter-container {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
-            min-height: 60px;
-        }
-        .letter-block {
-            background: white;
-            border: 3px solid var(--primary-yellow);
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #ccc;
-        }
-        .letter-block.space-block { border: 2px dashed #ccc; background: #f0f0f0; width: 30px; }
-
-        .answer-area {
-            min-height: 60px;
-            border-bottom: 4px solid #333;
-            margin: 0 20px;
-            display: flex;
-            justify-content: center;
-            gap: 5px;
-            font-size: 3rem;
-            font-family: monospace;
-            flex-wrap: wrap;
-        }
-
-        input[type="text"] {
-            font-size: 2rem;
-            padding: 10px;
-            width: 80%;
-            text-align: center;
-            border: 3px solid var(--primary-blue);
-            border-radius: 15px;
-            outline: none;
-            margin-bottom: 15px;
-        }
-        .feedback-msg {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-top: 15px;
-            min-height: 1.5em;
-        }
+        .letter-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0; min-height: 60px; }
+        .letter-block { background: white; border: 3px solid var(--primary-yellow); width: 45px; height: 45px; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+        .answer-area { min-height: 60px; border-bottom: 4px solid #333; margin-bottom: 20px; display: flex; justify-content: center; gap: 5px; font-size: 2.5rem; font-family: monospace; }
+        input[type="text"] { font-size: 2rem; padding: 10px; width: 80%; text-align: center; border: 3px solid var(--primary-blue); border-radius: 15px; outline: none; }
+        
+        .action-btn { background-color: var(--primary-blue); color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; box-shadow: 0 4px 0 #008B8B; margin: 5px; }
+        .challenge-btn { background-color: #E74C3C; box-shadow: 0 4px 0 #C0392B; }
+        .speak-btn { background-color: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.5rem; }
+        .feedback-msg { font-size: 1.2rem; font-weight: bold; margin-top: 10px; }
         .correct { color: #2ecc71; }
         .wrong { color: #e74c3c; }
-
-        .keyboard-area {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 10px;
-            align-items: center;
-        }
-        .keyboard-row { display: flex; gap: 5px; justify-content: center; }
-        .key-btn {
-            background: white;
-            border: 1px solid #ccc;
-            border-bottom: 3px solid #bbb;
-            border-radius: 8px;
-            padding: 10px 14px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            min-width: 30px;
-        }
-        .key-special { background: #eee; font-size: 1rem; }
-        .key-space { width: 150px; }
-
-        @media (max-width: 600px) {
-            .big-word { font-size: 3rem; }
-            .controls-bar { flex-direction: column; }
-            select { width: 100%; }
-        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>🐝 拼字小蜜蜂 Weekly</h1>
+    <h1>🐝 拼字小蜜蜂 (W1-W7)</h1>
 
-    <div class="controls-bar">
-        <div>
-            <label>📅 進度：</label>
-            <select id="levelSelect" onchange="changeLevel()"></select>
-        </div>
-        <div>
-            <label>🗣️ 發音：</label>
-            <select id="voiceSelect">
-                <option value="">正在載入語音...</option>
-            </select>
+    <div class="selector-box">
+        <label>🎯 <b>選取單元進行練習：</b></label>
+        <div class="week-options" id="weekSelector"></div>
+        <div style="margin-top: 15px;">
+            <button class="action-btn challenge-btn" onclick="startWeaknessChallenge()">🔥 弱點挑戰 (聽寫錯誤單字)</button>
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('modeA')">👀 看單字 (有序)</button>
-        <button class="tab-btn" onclick="switchTab('modeList')">📋 單字表 (有序)</button>
-        <button class="tab-btn" onclick="switchTab('modeB')">🧩 拼積木 (亂數)</button>
-        <button class="tab-btn" onclick="switchTab('modeC')">📝 聽寫考 (亂數)</button>
+        <button class="tab-btn active" id="tab-modeA" onclick="switchTab('modeA')">👀 學習</button>
+        <button class="tab-btn" id="tab-modeList" onclick="switchTab('modeList')">📋 單字表</button>
+        <button class="tab-btn" id="tab-modeB" onclick="switchTab('modeB')">🧩 拼積木</button>
+        <button class="tab-btn" id="tab-modeC" onclick="switchTab('modeC')">📝 聽寫考</button>
     </div>
 
     <div id="modeA" class="mode-section active">
         <div class="word-card">
-            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 單字發音</button>
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 發音</button>
             <div id="wordDisplay" class="big-word"></div>
             <div id="chineseDisplay" class="info-text"></div>
-            <div class="example-container">
-                <div id="exampleDisplay" class="example-text"></div>
-                <button class="btn-sm-speak" onclick="speakText(currentWordObj.example)">🔈</button>
-            </div>
             <div id="syllableBox" class="syllable-box"></div>
-            <div style="margin-top: 10px;">
-                <button id="btnToggleSyllable" class="action-btn secondary-btn" style="font-size: 1rem; padding: 8px 16px;" onclick="toggleSyllables()">隱藏音節</button>
-            </div>
         </div>
-        <div class="nav-buttons">
-            <button class="action-btn secondary-btn" onclick="prevWord()">⬅️ 上一個</button>
-            <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
-        </div>
+        <button class="action-btn" onclick="prevWord()">⬅️</button>
+        <button class="action-btn" onclick="nextWord()">➡️</button>
     </div>
 
     <div id="modeList" class="mode-section">
-        <div class="word-card" style="background: white; border: 2px solid #eee;">
-            <h2>本週單字列表 (顏色越紅代表錯越多)</h2>
-            <button class="action-btn secondary-btn" style="font-size: 0.8rem;" onclick="clearStats()">🧹 清除統計數據</button>
+        <div class="word-card" style="background: white;">
+            <button class="action-btn" style="font-size: 0.8rem;" onclick="clearStats()">🧹 清除統計</button>
             <div id="fullWordList" class="word-list-grid"></div>
         </div>
     </div>
 
     <div id="modeB" class="mode-section">
         <div class="word-card">
-            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
-            <div class="info-text" id="chineseHintB"></div>
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播音</button>
+            <div id="chineseHintB" class="info-text"></div>
             <div id="puzzleAnswer" class="answer-area"></div>
             <div id="puzzlePieces" class="letter-container"></div>
             <div id="feedbackB" class="feedback-msg"></div>
         </div>
-        <div class="nav-buttons">
-             <button class="action-btn secondary-btn" onclick="resetPuzzle()">🔄 重置</button>
-             <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
-        </div>
+        <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
     </div>
 
     <div id="modeC" class="mode-section">
         <div class="word-card">
-            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播聲音</button>
-            <div class="info-text" id="chineseHintC"></div>
-            <input type="text" id="dictationInput" placeholder="點擊按鈕或打字..." autocomplete="off">
-            <div id="virtualKeyboard" class="keyboard-area"></div>
+            <button class="action-btn speak-btn" onclick="speakText(currentWordObj.word)">🔊 播音</button>
+            <div id="chineseHintC" class="info-text"></div>
+            <input type="text" id="dictationInput" placeholder="請在此輸入單字..." autocomplete="off">
             <div id="feedbackC" class="feedback-msg"></div>
         </div>
-        <div style="margin-top: 15px;">
-            <button class="action-btn secondary-btn" onclick="resetDictation()">🔄 清除重寫</button>
-            <button class="action-btn" onclick="checkDictation()">✅ 檢查答案</button>
-        </div>
-        <div class="nav-buttons">
-            <button class="action-btn" onclick="nextWord()">下一個 ➡️</button>
-        </div>
+        <button class="action-btn" onclick="checkDictation()">✅ 檢查</button>
+        <button class="action-btn" onclick="nextWord()">➡️</button>
     </div>
 </div>
 
 <script>
-    // --- 1. 資料來源 ---
+    // --- 1. 資料庫 (已修復 Week 5-7 並去重) ---
     const rawData = [
-        // Week 1
-        { week: "1", word: "sandwich", syllables: ["sand", "wich"], chinese: "三明治", example: "I want a sandwich.", irregularIndices: [] },
-        { week: "1", word: "saw", syllables: ["saw"], chinese: "鋸子", example: "Dad uses a saw.", irregularIndices: [1, 2] },
-        { week: "1", word: "seal", syllables: ["seal"], chinese: "海豹", example: "The seal swims.", irregularIndices: [1, 2] },
-        { week: "1", word: "seven", syllables: ["sev", "en"], chinese: "七", example: "I have seven books.", irregularIndices: [] },
-        { week: "1", word: "sink", syllables: ["sink"], chinese: "水槽", example: "Wash hands in the sink.", irregularIndices: [] },
-        { week: "1", word: "six", syllables: ["six"], chinese: "六", example: "It is six o'clock.", irregularIndices: [] },
-        { week: "1", word: "soap", syllables: ["soap"], chinese: "肥皂", example: "Wash with soap.", irregularIndices: [1, 2] },
-        { week: "1", word: "socks", syllables: ["socks"], chinese: "襪子", example: "Red socks.", irregularIndices: [] },
-        { week: "1", word: "suit", syllables: ["suit"], chinese: "西裝", example: "Dad wears a suit.", irregularIndices: [1, 2] },
-        { week: "1", word: "sun", syllables: ["sun"], chinese: "太陽", example: "The sun is hot.", irregularIndices: [] },
-        { week: "1", word: "mailbox", syllables: ["mail", "box"], chinese: "信箱", example: "Check the mailbox.", irregularIndices: [1, 2] },
-        { week: "1", word: "mask", syllables: ["mask"], chinese: "面具/口罩", example: "Wear a mask.", irregularIndices: [] },
-        { week: "1", word: "match", syllables: ["match"], chinese: "火柴", example: "Light a match.", irregularIndices: [2, 3, 4] },
-        { week: "1", word: "milk", syllables: ["milk"], chinese: "牛奶", example: "Drink some milk.", irregularIndices: [] },
-        { week: "1", word: "mirror", syllables: ["mir", "ror"], chinese: "鏡子", example: "Look in the mirror.", irregularIndices: [] },
-        { week: "1", word: "monkey", syllables: ["mon", "key"], chinese: "猴子", example: "The monkey eats bananas.", irregularIndices: [4, 5] },
-        { week: "1", word: "moon", syllables: ["moon"], chinese: "月亮", example: "The moon is round.", irregularIndices: [1, 2] },
-        { week: "1", word: "mouse", syllables: ["mouse"], chinese: "老鼠", example: "A little mouse.", irregularIndices: [1, 2, 4] },
-        { week: "1", word: "mouth", syllables: ["mouth"], chinese: "嘴巴", example: "Open your mouth.", irregularIndices: [1, 2] },
-        { week: "1", word: "block", syllables: ["block"], chinese: "積木", example: "Play with blocks.", irregularIndices: [] },
-        { week: "1", word: "box", syllables: ["box"], chinese: "箱子", example: "A big box.", irregularIndices: [] },
-        { week: "1", word: "doll", syllables: ["doll"], chinese: "洋娃娃", example: "A pretty doll.", irregularIndices: [] },
-        { week: "1", word: "fox", syllables: ["fox"], chinese: "狐狸", example: "A clever fox.", irregularIndices: [] },
-        { week: "1", word: "lock", syllables: ["lock"], chinese: "鎖", example: "Lock the door.", irregularIndices: [] },
-        { week: "1", word: "mop", syllables: ["mop"], chinese: "拖把", example: "Mop the floor.", irregularIndices: [] },
-        { week: "1", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "Hot pot.", irregularIndices: [] },
-        { week: "1", word: "rock", syllables: ["rock"], chinese: "岩石", example: "A hard rock.", irregularIndices: [] },
-        { week: "1", word: "sock", syllables: ["sock"], chinese: "襪子(單數)", example: "I lost a sock.", irregularIndices: [] },
-        { week: "1", word: "top", syllables: ["top"], chinese: "陀螺", example: "Spin the top.", irregularIndices: [] },
-        { week: "1", word: "come down", syllables: ["come", " ", "down"], chinese: "倒塌", example: "The wall came down.", irregularIndices: [1, 3, 6, 7] },
-        { week: "1", word: "duck", syllables: ["duck"], chinese: "鴨子", example: "Quack quack duck.", irregularIndices: [] },
-        { week: "1", word: "here", syllables: ["here"], chinese: "這裡", example: "Come here.", irregularIndices: [1, 3] },
-        { week: "1", word: "pretty", syllables: ["pret", "ty"], chinese: "漂亮的", example: "She is pretty.", irregularIndices: [4, 5] },
-        { week: "1", word: "something", syllables: ["some", "thing"], chinese: "某物", example: "I see something.", irregularIndices: [1, 3] },
-        { week: "1", word: "tree", syllables: ["tree"], chinese: "樹", example: "Climb a tree.", irregularIndices: [2, 3] },
-        { week: "1", word: "turtle", syllables: ["tur", "tle"], chinese: "烏龜", example: "Slow turtle.", irregularIndices: [1, 2, 4, 5] },
-        { week: "1", word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠", example: "A squirrel eats nuts.", irregularIndices: [2, 3] },
-        { week: "1", word: "him", syllables: ["him"], chinese: "他(受格)", example: "Give it to him.", irregularIndices: [] },
-        { week: "1", word: "some", syllables: ["some"], chinese: "一些", example: "I want some.", irregularIndices: [1, 3] },
-        { week: "1", word: "cake", syllables: ["cake"], chinese: "蛋糕", example: "Yummy cake.", irregularIndices: [1, 3] },
-        { week: "1", word: "how", syllables: ["how"], chinese: "如何", example: "How are you?", irregularIndices: [1, 2] },
-        { week: "1", word: "give", syllables: ["give"], chinese: "給/送給", example: "Give me a hand.", irregularIndices: [1, 3] },
-
-        // Week 2
-        { week: "2", word: "table", syllables: ["ta", "ble"], chinese: "桌子", example: "Sit at the table.", irregularIndices: [3, 4] },
-        { week: "2", word: "tail", syllables: ["tail"], chinese: "尾巴", example: "The dog wags its tail.", irregularIndices: [1, 2] },
-        { week: "2", word: "tape", syllables: ["tape"], chinese: "膠帶", example: "Use some tape.", irregularIndices: [1, 3] },
-        { week: "2", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "Sleep in a tent.", irregularIndices: [] },
-        { week: "2", word: "toaster", syllables: ["toast", "er"], chinese: "烤麵包機", example: "The toaster is hot.", irregularIndices: [1, 2] },
-        { week: "2", word: "tomato", syllables: ["to", "ma", "to"], chinese: "番茄", example: "A red tomato.", irregularIndices: [] },
-        { week: "2", word: "tooth", syllables: ["tooth"], chinese: "牙齒", example: "My tooth hurts.", irregularIndices: [1, 2] },
-        { week: "2", word: "towel", syllables: ["tow", "el"], chinese: "毛巾", example: "A soft towel.", irregularIndices: [1, 2] },
-        { week: "2", word: "brush", syllables: ["brush"], chinese: "刷子", example: "Use a brush.", irregularIndices: [] },
-        { week: "2", word: "bug", syllables: ["bug"], chinese: "蟲", example: "A small bug.", irregularIndices: [] },
-        { week: "2", word: "bus", syllables: ["bus"], chinese: "公車", example: "Ride the bus.", irregularIndices: [] },
-        { week: "2", word: "cup", syllables: ["cup"], chinese: "杯子", example: "A cup of tea.", irregularIndices: [] },
-        { week: "2", word: "drum", syllables: ["drum"], chinese: "鼓", example: "Play the drum.", irregularIndices: [] },
-        { week: "2", word: "nut", syllables: ["nut"], chinese: "堅果", example: "Eat a nut.", irregularIndices: [] },
-        { week: "2", word: "rug", syllables: ["rug"], chinese: "地毯", example: "Sit on the rug.", irregularIndices: [] },
-        { week: "2", word: "truck", syllables: ["truck"], chinese: "卡車", example: "A big truck.", irregularIndices: [] },
-        { week: "2", word: "tub", syllables: ["tub"], chinese: "浴缸", example: "Wash in the tub.", irregularIndices: [] },
-        { week: "2", word: "around", syllables: ["a", "round"], chinese: "周圍", example: "Walk around.", irregularIndices: [2, 3] },
-        { week: "2", word: "flowers", syllables: ["flow", "ers"], chinese: "花(複數)", example: "Pretty flowers.", irregularIndices: [2, 3] },
-        { week: "2", word: "very fast", syllables: ["ver", "y", " ", "fast"], chinese: "非常快", example: "He runs very fast.", irregularIndices: [] },
-        { week: "2", word: "went", syllables: ["went"], chinese: "去(過去式)", example: "He went to school.", irregularIndices: [] },
-        { week: "2", word: "them", syllables: ["them"], chinese: "他們(受詞)", example: "Give it to them.", irregularIndices: [] },
-        { week: "2", word: "mother", syllables: ["moth", "er"], chinese: "媽媽", example: "I love my mother.", irregularIndices: [1] },
-        { week: "2", word: "every", syllables: ["ev", "er", "y"], chinese: "每個", example: "Every day.", irregularIndices: [4] },
-
-        // Week 3
-        { week: "3", word: "pan", syllables: ["pan"], chinese: "平底鍋", example: "Cook in a pan.", irregularIndices: [] },
-        { week: "3", word: "peas", syllables: ["peas"], chinese: "豌豆", example: "Green peas.", irregularIndices: [1, 2] },
-        { week: "3", word: "pen", syllables: ["pen"], chinese: "原子筆", example: "Write with a pen.", irregularIndices: [] },
-        { week: "3", word: "pencil", syllables: ["pen", "cil"], chinese: "鉛筆", example: "A sharp pencil.", irregularIndices: [] },
-        { week: "3", word: "pig", syllables: ["pig"], chinese: "豬", example: "Oink oink pig.", irregularIndices: [] },
-        { week: "3", word: "pillow", syllables: ["pil", "low"], chinese: "枕頭", example: "Soft pillow.", irregularIndices: [3, 4, 5] },
-        { week: "3", word: "pin", syllables: ["pin"], chinese: "大頭針/別針", example: "A sharp pin.", irregularIndices: [] },
-        { week: "3", word: "pool", syllables: ["pool"], chinese: "游泳池", example: "Swim in the pool.", irregularIndices: [1, 2] },
-        { week: "3", word: "pumpkin", syllables: ["pump", "kin"], chinese: "南瓜", example: "Orange pumpkin.", irregularIndices: [] },
-        { week: "3", word: "puzzle", syllables: ["puz", "zle"], chinese: "拼圖", example: "Do a puzzle.", irregularIndices: [4, 5] },
-        { week: "3", word: "nail", syllables: ["nail"], chinese: "釘子/指甲", example: "Hammer a nail.", irregularIndices: [1, 2] },
-        { week: "3", word: "neck", syllables: ["neck"], chinese: "脖子", example: "My neck hurts.", irregularIndices: [] },
-        { week: "3", word: "needle", syllables: ["nee", "dle"], chinese: "針", example: "Thread the needle.", irregularIndices: [1, 2, 4, 5] },
-        { week: "3", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "Bird in a nest.", irregularIndices: [] },
-        { week: "3", word: "newspaper", syllables: ["news", "pa", "per"], chinese: "報紙", example: "Read the newspaper.", irregularIndices: [1, 2] },
-        { week: "3", word: "nurse", syllables: ["nurse"], chinese: "護士", example: "The nurse helps.", irregularIndices: [1, 2, 4] },
-        { week: "3", word: "bed", syllables: ["bed"], chinese: "床", example: "Go to bed.", irregularIndices: [] },
-        { week: "3", word: "bell", syllables: ["bell"], chinese: "鈴鐺", example: "Ring the bell.", irregularIndices: [] },
-        { week: "3", word: "belt", syllables: ["belt"], chinese: "皮帶", example: "Wear a belt.", irregularIndices: [] },
-        { week: "3", word: "shell", syllables: ["shell"], chinese: "貝殼", example: "Seashell on the sand.", irregularIndices: [] },
-        { week: "3", word: "sled", syllables: ["sled"], chinese: "雪橇", example: "Ride a sled.", irregularIndices: [] },
-        { week: "3", word: "ten", syllables: ["ten"], chinese: "十", example: "Count to ten.", irregularIndices: [] },
-        { week: "3", word: "vest", syllables: ["vest"], chinese: "背心", example: "Wear a vest.", irregularIndices: [] },
-        { week: "3", word: "web", syllables: ["web"], chinese: "蜘蛛網", example: "Spider web.", irregularIndices: [] },
-        { week: "3", word: "everywhere", syllables: ["ev", "ery", "where"], chinese: "到處", example: "Toys are everywhere.", irregularIndices: [] },
-        { week: "3", word: "go up", syllables: ["go", " ", "up"], chinese: "往上", example: "Go up the stairs.", irregularIndices: [1] },
-        { week: "3", word: "go back", syllables: ["go", " ", "back"], chinese: "返回", example: "Go back home.", irregularIndices: [1] },
-        { week: "3", word: "stop", syllables: ["stop"], chinese: "停止", example: "Stop the car.", irregularIndices: [] },
-        { week: "3", word: "tag", syllables: ["tag"], chinese: "鬼抓人/標籤", example: "Let's play tag.", irregularIndices: [] },
-        { week: "3", word: "then", syllables: ["then"], chinese: "然後", example: "And then?", irregularIndices: [] },
-        { week: "3", word: "sleep", syllables: ["sleep"], chinese: "睡覺", example: "Go to sleep.", irregularIndices: [2, 3] },
-        { week: "3", word: "this", syllables: ["this"], chinese: "這個", example: "This is mine.", irregularIndices: [] },
-        { week: "3", word: "know", syllables: ["know"], chinese: "知道", example: "I know the answer.", irregularIndices: [0, 1, 2, 3] },
-        { week: "3", word: "bird", syllables: ["bird"], chinese: "鳥", example: "A blue bird.", irregularIndices: [1, 2] },
-
-        // Week 4
-        { week: "4", word: "cactus", syllables: ["cac", "tus"], chinese: "仙人掌", example: "A green cactus.", irregularIndices: [] },
-        { week: "4", word: "camel", syllables: ["cam", "el"], chinese: "駱駝", example: "Ride a camel.", irregularIndices: [] },
-        { week: "4", word: "camera", syllables: ["cam", "er", "a"], chinese: "相機", example: "Take a picture.", irregularIndices: [] },
-        { week: "4", word: "can", syllables: ["can"], chinese: "罐子/能", example: "A tin can.", irregularIndices: [] },
-        { week: "4", word: "cane", syllables: ["cane"], chinese: "拐杖", example: "Walk with a cane.", irregularIndices: [1, 3] },
-        { week: "4", word: "carrot", syllables: ["car", "rot"], chinese: "胡蘿蔔", example: "Eat a carrot.", irregularIndices: [1, 2, 4] },
-        { week: "4", word: "coat", syllables: ["coat"], chinese: "外套", example: "Wear a coat.", irregularIndices: [1, 2] },
-        { week: "4", word: "comb", syllables: ["comb"], chinese: "梳子", example: "Comb your hair.", irregularIndices: [1, 3] },
-        { week: "4", word: "corn", syllables: ["corn"], chinese: "玉米", example: "Yellow corn.", irregularIndices: [1, 2] },
-        { week: "4", word: "three", syllables: ["three"], chinese: "三", example: "Number three.", irregularIndices: [3, 4] },
-        { week: "4", word: "two", syllables: ["two"], chinese: "二", example: "Number two.", irregularIndices: [1, 2] },
-        { week: "4", word: "one", syllables: ["one"], chinese: "一", example: "Number one.", irregularIndices: [0, 1, 2] },
-        { week: "4", word: "eat", syllables: ["eat"], chinese: "吃", example: "Eat an apple.", irregularIndices: [0, 1] },
-        { week: "4", word: "try", syllables: ["try"], chinese: "嘗試", example: "Try your best.", irregularIndices: [2] },
-        { week: "4", word: "day", syllables: ["day"], chinese: "一天/白天", example: "A sunny day.", irregularIndices: [1, 2] },
-        { week: "4", word: "roll over", syllables: ["roll", " ", "o", "ver"], chinese: "翻身", example: "The dog can roll over.", irregularIndices: [] },
-        { week: "4", word: "children", syllables: ["chil", "dren"], chinese: "小孩(複數)", example: "The children play.", irregularIndices: [] },
-        { week: "4", word: "were", syllables: ["were"], chinese: "是(過去式)", example: "They were happy.", irregularIndices: [1, 3] },
-        { week: "4", word: "now", syllables: ["now"], chinese: "現在", example: "Do it now.", irregularIndices: [1, 2] },
-        { week: "4", word: "was", syllables: ["was"], chinese: "是(過去式)", example: "I was late.", irregularIndices: [1] },
-
-        // Week 5~7 (其餘單字...)
-        { week: "5", word: "kitten", syllables: ["kit", "ten"], chinese: "小貓", example: "A cute kitten.", irregularIndices: [] },
-        { week: "5", word: "king", syllables: ["king"], chinese: "國王", example: "The king wears a crown.", irregularIndices: [] },
-        { week: "5", word: "kangaroo", syllables: ["kan", "ga", "roo"], chinese: "袋鼠", example: "A jumping kangaroo.", irregularIndices: [6, 7] },
-        { week: "6", word: "radio", syllables: ["ra", "di", "o"], chinese: "收音機", example: "Listen to the radio.", irregularIndices: [1, 4] },
-        { week: "6", word: "rainbow", syllables: ["rain", "bow"], chinese: "彩虹", example: "A colorful rainbow.", irregularIndices: [1, 2, 5, 6] },
-        { week: "7", word: "butterfly", syllables: ["but", "ter", "fly"], chinese: "蝴蝶", example: "A pretty butterfly.", irregularIndices: [8] },
-        { week: "7", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球", example: "A red balloon.", irregularIndices: [4, 5] },
-
-        // Week 13~19 (之前已有的資料...)
-        { week: "13", word: "cube", syllables: ["cube"], chinese: "立方體", example: "The ice is a cube.", irregularIndices: [1, 3] },
-        { week: "16", word: "baby", syllables: ["ba", "by"], chinese: "嬰兒", example: "The baby is crying.", irregularIndices: [1, 3] },
-        { week: "19", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite.", irregularIndices: [1, 3] }
+        { week: "1", word: "sandwich", syllables: ["sand", "wich"], chinese: "三明治" },
+        { week: "1", word: "saw", syllables: ["saw"], chinese: "鋸子", irregularIndices: [1, 2] },
+        { week: "1", word: "seal", syllables: ["seal"], chinese: "海豹", irregularIndices: [1, 2] },
+        { week: "1", word: "seven", syllables: ["sev", "en"], chinese: "七" },
+        { week: "1", word: "sink", syllables: ["sink"], chinese: "水槽" },
+        { week: "1", word: "six", syllables: ["six"], chinese: "六" },
+        { week: "1", word: "soap", syllables: ["soap"], chinese: "肥皂", irregularIndices: [1, 2] },
+        { week: "1", word: "socks", syllables: ["socks"], chinese: "襪子" },
+        { week: "1", word: "suit", syllables: ["suit"], chinese: "西裝", irregularIndices: [1, 2] },
+        { week: "1", word: "sun", syllables: ["sun"], chinese: "太陽" },
+        { week: "1", word: "mailbox", syllables: ["mail", "box"], chinese: "信箱", irregularIndices: [1, 2] },
+        { week: "1", word: "mask", syllables: ["mask"], chinese: "面具" },
+        { week: "1", word: "match", syllables: ["match"], chinese: "火柴", irregularIndices: [2, 3, 4] },
+        { week: "1", word: "milk", syllables: ["milk"], chinese: "牛奶" },
+        { week: "1", word: "monkey", syllables: ["mon", "key"], chinese: "猴子" },
+        { week: "1", word: "moon", syllables: ["moon"], chinese: "月亮", irregularIndices: [1, 2] },
+        { week: "1", word: "mouse", syllables: ["mouse"], chinese: "老鼠", irregularIndices: [1, 2, 4] },
+        { week: "1", word: "mouth", syllables: ["mouth"], chinese: "嘴巴", irregularIndices: [1, 2] },
+        { week: "1", word: "block", syllables: ["block"], chinese: "積木" },
+        { week: "1", word: "box", syllables: ["box"], chinese: "箱子" },
+        { week: "1", word: "doll", syllables: ["doll"], chinese: "洋娃娃" },
+        { week: "1", word: "fox", syllables: ["fox"], chinese: "狐狸" },
+        { week: "1", word: "lock", syllables: ["lock"], chinese: "鎖" },
+        { week: "1", word: "mop", syllables: ["mop"], chinese: "拖把" },
+        { week: "1", word: "pot", syllables: ["pot"], chinese: "鍋子" },
+        { week: "1", word: "rock", syllables: ["rock"], chinese: "岩石" },
+        { week: "1", word: "sock", syllables: ["sock"], chinese: "襪子(單)" },
+        { week: "1", word: "top", syllables: ["top"], chinese: "陀螺" },
+        { week: "1", word: "come down", syllables: ["come", "down"], chinese: "倒塌" },
+        { week: "1", word: "duck", syllables: ["duck"], chinese: "鴨子" },
+        { week: "1", word: "here", syllables: ["here"], chinese: "這裡" },
+        { week: "1", word: "pretty", syllables: ["pret", "ty"], chinese: "漂亮的" },
+        { week: "1", word: "something", syllables: ["some", "thing"], chinese: "某物" },
+        { week: "1", word: "tree", syllables: ["tree"], chinese: "樹" },
+        { week: "1", word: "turtle", syllables: ["tur", "tle"], chinese: "烏龜" },
+        { week: "1", word: "squirrel", syllables: ["squir", "rel"], chinese: "松鼠" },
+        { week: "1", word: "him", syllables: ["him"], chinese: "他" },
+        { week: "1", word: "some", syllables: ["some"], chinese: "一些" },
+        { week: "1", word: "cake", syllables: ["cake"], chinese: "蛋糕" },
+        { week: "1", word: "how", syllables: ["how"], chinese: "如何" },
+        { week: "1", word: "give", syllables: ["give"], chinese: "給" },
+        { week: "2", word: "table", syllables: ["ta", "ble"], chinese: "桌子" },
+        { week: "2", word: "tail", syllables: ["tail"], chinese: "尾巴" },
+        { week: "2", word: "tape", syllables: ["tape"], chinese: "膠帶" },
+        { week: "2", word: "tent", syllables: ["tent"], chinese: "帳篷" },
+        { week: "2", word: "toaster", syllables: ["toast", "er"], chinese: "烤麵包機" },
+        { week: "2", word: "tomato", syllables: ["to", "ma", "to"], chinese: "番茄" },
+        { week: "2", word: "tooth", syllables: ["tooth"], chinese: "牙齒" },
+        { week: "2", word: "towel", syllables: ["tow", "el"], chinese: "毛巾" },
+        { week: "2", word: "brush", syllables: ["brush"], chinese: "刷子" },
+        { week: "2", word: "bug", syllables: ["bug"], chinese: "蟲" },
+        { week: "2", word: "bus", syllables: ["bus"], chinese: "公車" },
+        { week: "2", word: "cup", syllables: ["cup"], chinese: "杯子" },
+        { week: "2", word: "drum", syllables: ["drum"], chinese: "鼓" },
+        { week: "2", word: "nut", syllables: ["nut"], chinese: "堅果" },
+        { week: "2", word: "rug", syllables: ["rug"], chinese: "地毯" },
+        { week: "2", word: "truck", syllables: ["truck"], chinese: "卡車" },
+        { week: "2", word: "tub", syllables: ["tub"], chinese: "浴缸" },
+        { week: "2", word: "around", syllables: ["around"], chinese: "周圍" },
+        { week: "2", word: "flowers", syllables: ["flow", "ers"], chinese: "花" },
+        { week: "2", word: "very fast", syllables: ["very", "fast"], chinese: "非常快" },
+        { week: "2", word: "went", syllables: ["went"], chinese: "去(過去式)" },
+        { week: "2", word: "them", syllables: ["them"], chinese: "他們" },
+        { week: "2", word: "mother", syllables: ["moth", "er"], chinese: "媽媽" },
+        { week: "2", word: "every", syllables: ["ev", "er", "y"], chinese: "每個" },
+        { week: "3", word: "pan", syllables: ["pan"], chinese: "平底鍋" },
+        { week: "3", word: "peas", syllables: ["peas"], chinese: "豌豆" },
+        { week: "3", word: "pen", syllables: ["pen"], chinese: "原子筆" },
+        { week: "3", word: "pencil", syllables: ["pen", "cil"], chinese: "鉛筆" },
+        { week: "3", word: "pig", syllables: ["pig"], chinese: "豬" },
+        { week: "3", word: "pillow", syllables: ["pil", "low"], chinese: "枕頭" },
+        { week: "3", word: "pin", syllables: ["pin"], chinese: "別針" },
+        { week: "3", word: "pool", syllables: ["pool"], chinese: "游泳池" },
+        { week: "3", word: "pumpkin", syllables: ["pump", "kin"], chinese: "南瓜" },
+        { week: "3", word: "puzzle", syllables: ["puz", "zle"], chinese: "拼圖" },
+        { week: "3", word: "nail", syllables: ["nail"], chinese: "釘子" },
+        { week: "3", word: "neck", syllables: ["neck"], chinese: "脖子" },
+        { week: "3", word: "needle", syllables: ["nee", "dle"], chinese: "針" },
+        { week: "3", word: "nest", syllables: ["nest"], chinese: "鳥巢" },
+        { week: "3", word: "net", syllables: ["net"], chinese: "網子" },
+        { week: "3", word: "newspaper", syllables: ["news", "pa", "per"], chinese: "報紙" },
+        { week: "3", word: "nine", syllables: ["nine"], chinese: "九" },
+        { week: "3", word: "nurse", syllables: ["nurse"], chinese: "護士" },
+        { week: "3", word: "bed", syllables: ["bed"], chinese: "床" },
+        { week: "3", word: "bell", syllables: ["bell"], chinese: "鈴鐺" },
+        { week: "3", word: "belt", syllables: ["belt"], chinese: "皮帶" },
+        { week: "3", word: "shell", syllables: ["shell"], chinese: "貝殼" },
+        { week: "3", word: "sled", syllables: ["sled"], chinese: "雪橇" },
+        { week: "3", word: "ten", syllables: ["ten"], chinese: "十" },
+        { week: "3", word: "vest", syllables: ["vest"], chinese: "背心" },
+        { week: "3", word: "web", syllables: ["web"], chinese: "網" },
+        { week: "3", word: "everywhere", syllables: ["ev", "ery", "where"], chinese: "到處" },
+        { week: "3", word: "go up", syllables: ["go", "up"], chinese: "往上" },
+        { week: "3", word: "go back", syllables: ["go", "back"], chinese: "返回" },
+        { week: "3", word: "stop", syllables: ["stop"], chinese: "停止" },
+        { week: "3", word: "tag", syllables: ["tag"], chinese: "鬼抓人" },
+        { week: "3", word: "know", syllables: ["know"], chinese: "知道" },
+        { week: "3", word: "bird", syllables: ["bird"], chinese: "鳥" },
+        { week: "3", word: "fly", syllables: ["fly"], chinese: "飛" },
+        { week: "4", word: "cactus", syllables: ["cac", "tus"], chinese: "仙人掌" },
+        { week: "4", word: "camel", syllables: ["cam", "el"], chinese: "駱駝" },
+        { week: "4", word: "camera", syllables: ["cam", "er", "a"], chinese: "相機" },
+        { week: "4", word: "can", syllables: ["can"], chinese: "罐子" },
+        { week: "4", word: "cane", syllables: ["cane"], chinese: "拐杖" },
+        { week: "4", word: "carrot", syllables: ["car", "rot"], chinese: "胡蘿蔔" },
+        { week: "4", word: "coat", syllables: ["coat"], chinese: "外套" },
+        { week: "4", word: "comb", syllables: ["comb"], chinese: "梳子" },
+        { week: "4", word: "corn", syllables: ["corn"], chinese: "玉米" },
+        { week: "4", word: "three", syllables: ["three"], chinese: "三" },
+        { week: "4", word: "one", syllables: ["one"], chinese: "一" },
+        { week: "4", word: "eat", syllables: ["eat"], chinese: "吃" },
+        { week: "4", word: "day", syllables: ["day"], chinese: "天" },
+        { week: "4", word: "roll over", syllables: ["roll", "over"], chinese: "翻身" },
+        { week: "4", word: "children", syllables: ["chil", "dren"], chinese: "小孩" },
+        { week: "4", word: "were", syllables: ["were"], chinese: "是(複過去)" },
+        { week: "4", word: "was", syllables: ["was"], chinese: "是(單過去)" },
+        { week: "5", word: "kitten", syllables: ["kit", "ten"], chinese: "小貓" },
+        { week: "5", word: "key", syllables: ["key"], chinese: "鑰匙" },
+        { week: "5", word: "kite", syllables: ["kite"], chinese: "風箏" },
+        { week: "5", word: "king", syllables: ["king"], chinese: "國王" },
+        { week: "5", word: "kangaroo", syllables: ["kan", "ga", "roo"], chinese: "袋鼠" },
+        { week: "5", word: "kiss", syllables: ["kiss"], chinese: "親吻" },
+        { week: "5", word: "kitchen", syllables: ["kit", "chen"], chinese: "廚房" },
+        { week: "5", word: "skunk", syllables: ["skunk"], chinese: "臭鼬" },
+        { week: "5", word: "other", syllables: ["oth", "er"], chinese: "其他的" },
+        { week: "5", word: "see", syllables: ["see"], chinese: "看見" },
+        { week: "5", word: "went down", syllables: ["went", "down"], chinese: "下去" },
+        { week: "5", word: "went up", syllables: ["went", "up"], chinese: "上升" },
+        { week: "5", word: "new", syllables: ["new"], chinese: "新的" },
+        { week: "5", word: "going", syllables: ["go", "ing"], chinese: "去(進行)" },
+        { week: "5", word: "old", syllables: ["old"], chinese: "老的/舊的" },
+        { week: "5", word: "park", syllables: ["park"], chinese: "公園" },
+        { week: "5", word: "yes", syllables: ["yes"], chinese: "是的" },
+        { week: "6", word: "radio", syllables: ["ra", "di", "o"], chinese: "收音機" },
+        { week: "6", word: "rainbow", syllables: ["rain", "bow"], chinese: "彩虹" },
+        { week: "6", word: "rake", syllables: ["rake"], chinese: "耙子" },
+        { week: "6", word: "rattle", syllables: ["rat", "tle"], chinese: "搖鈴" },
+        { week: "6", word: "record", syllables: ["re", "cord"], chinese: "唱片" },
+        { week: "6", word: "ribbon", syllables: ["rib", "bon"], chinese: "緞帶" },
+        { week: "6", word: "robe", syllables: ["robe"], chinese: "袍子" },
+        { week: "6", word: "rose", syllables: ["rose"], chinese: "玫瑰" },
+        { week: "6", word: "rug", syllables: ["rug"], chinese: "地毯" },
+        { week: "6", word: "ruler", syllables: ["rul", "er"], chinese: "尺" },
+        { week: "6", word: "want", syllables: ["want"], chinese: "想要" },
+        { week: "6", word: "cannot", syllables: ["can", "not"], chinese: "不能" },
+        { week: "6", word: "find", syllables: ["find"], chinese: "找到" },
+        { week: "6", word: "stay", syllables: ["stay"], chinese: "留下" },
+        { week: "6", word: "all at once", syllables: ["all", "at", "once"], chinese: "突然" },
+        { week: "6", word: "no", syllables: ["no"], chinese: "不" },
+        { week: "6", word: "help", syllables: ["help"], chinese: "幫助" },
+        { week: "6", word: "round", syllables: ["round"], chinese: "圓的" },
+        { week: "6", word: "four", syllables: ["four"], chinese: "四" },
+        { week: "6", word: "us", syllables: ["us"], chinese: "我們" },
+        { week: "7", word: "ball", syllables: ["ball"], chinese: "球" },
+        { week: "7", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球" },
+        { week: "7", word: "banana", syllables: ["ba", "nan", "a"], chinese: "香蕉" },
+        { week: "7", word: "bat", syllables: ["bat"], chinese: "球棒/蝙蝠" },
+        { week: "7", word: "book", syllables: ["book"], chinese: "書" },
+        { week: "7", word: "butterfly", syllables: ["but", "ter", "fly"], chinese: "蝴蝶" },
+        { week: "7", word: "button", syllables: ["but", "ton"], chinese: "鈕扣" },
+        { week: "7", word: "ran", syllables: ["ran"], chinese: "跑(過去)" },
+        { week: "7", word: "sat", syllables: ["sat"], chinese: "坐(過去)" },
+        { week: "7", word: "dad", syllables: ["dad"], chinese: "爸爸" },
+        { week: "7", word: "bag", syllables: ["bag"], chinese: "袋子" },
+        { week: "7", word: "am", syllables: ["am"], chinese: "是" },
+        { week: "7", word: "and", syllables: ["and"], chinese: "和" },
+        { week: "7", word: "fan", syllables: ["fan"], chinese: "風扇" },
+        { week: "7", word: "had", syllables: ["had"], chinese: "有(過去)" },
+        { week: "7", word: "but", syllables: ["but"], chinese: "但是" },
+        { week: "7", word: "game", syllables: ["game"], chinese: "遊戲" },
+        { week: "7", word: "go out", syllables: ["go", "out"], chinese: "出去" },
+        { week: "7", word: "jump onto", syllables: ["jump", "onto"], chinese: "跳上" },
+        { week: "7", word: "made", syllables: ["made"], chinese: "製作(過去)" },
+        { week: "7", word: "again", syllables: ["a", "gain"], chinese: "再一次" },
+        { week: "7", word: "after", syllables: ["af", "ter"], chinese: "在...之後" },
+        { week: "7", word: "toy", syllables: ["toy"], chinese: "玩具" },
+        { week: "7", word: "brother", syllables: ["broth", "er"], chinese: "兄弟" }
     ];
 
-    // --- 2. 統計系統與變數 ---
+    // --- 2. 核心變數與持久化 ---
     let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
-
     let wordListOrdered = [];
-    let idxOrdered = 0;
     let wordListShuffled = [];
+    let idxOrdered = 0;
     let idxShuffled = 0;
     let currentWordObj = null;
     let activeTab = 'modeA';
     let voices = [];
     let synth = window.speechSynthesis;
-    let isSyllableVisible = true;
     let audioCtx = null;
 
-    // --- 3. 初始化 ---
     window.onload = function() {
-        initLevelSystem();
+        initWeekSelector();
         initVoiceSystem();
-        initKeyboard(); 
         initAudio();
+        refreshWordData(); 
     };
 
-    function initLevelSystem() {
-        const levelSelect = document.getElementById('levelSelect');
-        const weeks = [...new Set(rawData.map(item => item.week))].sort((a,b) => parseInt(a) - parseInt(b));
-
-        // 單週選項
-        weeks.forEach(wk => {
-            let option = document.createElement('option');
-            option.value = wk;
-            option.text = `📅 Week ${wk}`;
-            levelSelect.appendChild(option);
-        });
-
-        // 綜合選項：Week 1~4 (過濾重複)
-        let w14Option = document.createElement('option');
-        w14Option.value = '1-4';
-        w14Option.text = "⭐ 綜合：Week 1~4 (去重)";
-        levelSelect.appendChild(w14Option);
-        
-        // 全部
-        let allOption = document.createElement('option');
-        allOption.value = 'all';
-        allOption.text = "📚 全部複習 (All Weeks)";
-        levelSelect.appendChild(allOption);
-
-        changeLevel();
+    function initWeekSelector() {
+        const container = document.getElementById('weekSelector');
+        for (let i = 1; i <= 7; i++) {
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <input type="checkbox" class="week-checkbox" id="wk${i}" value="${i}" onchange="refreshWordData()" ${i===1?'checked':''}>
+                <label for="wk${i}" class="week-label">Week ${i}</label>
+            `;
+            container.appendChild(div);
+        }
     }
 
-    function changeLevel() {
-        const val = document.getElementById('levelSelect').value;
-        let baseList = [];
-
-        if (val === 'all') {
-            baseList = [...rawData];
-        } else if (val === '1-4') {
-            // 抓取 1~4 週並過濾重複單字
-            const filteredMap = new Map();
-            rawData.filter(item => ["1", "2", "3", "4"].includes(item.week))
-                   .forEach(item => {
-                       if (!filteredMap.has(item.word)) {
-                           filteredMap.set(item.word, item);
-                       }
-                   });
-            baseList = Array.from(filteredMap.values());
+    function refreshWordData() {
+        const checkedWeeks = Array.from(document.querySelectorAll('.week-checkbox:checked')).map(cb => cb.value);
+        if (checkedWeeks.length === 0) {
+            wordListOrdered = [];
         } else {
-            baseList = rawData.filter(item => item.week === val);
+            // 自動排除重複
+            const filteredMap = new Map();
+            rawData.filter(item => checkedWeeks.includes(item.week))
+                   .forEach(item => {
+                       if (!filteredMap.has(item.word)) filteredMap.set(item.word, item);
+                   });
+            wordListOrdered = Array.from(filteredMap.values());
         }
-        
-        wordListOrdered = [...baseList];
-        wordListShuffled = shuffleArray(baseList);
+        wordListShuffled = [...wordListOrdered].sort(() => Math.random() - 0.5);
         idxOrdered = 0;
         idxShuffled = 0;
-
         loadWord();
-        renderWordList(); 
     }
 
-    // --- 4. 統計邏輯 ---
+    // 🔥 弱點挑戰邏輯
+    function startWeaknessChallenge() {
+        // 從目前的選擇清單中，找出有錯誤次數的單字
+        let errorWords = wordListOrdered.filter(w => (errorStats[w.word] || 0) > 0);
+        
+        if (errorWords.length === 0) {
+            alert("目前選擇的範圍中還沒有錯誤紀錄喔！先去練習看看吧。");
+            return;
+        }
+
+        // 按錯誤次數排序 (高到低)
+        errorWords.sort((a, b) => (errorStats[b.word] || 0) - (errorStats[a.word] || 0));
+
+        // 選出前 15 個或是全部
+        wordListShuffled = errorWords.slice(0, 15);
+        idxShuffled = 0;
+        
+        switchTab('modeC'); // 自動切換到聽寫考模式
+        alert(`已為您選出錯誤率最高的 ${wordListShuffled.length} 個單字，開始挑戰！`);
+    }
+
     function recordError(word) {
         errorStats[word] = (errorStats[word] || 0) + 1;
         localStorage.setItem('spellingErrors', JSON.stringify(errorStats));
-        renderWordList(); // 即時更新列表顏色
+        renderWordList();
     }
 
     function clearStats() {
-        if(confirm("確定要清除所有單字的錯誤紀錄嗎？")) {
-            errorStats = {};
-            localStorage.removeItem('spellingErrors');
-            renderWordList();
+        if(confirm("確定清除所有錯誤次數？")) { 
+            errorStats = {}; localStorage.removeItem('spellingErrors'); renderWordList(); 
         }
-    }
-
-    // --- 5. 核心顯示邏輯 ---
-    function renderWordList() {
-        const listContainer = document.getElementById('fullWordList');
-        listContainer.innerHTML = '';
-        wordListOrdered.forEach((item, index) => {
-            let btn = document.createElement('button');
-            btn.className = 'list-btn';
-            if (index === idxOrdered && (activeTab === 'modeA' || activeTab === 'modeList')) {
-                btn.classList.add('active-word');
-            }
-
-            const errors = errorStats[item.word] || 0;
-            // 根據錯誤次數調整顏色深淺 (從淡粉紅到深紅)
-            if (errors > 0) {
-                const intensity = Math.min(errors * 15, 80); // 最高 80% 飽和
-                btn.style.backgroundColor = `hsl(0, 100%, ${100 - intensity/1.5}%)`;
-                if(intensity > 40) btn.style.color = "white";
-            }
-
-            btn.innerHTML = `
-                <span>${item.word}</span>
-                <span class="error-badge">❌ ${errors}</span>
-            `;
-
-            btn.onclick = () => {
-                activeTab = 'modeA'; 
-                idxOrdered = index;
-                switchTab('modeA');
-                speakText(item.word);
-            };
-            listContainer.appendChild(btn);
-        });
-    }
-
-    function checkPuzzle(correctWord) {
-        const userWord = puzzleCurrentAnswer.join('');
-        if (userWord.length === correctWord.length) {
-            const feedback = document.getElementById('feedbackB');
-            if (userWord === correctWord) {
-                feedback.innerHTML = "<span class='correct'>🎉 答對了！</span>";
-                playSound('correct'); 
-                speakText(correctWord);
-            } else {
-                feedback.innerHTML = "<span class='wrong'>❌ 再試一次！</span>";
-                playSound('wrong'); 
-                recordError(correctWord); // 紀錄錯誤
-            }
-        }
-    }
-
-    function checkDictation() {
-        const input = document.getElementById('dictationInput');
-        const feedback = document.getElementById('feedbackC');
-        const correctWord = currentWordObj.word;
-        
-        if (input.value.trim().toLowerCase() === correctWord.toLowerCase()) {
-            feedback.innerHTML = "<span class='correct'>🌟 完全正確！</span>";
-            playSound('correct'); 
-            speakText(correctWord);
-        } else {
-            feedback.innerHTML = `<span class='wrong'>❌ 正確是：${correctWord}</span>`;
-            playSound('wrong'); 
-            recordError(correctWord); // 紀錄錯誤
-        }
-    }
-
-    // --- 其餘系統代碼 (聲音、鍵盤等均保留) ---
-    function shuffleArray(array) {
-        const arr = [...array];
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    }
-
-    function initAudio() {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
-    }
-
-    function playSound(type) {
-        if (!audioCtx) initAudio();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        if (type === 'correct') {
-            oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
-        } else {
-            oscillator.type = 'sawtooth';
-            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
-        }
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.3);
-    }
-
-    function initVoiceSystem() {
-        const populateVoices = () => {
-            voices = synth.getVoices();
-            const voiceSelect = document.getElementById('voiceSelect');
-            voiceSelect.innerHTML = '';
-            voices.forEach((voice, index) => {
-                if(voice.lang.includes('en')){
-                    let option = document.createElement('option');
-                    option.textContent = voice.name;
-                    option.value = index;
-                    voiceSelect.appendChild(option);
-                }
-            });
-        };
-        speechSynthesis.onvoiceschanged = populateVoices;
-        populateVoices();
-    }
-
-    function speakText(text) {
-        synth.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        const voiceSelect = document.getElementById('voiceSelect');
-        if (voices[voiceSelect.value]) utter.voice = voices[voiceSelect.value];
-        utter.rate = 0.8;
-        synth.speak(utter);
     }
 
     function loadWord() {
+        if (wordListOrdered.length === 0) return;
         const ctx = (activeTab === 'modeA' || activeTab === 'modeList') 
             ? { list: wordListOrdered, index: idxOrdered } 
             : { list: wordListShuffled, index: idxShuffled };
+        
         currentWordObj = ctx.list[ctx.index];
+        if (!currentWordObj) return;
 
         document.getElementById('feedbackB').innerText = "";
         document.getElementById('feedbackC').innerText = "";
         document.getElementById('dictationInput').value = "";
         document.getElementById('chineseDisplay').innerText = currentWordObj.chinese;
-        document.getElementById('exampleDisplay').innerText = currentWordObj.example;
         document.getElementById('syllableBox').innerText = currentWordObj.syllables.join(" - ");
         document.getElementById('chineseHintB').innerText = currentWordObj.chinese;
         document.getElementById('chineseHintC').innerText = currentWordObj.chinese;
@@ -794,19 +447,36 @@
         renderWordList();
     }
 
-    function nextWord() {
-        if (activeTab === 'modeA' || activeTab === 'modeList') {
-            idxOrdered = (idxOrdered + 1) % wordListOrdered.length;
-        } else {
-            idxShuffled = (idxShuffled + 1) % wordListShuffled.length;
-        }
-        loadWord();
-        speakText(currentWordObj.word);
+    function renderWordList() {
+        const listContainer = document.getElementById('fullWordList');
+        listContainer.innerHTML = '';
+        wordListOrdered.forEach((item, index) => {
+            let btn = document.createElement('button');
+            btn.className = 'list-btn';
+            if (index === idxOrdered && (activeTab === 'modeA' || activeTab === 'modeList')) btn.classList.add('active-word');
+            const errors = errorStats[item.word] || 0;
+            if (errors > 0) {
+                const intensity = Math.min(errors * 15, 80);
+                btn.style.backgroundColor = `hsl(0, 100%, ${100 - intensity/1.5}%)`;
+                if(intensity > 40) btn.style.color = "white";
+            }
+            btn.innerHTML = `<span>${item.word}</span><small>❌ ${errors}</small>`;
+            btn.onclick = () => { activeTab = 'modeA'; idxOrdered = index; switchTab('modeA'); speakText(item.word); };
+            listContainer.appendChild(btn);
+        });
     }
 
-    function prevWord() {
-        idxOrdered = (idxOrdered - 1 + wordListOrdered.length) % wordListOrdered.length;
-        loadWord();
+    function checkDictation() {
+        const input = document.getElementById('dictationInput').value.trim().toLowerCase();
+        const correct = currentWordObj.word.toLowerCase();
+        const feedback = document.getElementById('feedbackC');
+        if (input === correct) {
+            feedback.innerHTML = "<span class='correct'>🎉 太棒了，拼對了！</span>";
+            playSound('correct'); speakText(currentWordObj.word);
+        } else {
+            feedback.innerHTML = `<span class='wrong'>❌ 再接再厲！正確是：${currentWordObj.word}</span>`;
+            playSound('wrong'); recordError(currentWordObj.word);
+        }
     }
 
     function switchTab(modeId) {
@@ -814,76 +484,66 @@
         document.querySelectorAll('.mode-section').forEach(el => el.classList.remove('active'));
         document.getElementById(modeId).classList.add('active');
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        if(event) event.target.classList.add('active');
+        document.getElementById('tab-' + modeId).classList.add('active');
         loadWord();
     }
 
-    function renderColoredWord(wordObj) {
-        const display = document.getElementById('wordDisplay');
-        display.innerHTML = '';
-        const vowels = ['a','e','i','o','u'];
-        const word = wordObj.word;
-        const irregulars = wordObj.irregularIndices || [];
-        for (let i = 0; i < word.length; i++) {
-            let span = document.createElement('span');
-            span.innerText = word[i];
-            if (word[i] === ' ') span.style.width = "15px";
-            else if (irregulars.includes(i)) span.className = 'char-irregular';
-            else if (vowels.includes(word[i].toLowerCase())) span.className = 'char-vowel';
-            else span.className = 'char-consonant';
-            display.appendChild(span);
-        }
+    function nextWord() {
+        if (activeTab === 'modeA' || activeTab === 'modeList') idxOrdered = (idxOrdered + 1) % wordListOrdered.length;
+        else idxShuffled = (idxShuffled + 1) % wordListShuffled.length;
+        loadWord(); speakText(currentWordObj.word);
     }
 
-    function initKeyboard() {
-        const container = document.getElementById('virtualKeyboard');
-        const keys = "qwertyuiopasdfghjklzxcvbnm'".split("");
-        let row = document.createElement('div');
-        row.className = 'keyboard-row';
-        keys.forEach((key, i) => {
-            let b = document.createElement('button');
-            b.className = 'key-btn';
-            b.innerText = key;
-            b.onclick = () => { document.getElementById('dictationInput').value += key; };
-            row.appendChild(b);
-            if(i === 9 || i === 18) {
-                container.appendChild(row);
-                row = document.createElement('div');
-                row.className = 'keyboard-row';
-            }
+    function prevWord() { idxOrdered = (idxOrdered - 1 + wordListOrdered.length) % wordListOrdered.length; loadWord(); }
+
+    function speakText(text) {
+        synth.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US'; utter.rate = 0.8; synth.speak(utter);
+    }
+
+    function initVoiceSystem() {
+        const populate = () => voices = synth.getVoices();
+        speechSynthesis.onvoiceschanged = populate; populate();
+    }
+
+    function initAudio() { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playSound(t) {
+        if (!audioCtx) initAudio();
+        const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+        o.connect(g); g.connect(audioCtx.destination);
+        o.frequency.setValueAtTime(t === 'correct' ? 600 : 150, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.1, audioCtx.currentTime); o.start(); o.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function renderColoredWord(obj) {
+        const d = document.getElementById('wordDisplay'); d.innerHTML = '';
+        const vowels = 'aeiou';
+        obj.word.split('').forEach((c, i) => {
+            let s = document.createElement('span'); s.innerText = c;
+            if (c === ' ') s.style.width = "15px";
+            else if (obj.irregularIndices?.includes(i)) s.className = 'char-irregular';
+            else if (vowels.includes(c.toLowerCase())) s.className = 'char-vowel';
+            else s.className = 'char-consonant';
+            d.appendChild(s);
         });
-        container.appendChild(row);
     }
 
     let puzzleCurrentAnswer = [];
-    function initPuzzleMode(word) {
-        const container = document.getElementById('puzzlePieces');
-        const answerArea = document.getElementById('puzzleAnswer');
-        container.innerHTML = ''; answerArea.innerHTML = '';
-        puzzleCurrentAnswer = [];
-        word.split('').sort(() => Math.random() - 0.5).forEach(char => {
-            let b = document.createElement('div');
-            b.className = 'letter-block';
+    function initPuzzleMode(w) {
+        const c = document.getElementById('puzzlePieces'); const a = document.getElementById('puzzleAnswer');
+        c.innerHTML = ''; a.innerHTML = ''; puzzleCurrentAnswer = [];
+        w.split('').sort(() => Math.random() - 0.5).forEach(char => {
+            let b = document.createElement('div'); b.className = 'letter-block';
             b.innerText = char === ' ' ? '_' : char;
             b.onclick = () => {
-                let s = document.createElement('span');
-                s.innerText = char;
-                answerArea.appendChild(s);
-                puzzleCurrentAnswer.push(char);
-                b.style.visibility = 'hidden';
-                checkPuzzle(word);
+                let s = document.createElement('span'); s.innerText = char; a.appendChild(s);
+                puzzleCurrentAnswer.push(char); b.style.visibility = 'hidden';
+                if (puzzleCurrentAnswer.join('') === w) { playSound('correct'); }
             };
-            container.appendChild(b);
+            c.appendChild(b);
         });
     }
-
-    function resetPuzzle() { initPuzzleMode(currentWordObj.word); }
-    function resetDictation() { document.getElementById('dictationInput').value = ""; }
-    function toggleSyllables() {
-        isSyllableVisible = !isSyllableVisible;
-        document.getElementById('syllableBox').style.display = isSyllableVisible ? 'block' : 'none';
-    }
 </script>
-
 </body>
 </html>
