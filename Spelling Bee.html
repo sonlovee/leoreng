@@ -105,7 +105,10 @@
         <button class="action-btn chk-btn" style="width:100%; margin-top:8px;" onclick="checkDict()">✅ 檢查答案</button>
     </div>
 
-    <div id="modeList" class="mode-section"><button class="action-btn sec-btn" style="width:100%; margin-bottom:10px;" onclick="clearStats()">🧹 清除數據</button><div id="fullWordList" class="word-list-grid"></div></div>
+    <div id="modeList" class="mode-section">
+        <button class="action-btn sec-btn" style="width:100%; margin-bottom:10px;" onclick="clearStats()">🧹 清除數據</button>
+        <div id="fullWordList" class="word-list-grid"></div>
+    </div>
 </div>
 
 <script>
@@ -152,7 +155,6 @@ const rawData = [
 { week: "1", word: "cake", syllables: ["cake"], chinese: "蛋糕", example: "The cake is sweet." },
 { week: "1", word: "how", syllables: ["how"], chinese: "如何", example: "How are you?" },
 { week: "1", word: "give", syllables: ["give"], chinese: "送給", example: "Give me the toy." },
-
 { week: "2", word: "table", syllables: ["ta", "ble"], chinese: "桌子", example: "The table is big." },
 { week: "2", word: "tail", syllables: ["tail"], chinese: "尾巴", example: "The dog has a tail." },
 { week: "2", word: "tape", syllables: ["tape"], chinese: "膠帶", example: "Use tape to stick it." },
@@ -178,7 +180,6 @@ const rawData = [
 { week: "2", word: "mother", syllables: ["moth", "er"], chinese: "媽媽", example: "I love my mother." },
 { week: "2", word: "saw", syllables: ["saw"], chinese: "看見(過去式)", example: "I saw a bird." },
 { week: "2", word: "every", syllables: ["ev", "er", "y"], chinese: "每個", example: "I read every day." },
-
 { week: "3", word: "pan", syllables: ["pan"], chinese: "平底鍋", example: "The pan is hot." },
 { week: "3", word: "peas", syllables: ["peas"], chinese: "豌豆", example: "I eat peas." },
 { week: "3", word: "pen", syllables: ["pen"], chinese: "原子筆", example: "I write with a pen." },
@@ -220,7 +221,6 @@ const rawData = [
 { week: "3", word: "know", syllables: ["know"], chinese: "知道", example: "I know you." },
 { week: "3", word: "bird", syllables: ["bird"], chinese: "鳥", example: "The bird can fly." },
 { week: "3", word: "fly", syllables: ["fly"], chinese: "飛", example: "Birds fly high." },
-
 { week: "4", word: "cactus", syllables: ["cac", "tus"], chinese: "仙人掌", example: "The cactus is green." },
 { week: "4", word: "camel", syllables: ["cam", "el"], chinese: "駱駝", example: "The camel is tall." },
 { week: "4", word: "camera", syllables: ["cam", "er", "a"], chinese: "相機", example: "Use a camera." },
@@ -242,7 +242,6 @@ const rawData = [
 { week: "4", word: "were", syllables: ["were"], chinese: "是(複過去)", example: "They were here." },
 { week: "4", word: "was", syllables: ["was"], chinese: "是(單過去)", example: "He was happy." },
 { week: "4", word: "now", syllables: ["now"], chinese: "現在", example: "Do it now." },
-
 { week: "5", word: "kitten", syllables: ["kit", "ten"], chinese: "小貓", example: "The kitten is cute." },
 { week: "5", word: "key", syllables: ["key"], chinese: "鑰匙", example: "Use the key." },
 { week: "5", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite." },
@@ -269,7 +268,6 @@ const rawData = [
 { week: "5", word: "old", syllables: ["old"], chinese: "老的", example: "The man is old." },
 { week: "5", word: "park", syllables: ["park"], chinese: "公園", example: "Go to the park." },
 { week: "5", word: "yes", syllables: ["yes"], chinese: "是的", example: "Say yes." },
-
 { week: "6", word: "radio", syllables: ["ra", "di", "o"], chinese: "收音機", example: "Listen to the radio." },
 { week: "6", word: "rainbow", syllables: ["rain", "bow"], chinese: "彩虹", example: "The rainbow is pretty." },
 { week: "6", word: "rake", syllables: ["rake"], chinese: "耙子", example: "Use a rake." },
@@ -290,13 +288,12 @@ const rawData = [
 { week: "6", word: "round", syllables: ["round"], chinese: "圓的", example: "The ball is round." },
 { week: "6", word: "four", syllables: ["four"], chinese: "四", example: "I see four cats." },
 { week: "6", word: "us", syllables: ["us"], chinese: "我們", example: "Come with us." },
-
 { week: "7", word: "ball", syllables: ["ball"], chinese: "球", example: "Kick the ball." },
 { week: "7", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球", example: "The balloon is red." },
 { week: "7", word: "banana", syllables: ["ba", "na", "na"], chinese: "香蕉", example: "Eat a banana." },
 { week: "7", word: "bat", syllables: ["bat"], chinese: "球棒/蝙蝠", example: "Hold the bat." },
 { week: "7", word: "bed", syllables: ["bed"], chinese: "床", example: "Go to bed." },
-{ week: "7", word: "bell", syllables: ["bell"], chinese: "鈴鐺", example: "The bell rings." },
+{ week: "7", word: "bell", syllables: ["bell"], chinese: "鈴鐺", example: "Ring the bell." },
 { week: "7", word: "book", syllables: ["book"], chinese: "書", example: "Read a book." },
 { week: "7", word: "box", syllables: ["box"], chinese: "箱子", example: "Open the box." },
 { week: "7", word: "butterfly", syllables: ["but", "ter", "fly"], chinese: "蝴蝶", example: "The butterfly is pretty." },
@@ -319,72 +316,71 @@ const rawData = [
 { week: "7", word: "again", syllables: ["a", "gain"], chinese: "再一次", example: "Try again." },
 { week: "7", word: "after", syllables: ["af", "ter"], chinese: "在...以後", example: "After school, I play." },
 { week: "7", word: "toy", syllables: ["toy"], chinese: "玩具", example: "This toy is fun." },
-{ week: "7", word: "brother", syllables: ["broth", "er"], chinese: "兄弟", example: "My brother is tall." }
-// --- 期中考 (Midterm) 42 單字正式版 ---
+{ week: "7", word: "brother", syllables: ["broth", "er"], chinese: "兄弟", example: "My brother is tall." },
+
+// --- 期中考 (Midterm) ---
 { week: "M", word: "bus", syllables: ["bus"], chinese: "公車", example: "I go to school by bus." },
 { week: "M", word: "needle", syllables: ["nee", "dle"], chinese: "針", example: "A needle is sharp." },
 { week: "M", word: "web", syllables: ["web"], chinese: "蜘蛛網", example: "The spider makes a web." },
 { week: "M", word: "camera", syllables: ["cam", "er", "a"], chinese: "相機", example: "Take a photo with the camera." },
 { week: "M", word: "truck", syllables: ["truck"], chinese: "卡車", example: "The truck is very big." },
 { week: "M", word: "suit", syllables: ["suit"], chinese: "西裝", example: "Dad wears a black suit." },
-
 { week: "M", word: "mailbox", syllables: ["mail", "box"], chinese: "信箱", example: "Put the letter in the mailbox." },
 { week: "M", word: "tub", syllables: ["tub"], chinese: "浴缸", example: "Wash your hands in the tub." },
 { week: "M", word: "turtle", syllables: ["tur", "tle"], chinese: "烏龜", example: "The turtle moves slowly." },
 { week: "M", word: "brush", syllables: ["brush"], chinese: "刷子", example: "Use a brush for your hair." },
 { week: "M", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "Put the soup in the pot." },
 { week: "M", word: "net", syllables: ["net"], chinese: "網子", example: "Catch the fish with a net." },
-
 { week: "M", word: "bag", syllables: ["bag"], chinese: "袋子", example: "My school bag is heavy." },
 { week: "M", word: "sled", syllables: ["sled"], chinese: "雪橇", example: "Ride a sled on the snow." },
 { week: "M", word: "lock", syllables: ["lock"], chinese: "鎖", example: "Lock the door when you leave." },
 { week: "M", word: "king", syllables: ["king"], chinese: "國王", example: "The king lives in a castle." },
 { week: "M", word: "top", syllables: ["top"], chinese: "陀螺", example: "Spin the top on the table." },
 { week: "M", word: "cactus", syllables: ["cac", "tus"], chinese: "仙人掌", example: "A cactus grows in the desert." },
-
 { week: "M", word: "soap", syllables: ["soap"], chinese: "肥皂", example: "Wash your hands with soap." },
 { week: "M", word: "cup", syllables: ["cup"], chinese: "杯子", example: "A cup of hot milk." },
 { week: "M", word: "pillow", syllables: ["pil", "low"], chinese: "枕頭", example: "The pillow is soft." },
 { week: "M", word: "bell", syllables: ["bell"], chinese: "鈴鐺", example: "Ring the bell, please." },
 { week: "M", word: "puzzle", syllables: ["puz", "zle"], chinese: "拼圖", example: "I like to do a puzzle." },
 { week: "M", word: "newspaper", syllables: ["news", "pa", "per"], chinese: "報紙", example: "Dad reads the newspaper." },
-
 { week: "M", word: "ribbon", syllables: ["rib", "bon"], chinese: "緞帶", example: "Tie a red ribbon on the gift." },
 { week: "M", word: "dad", syllables: ["dad"], chinese: "爸爸", example: "I love my dad." },
 { week: "M", word: "had", syllables: ["had"], chinese: "有(過去式)", example: "I had an apple today." },
 { week: "M", word: "rake", syllables: ["rake"], chinese: "耙子", example: "Rake the leaves in the yard." },
 { week: "M", word: "camel", syllables: ["cam", "el"], chinese: "駱駝", example: "A camel has a hump." },
 { week: "M", word: "sat", syllables: ["sat"], chinese: "坐(過去式)", example: "He sat on the chair." },
-
 { week: "M", word: "again", syllables: ["a", "gain"], chinese: "再一次", example: "Try to do it again." },
 { week: "M", word: "ask", syllables: ["ask"], chinese: "詢問", example: "Ask a question in class." },
 { week: "M", word: "mother", syllables: ["moth", "er"], chinese: "媽媽", example: "My mother is very kind." },
 { week: "M", word: "help", syllables: ["help"], chinese: "幫助", example: "Can you help me?" },
 { week: "M", word: "was", syllables: ["was"], chinese: "是(過去式)", example: "He was happy yesterday." },
 { week: "M", word: "park", syllables: ["park"], chinese: "公園", example: "Let's play in the park." },
-
 { week: "M", word: "this", syllables: ["this"], chinese: "這個", example: "Look at this book." },
 { week: "M", word: "fly", syllables: ["fly"], chinese: "飛", example: "Birds can fly high." },
 { week: "M", word: "him", syllables: ["him"], chinese: "他(受格)", example: "Give the ball to him." },
 { week: "M", word: "going", syllables: ["go", "ing"], chinese: "去(進行式)", example: "I am going to school." },
 { week: "M", word: "how", syllables: ["how"], chinese: "如何/怎樣", example: "How are you today?" },
-{ week: "M", word: "know", syllables: ["know"], chinese: "知道", example: "I know the answer." },
-
-
+{ week: "M", word: "know", syllables: ["know"], chinese: "知道", example: "I know the answer." }
 ];
 
     let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
     let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
 
     window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
+    
+    // --- 修正處 1: 這裡要讓迴圈跑出 M 的按鈕 ---
     function initWeekSelector() {
         const c = document.getElementById('weekSelector');
-        for (let i = 1; i <= 7; i++) {
+        // 加入 M 到陣列中跑迴圈
+        const weeks = ["1", "2", "3", "4", "5", "6", "7", "M"];
+        weeks.forEach(val => {
             const div = document.createElement('div');
-            div.innerHTML = `<input type="checkbox" class="week-checkbox" id="wk${i}" value="${i}" onchange="refresh()" ${i===1?'checked':''}><label for="wk${i}" class="week-label">W${i}</label>`;
+            const display = (val === "M") ? "期中" : "W" + val;
+            div.innerHTML = `<input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${val==='M'?'checked':''}><label for="wk${val}" class="week-label">${display}</label>`;
             c.appendChild(div);
-        }
+        });
     }
+
     function refresh() {
         const checked = Array.from(document.querySelectorAll('.week-checkbox:checked')).map(cb => cb.value);
         if (checked.length === 0) { wordListOrdered = []; } else {
@@ -395,6 +391,7 @@ const rawData = [
         wordListShuffled = [...wordListOrdered].sort(() => Math.random() - 0.5);
         idxOrdered = 0; idxShuffled = 0; load();
     }
+
     function load() {
         const list = (activeTab === 'modeA' || activeTab === 'modeList') ? wordListOrdered : wordListShuffled;
         const index = (activeTab === 'modeA' || activeTab === 'modeList') ? idxOrdered : idxShuffled;
