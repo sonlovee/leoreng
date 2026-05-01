@@ -113,15 +113,6 @@
 
 <script>
 const rawData = [
-    // --- Week 1-7 (精簡展示) ---
-    { week: "1", word: "sandwich", syllables: ["sand", "wich"], chinese: "三明治", example: "I eat a sandwich." },
-    // ... 此處已包含之前的所有 W1-W7 單字 ...
-
-    // --- Midterm 42 單字 ---
-    { week: "M", word: "bus", syllables: ["bus"], chinese: "公車", example: "I go to school by bus." },
-    { week: "M", word: "needle", syllables: ["nee", "dle"], chinese: "針", example: "A needle is sharp." },
-    // ... 此處已包含之前的期中考單字 ...
-
     // --- Week 10 ---
     { week: "10", word: "big", syllables: ["big"], chinese: "大的", example: "The elephant is big." },
     { week: "10", word: "pig", syllables: ["pig"], chinese: "豬", example: "I see a pink pig." },
@@ -140,41 +131,53 @@ const rawData = [
     { week: "10", word: "before", syllables: ["be", "fore"], chinese: "在...以前", example: "Wash hands before lunch." },
     { week: "10", word: "live", syllables: ["live"], chinese: "活著、住", example: "We live in a house." },
     { week: "10", word: "ask", syllables: ["ask"], chinese: "詢問", example: "Ask the teacher for help." },
-    { week: "10", word: "teacher", syllables: ["teach", "er"], chinese: "老師", example: "The teacher is kind." },
+    { week: "10", word: "teacher", syllables: ["teach", "er"], chinese: "老師", example: "The teacher is 
 
-    // --- Week 11 ---
+    // --- Week 11 (根據圖片精確校對，共 35 個單字) ---
+    // Phonics (10個)
     { week: "11", word: "jeep", syllables: ["jeep"], chinese: "吉普車", example: "We ride in the jeep." },
     { week: "11", word: "jacket", syllables: ["jack", "et"], chinese: "夾克", example: "Put on your jacket." },
     { week: "11", word: "jewelry", syllables: ["jew", "el", "ry"], chinese: "珠寶", example: "Mom wears jewelry." },
     { week: "11", word: "jar", syllables: ["jar"], chinese: "罐子", example: "A jar of jam." },
     { week: "11", word: "jack-in-the-box", syllables: ["jack", "in", "the", "box"], chinese: "驚喜箱", example: "A funny toy." },
-    { week: "11", word: "four", syllables: ["four"], chinese: "四", example: "Four cats." },
+    { week: "11", word: "four", syllables: ["four"], chinese: "四", example: "I see four cats." },
     { week: "11", word: "fork", syllables: ["fork"], chinese: "叉子", example: "Eat with a fork." },
     { week: "11", word: "feet", syllables: ["feet"], chinese: "雙腳", example: "Wash your feet." },
     { week: "11", word: "foot", syllables: ["foot"], chinese: "單腳", example: "Left foot." },
     { week: "11", word: "football", syllables: ["foot", "ball"], chinese: "美式足球", example: "Play football." },
+
+    // Spelling (10個 - 包含重複的 got)
     { week: "11", word: "hop", syllables: ["hop"], chinese: "跳躍", example: "Bunny can hop." },
-    { week: "11", word: "top", syllables: ["top"], chinese: "陀螺", example: "Spin the top." },
+    { week: "11", word: "top", syllables: ["top"], chinese: "頂部/陀螺", example: "Spin the top." },
     { week: "11", word: "got", syllables: ["got"], chinese: "得到", example: "I got a toy." },
     { week: "11", word: "not", syllables: ["not"], chinese: "不", example: "It is not cold." },
     { week: "11", word: "box", syllables: ["box"], chinese: "箱子", example: "A big box." },
-    { week: "11", word: "fox", syllables: ["fox"], chinese: "狐狸", example: "Orange fox." },
+    { week: "11", word: "fox", syllables: ["fox"], chinese: "狐狸", example: "The fox is orange." },
+    { week: "11", word: "got", syllables: ["got"], chinese: "得到(重複)", example: "He got a gift." },
     { week: "11", word: "mom", syllables: ["mom"], chinese: "媽媽", example: "I love mom." },
-    { week: "11", word: "pop", syllables: ["pop"], chinese: "爆裂聲", example: "Balloon went pop." },
-    { week: "11", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "Hot pot." },
-    { week: "11", word: "give it back", syllables: ["give", "it", "back"], chinese: "還回來", example: "Give it back." },
-    { week: "11", word: "must", syllables: ["must"], chinese: "必須", example: "I must go." },
-    { week: "11", word: "fast", syllables: ["fast"], chinese: "快的", example: "He runs fast." },
-    { week: "11", word: "thing", syllables: ["thing"], chinese: "東西", example: "What is that thing?" },
-    { week: "11", word: "toy", syllables: ["toy"], chinese: "玩具", example: "Fun toy." },
-    { week: "11", word: "way", syllables: ["way"], chinese: "路/方法", example: "The right way." },
-    { week: "11", word: "next", syllables: ["next"], chinese: "然後/下一個", example: "Next, we sing." },
-    { week: "11", word: "sister", syllables: ["sis", "ter"], chinese: "姐妹", example: "My sister." },
-    { week: "11", word: "red", syllables: ["red"], chinese: "紅色", example: "Red apple." },
-    { week: "11", word: "their", syllables: ["their"], chinese: "他們的", example: "Their house." },
-    { week: "11", word: "tree", syllables: ["tree"], chinese: "樹", example: "Tall tree." },
-    { week: "11", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "Cute puppy." },
+    { week: "11", word: "pop", syllables: ["pop"], chinese: "爆裂聲", example: "The balloon went pop." },
+    { week: "11", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "The pot is hot." },
 
+    // Reading Plus (10個 - 包含 found/find)
+    { week: "11", word: "give it back", syllables: ["give", "it", "back"], chinese: "放回去", example: "Please give it back." },
+    { week: "11", word: "must", syllables: ["must"], chinese: "必須", example: "I must go." },
+    { week: "11", word: "fast", syllables: ["fast"], chinese: "比較快的", example: "He runs fast." },
+    { week: "11", word: "other", syllables: ["o", "ther"], chinese: "其他的", example: "The other one." },
+    { week: "11", word: "thing", syllables: ["thing"], chinese: "東西", example: "What is that thing?" },
+    { week: "11", word: "toy", syllables: ["toy"], chinese: "玩具", example: "A fun toy." },
+    { week: "11", word: "found", syllables: ["found"], chinese: "找到(過去式)", example: "I found the key." },
+    { week: "11", word: "find", syllables: ["find"], chinese: "找到(現在式)", example: "I can find it." },
+    { week: "11", word: "way", syllables: ["way"], chinese: "方向/路", example: "The right way." },
+    { week: "11", word: "next", syllables: ["next"], chinese: "然後", example: "What is next?" },
+
+    // Dolch (5個)
+    { week: "11", word: "sister", syllables: ["sis", "ter"], chinese: "姐妹", example: "My sister is kind." },
+    { week: "11", word: "their", syllables: ["their"], chinese: "他們的", example: "It is their house." },
+    { week: "11", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "The puppy is cute." },
+    { week: "11", word: "red", syllables: ["red"], chinese: "紅色", example: "A red apple." },
+    { week: "11", word: "tree", syllables: ["tree"], chinese: "樹", example: "A tall tree." }
+
+        
     // --- Week 12 ---
     { week: "12", word: "goat", syllables: ["goat"], chinese: "山羊", example: "White goat." },
     { week: "12", word: "gas", syllables: ["gas"], chinese: "瓦斯/汽油", example: "Fill up gas." },
@@ -418,7 +421,7 @@ window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 function initWeekSelector() {
     const c = document.getElementById('weekSelector');
     // 手動定義顯示的所有週數按鈕
-    const weeks = ["1", "2", "3", "4", "5", "6", "7", "M", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
+    const weeks = [ "10", "11", "12", "13", "14", "15", "16", "17", "18"];
     weeks.forEach(val => {
         const div = document.createElement('div');
         const display = (val === "M") ? "期中" : "W" + val;
