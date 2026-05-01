@@ -417,20 +417,30 @@ let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
-
 function initWeekSelector() {
     const c = document.getElementById('weekSelector');
-    // 手動定義顯示的所有週數按鈕
-    const weeks = [ "10", "11", "12", "13", "14", "15", "16", "17", "18"];
+    // 只保留 Week 10 到 Week 18 的範圍
+    const weeks = ["10", "11", "12", "13", "14", "15", "16", "17", "18"];
+    
+    // 清空目前的內容，避免重複產生
+    c.innerHTML = ''; 
+
     weeks.forEach(val => {
         const div = document.createElement('div');
-        const display = (val === "M") ? "期中" : "W" + val;
-        // 預設勾選最新的一週 (W18)
-        const isChecked = (val === 'M' || val === '18') ? 'checked' : '';
-        div.innerHTML = `<input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${isChecked}><label for="wk${val}" class="week-label">${display}</label>`;
+        const display = "W" + val;
+        
+        // 預設勾選最新的 W18，讓練習更直覺
+        const isChecked = (val === '18') ? 'checked' : '';
+        
+        div.innerHTML = `
+            <input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${isChecked}>
+            <label for="wk${val}" class="week-label">${display}</label>
+        `;
         c.appendChild(div);
     });
 }
+
+
 
 function refresh() {
     const checked = Array.from(document.querySelectorAll('.week-checkbox:checked')).map(cb => cb.value);
