@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fun Phonics Adventure! 🌟</title>
+    <style>
+        :root {
+            --bg-color: #fdf6e3;
+            --primary-color: #ffb3ba;
+            --text-color: #5c4b51;
+            --card-bg: #ffffff;
+            --btn-hover: #ffdfba;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Fredoka One', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #ff9aa2;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            font-size: 1.5em;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .tab-btn:hover, .tab-btn.active {
+            background-color: #ff9aa2;
+            transform: scale(1.1);
+        }
+
+        /* 針對不同母音設定可愛的顏色 */
+        .tab-btn[data-vowel="a"] { background-color: #ffb3ba; }
+        .tab-btn[data-vowel="e"] { background-color: #ffdfba; }
+        .tab-btn[data-vowel="i"] { background-color: #ffffba; color: #5c4b51; }
+        .tab-btn[data-vowel="o"] { background-color: #baffc9; color: #5c4b51; }
+        .tab-btn[data-vowel="u"] { background-color: #bae1ff; }
+
+        .content-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .word-family-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border: 3px dashed #e2e2e2;
+        }
+
+        .family-title {
+            background-color: #a2e1db;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+
+        .word-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 1.3em;
+            border-bottom: 2px dotted #f0f0f0;
+        }
+
+        .word-item:last-child {
+            border-bottom: none;
+        }
+
+        .speak-btn {
+            background-color: #ffdac1;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .speak-btn:hover {
+            background-color: #e2f0cb;
+            transform: scale(1.1);
+        }
+        
+        .speak-btn:active {
+            transform: scale(0.9);
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>🌟 Fun Phonics Adventure 🌟</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" data-vowel="a">Short /a/</button>
+        <button class="tab-btn" data-vowel="e">Short /e/</button>
+        <button class="tab-btn" data-vowel="i">Short /i/</button>
+        <button class="tab-btn" data-vowel="o">Short /o/</button>
+        <button class="tab-btn" data-vowel="u">Short /u/</button>
+    </div>
+
+    <div class="content-area" id="word-container">
+        </div>
+
+    <script>
+        // 整理照片中的自然發音單字資料庫
+        const phonicsData = {
+            'a': {
+                '-am': ['dam', 'Sam', 'ram', 'ham', 'jam', 'Pam'],
+                '-at': ['bat', 'cat', 'rat', 'mat', 'sat', 'fat'],
+                '-an': ['can', 'man', 'ran', 'tan', 'fan', 'ban'],
+                '-ad': ['bad', 'dad', 'had', 'fad', 'sad', 'mad'],
+                '-ap': ['sap', 'rap', 'tap', 'cap', 'gap', 'map'],
+                '-ag': ['bag', 'nag', 'tag', 'sag', 'wag', 'rag'],
+                '-ab': ['dab', 'cab', 'nab', 'lab', 'tab', 'fab'],
+                '-ack': ['back', 'rack', 'pack', 'sack', 'tack', 'lack']
+            },
+            'e': {
+                '-ed': ['bed', 'fed', 'led', 'red', 'Ted', 'wed'],
+                '-et': ['met', 'bet', 'net', 'wet', 'set', 'let'],
+                '-ell': ['bell', 'tell', 'well', 'sell', 'fell', 'yell'],
+                '-en': ['Ben', 'den', 'men', 'ten', 'zen', 'hen'],
+                '-ess': ['mess', 'Jess', 'less', 'chess', 'bless', 'dress'],
+                '-eck': ['beck', 'deck', 'heck', 'neck', 'speck', 'peck'],
+                '-est': ['fest', 'best', 'nest', 'lest', 'west', 'rest'],
+                '-end': ['bend', 'send', 'mend', 'tend', 'fend', 'lend']
+            },
+            'i': {
+                '-ib': ['bib', 'rib', 'fib', 'nib', 'sib', 'dib'],
+                '-in': ['pin', 'bin', 'fin', 'gin', 'sin', 'tin'],
+                '-it': ['bit', 'fit', 'sit', 'wit', 'lit', 'hit'],
+                '-id': ['did', 'bid', 'lid', 'kid', 'rid', 'hid'],
+                '-im': ['dim', 'Kim', 'rim', 'him', 'Jim', 'vim'],
+                '-ig': ['big', 'wig', 'rig', 'dig', 'fig', 'jig'],
+                '-ill': ['mill', 'bill', 'hill', 'will', 'sill', 'fill'],
+                '-ing': ['king', 'ping', 'ring', 'sing', 'wing', 'zing']
+            },
+            'o': {
+                '-on': ['con', 'don', 'son', 'won', 'ton', 'Jon'],
+                '-od': ['cod', 'God', 'mod', 'nod', 'rod', 'pod'],
+                '-ot': ['cot', 'not', 'rot', 'dot', 'lot', 'got'],
+                '-og': ['dog', 'log', 'hog', 'fog', 'bog', 'jog'],
+                '-ob': ['Bob', 'cob', 'rob', 'sob', 'mob', 'job'],
+                '-op': ['bop', 'top', 'cop', 'pop', 'hop', 'mop'],
+                '-ong': ['gong', 'long', 'pong', 'song'],
+                '-ock': ['rock', 'mock', 'lock', 'sock', 'dock', 'jock']
+            },
+            'u': {
+                '-ud': ['bud', 'mud', 'cud', 'dud'],
+                '-ub': ['bub', 'rub', 'sub', 'dub', 'cub'],
+                '-ut': ['but', 'vut', 'rut', 'gut', 'hut', 'nut'],
+                '-ug': ['jug', 'bug', 'dug', 'lug', 'mug', 'hug'],
+                '-um': ['gum', 'bum', 'mum', 'rum', 'dum', 'yum'],
+                '-un': ['bun', 'run', 'sun', 'fun', 'gun', 'nun'],
+                '-uck': ['buck', 'duck', 'luck', 'tuck', 'yuck', 'puck'],
+                '-uff': ['duff', 'huff', 'buff', 'ruff', 'cuff', 'muff']
+            }
+        };
+
+        const container = document.getElementById('word-container');
+        const tabs = document.querySelectorAll('.tab-btn');
+
+        // 語音合成 API (發音功能)
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US'; 
+                // 稍微放慢語速，讓孩子聽得更清楚
+                utterance.rate = 0.8; 
+                utterance.pitch = 1.2;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('抱歉，您的瀏覽器不支援發音功能喔！');
+            }
+        }
+
+        // 渲染單字卡片
+        function renderWords(vowel) {
+            container.innerHTML = ''; // 清空目前內容
+            const families = phonicsData[vowel];
+
+            // 根據選擇的母音，設定卡片標題的顏色
+            const titleColors = {
+                'a': '#ffb3ba', 'e': '#ffdfba', 'i': '#ffffba', 'o': '#baffc9', 'u': '#bae1ff'
+            };
+
+            for (const [family, words] of Object.entries(families)) {
+                const card = document.createElement('div');
+                card.className = 'word-family-card';
+
+                const title = document.createElement('h3');
+                title.className = 'family-title';
+                title.style.backgroundColor = titleColors[vowel];
+                title.style.color = (vowel === 'i' || vowel === 'o') ? '#5c4b51' : 'white';
+                title.textContent = family;
+                card.appendChild(title);
+
+                const list = document.createElement('ul');
+                list.className = 'word-list';
+
+                words.forEach(word => {
+                    const li = document.createElement('li');
+                    li.className = 'word-item';
+                    
+                    const wordText = document.createElement('span');
+                    wordText.textContent = `• ${word}`;
+                    
+                    const btn = document.createElement('button');
+                    btn.className = 'speak-btn';
+                    btn.innerHTML = '🔊';
+                    btn.onclick = () => speakWord(word);
+
+                    li.appendChild(wordText);
+                    li.appendChild(btn);
+                    list.appendChild(li);
+                });
+
+                card.appendChild(list);
+                container.appendChild(card);
+            }
+        }
+
+        // 綁定標籤點擊事件
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // 移除所有 active 狀態
+                tabs.forEach(t => t.classList.remove('active'));
+                // 加入目前點擊的 active 狀態
+                e.target.classList.add('active');
+                
+                const vowel = e.target.getAttribute('data-vowel');
+                renderWords(vowel);
+            });
+        });
+
+        // 初始載入 Short /a/
+        renderWords('a');
+    </script>
+</body>
+</html>
