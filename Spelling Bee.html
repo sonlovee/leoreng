@@ -9,7 +9,7 @@
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--t-d); text-align: center; }
         .app-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 4px solid var(--p-y); }
         .selector-box { background: #E0F7FA; padding: 10px; border-radius: 15px; margin-bottom: 10px; }
-        .week-options { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 5px; }
+        .week-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 5px; }
         .week-label { padding: 8px 0; background: white; border: 2px solid var(--p-b); border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: block;}
         .week-checkbox:checked + .week-label { background: var(--p-b); color: white; }
         .week-checkbox { display: none; }
@@ -131,10 +131,9 @@ const rawData = [
     { week: "10", word: "before", syllables: ["be", "fore"], chinese: "在...以前", example: "Wash hands before lunch." },
     { week: "10", word: "live", syllables: ["live"], chinese: "活著、住", example: "We live in a house." },
     { week: "10", word: "ask", syllables: ["ask"], chinese: "詢問", example: "Ask the teacher for help." },
-    { week: "10", word: "teacher", syllables: ["teach", "er"], chinese: "老師", example: "His mother was a school teacher ." },
+    { week: "10", word: "teacher", syllables: ["teach", "er"], chinese: "老師", example: "His mother was a school teacher." },
 
-    // --- Week 11 (根據圖片精確校對，共 35 個單字) ---
-    // Phonics (10個)
+    // --- Week 11 (精確校對共 35 個) ---
     { week: "11", word: "jeep", syllables: ["jeep"], chinese: "吉普車", example: "We ride in the jeep." },
     { week: "11", word: "jacket", syllables: ["jack", "et"], chinese: "夾克", example: "Put on your jacket." },
     { week: "11", word: "jewelry", syllables: ["jew", "el", "ry"], chinese: "珠寶", example: "Mom wears jewelry." },
@@ -145,8 +144,6 @@ const rawData = [
     { week: "11", word: "feet", syllables: ["feet"], chinese: "雙腳", example: "Wash your feet." },
     { week: "11", word: "foot", syllables: ["foot"], chinese: "單腳", example: "Left foot." },
     { week: "11", word: "football", syllables: ["foot", "ball"], chinese: "美式足球", example: "Play football." },
-
-    // Spelling (10個 - 包含重複的 got)
     { week: "11", word: "hop", syllables: ["hop"], chinese: "跳躍", example: "Bunny can hop." },
     { week: "11", word: "top", syllables: ["top"], chinese: "頂部/陀螺", example: "Spin the top." },
     { week: "11", word: "got", syllables: ["got"], chinese: "得到", example: "I got a toy." },
@@ -157,8 +154,6 @@ const rawData = [
     { week: "11", word: "mom", syllables: ["mom"], chinese: "媽媽", example: "I love mom." },
     { week: "11", word: "pop", syllables: ["pop"], chinese: "爆裂聲", example: "The balloon went pop." },
     { week: "11", word: "pot", syllables: ["pot"], chinese: "鍋子", example: "The pot is hot." },
-
-    // Reading Plus (10個 - 包含 found/find)
     { week: "11", word: "give it back", syllables: ["give", "it", "back"], chinese: "放回去", example: "Please give it back." },
     { week: "11", word: "must", syllables: ["must"], chinese: "必須", example: "I must go." },
     { week: "11", word: "fast", syllables: ["fast"], chinese: "比較快的", example: "He runs fast." },
@@ -169,15 +164,12 @@ const rawData = [
     { week: "11", word: "find", syllables: ["find"], chinese: "找到(現在式)", example: "I can find it." },
     { week: "11", word: "way", syllables: ["way"], chinese: "方向/路", example: "The right way." },
     { week: "11", word: "next", syllables: ["next"], chinese: "然後", example: "What is next?" },
-
-    // Dolch (5個)
     { week: "11", word: "sister", syllables: ["sis", "ter"], chinese: "姐妹", example: "My sister is kind." },
     { week: "11", word: "their", syllables: ["their"], chinese: "他們的", example: "It is their house." },
     { week: "11", word: "cute", syllables: ["cute"], chinese: "可愛的", example: "The puppy is cute." },
     { week: "11", word: "red", syllables: ["red"], chinese: "紅色", example: "A red apple." },
     { week: "11", word: "tree", syllables: ["tree"], chinese: "樹", example: "A tall tree." },
 
-        
     // --- Week 12 ---
     { week: "12", word: "goat", syllables: ["goat"], chinese: "山羊", example: "White goat." },
     { week: "12", word: "gas", syllables: ["gas"], chinese: "瓦斯/汽油", example: "Fill up gas." },
@@ -229,7 +221,7 @@ const rawData = [
     { week: "13", word: "school", syllables: ["school"], chinese: "學校", example: "Go to school." },
     { week: "13", word: "tell", syllables: ["tell"], chinese: "告訴", example: "Tell truth." },
     { week: "13", word: "first", syllables: ["first"], chinese: "第一", example: "First place." },
-    { week: "13", word: "miss", syllables: ["miss"], chinese: "錯過/想念", example: "I miss you." },
+    { week: "13", word: "miss", syllables: ["miss"], chinese: "想念", example: "I miss you." },
     { week: "13", word: "hat", syllables: ["hat"], chinese: "帽子", example: "Wear hat." },
     { week: "13", word: "how", syllables: ["how"], chinese: "怎麼", example: "How are you?" },
     { week: "13", word: "birthday", syllables: ["birth", "day"], chinese: "生日", example: "Happy birthday." },
@@ -267,9 +259,9 @@ const rawData = [
     { week: "14", word: "laugh", syllables: ["laugh"], chinese: "笑", example: "Happy laugh." },
     { week: "14", word: "only", syllables: ["only"], chinese: "唯一", example: "Only you." },
     { week: "14", word: "they", syllables: ["they"], chinese: "他們", example: "They are here." },
-    { week: "14", word: "had", syllables: ["had"], chinese: "有(過去式)", example: "I had fun." },
+    { week: "14", word: "had", syllables: ["had"], chinese: "有", example: "I had fun." },
     { week: "14", word: "milk", syllables: ["milk"], chinese: "牛奶", example: "Cold milk." },
-    { week: "14", word: "found", syllables: ["found"], chinese: "找到(過去式)", example: "I found it." },
+    { week: "14", word: "found", syllables: ["found"], chinese: "找到", example: "I found it." },
     { week: "14", word: "apple", syllables: ["ap", "ple"], chinese: "蘋果", example: "Eat apple." },
     { week: "14", word: "together", syllables: ["to", "geth", "er"], chinese: "一起", example: "Together." },
 
@@ -290,10 +282,10 @@ const rawData = [
     { week: "15", word: "hop", syllables: ["hop"], chinese: "蹦蹦跳", example: "Hop hop." },
     { week: "15", word: "not", syllables: ["not"], chinese: "不", example: "I am not sad." },
     { week: "15", word: "nut", syllables: ["nut"], chinese: "堅果", example: "Crunchy nut." },
-    { week: "15", word: "sat", syllables: ["sat"], chinese: "坐(過去式)", example: "He sat down." },
+    { week: "15", word: "sat", syllables: ["sat"], chinese: "坐", example: "He sat down." },
     { week: "15", word: "can", syllables: ["can"], chinese: "能", example: "I can swim." },
     { week: "15", word: "top", syllables: ["top"], chinese: "陀螺", example: "Spin top." },
-    { week: "15", word: "did", syllables: ["did"], chinese: "做(過去式)", example: "I did it." },
+    { week: "15", word: "did", syllables: ["did"], chinese: "做", example: "I did it." },
     { week: "15", word: "win", syllables: ["win"], chinese: "贏", example: "Win race." },
     { week: "15", word: "but", syllables: ["but"], chinese: "但是", example: "Small but cute." },
     { week: "15", word: "soon", syllables: ["soon"], chinese: "很快", example: "Coming soon." },
@@ -302,7 +294,7 @@ const rawData = [
     { week: "15", word: "flew over", syllables: ["flew", "over"], chinese: "飛過", example: "Flew over." },
     { week: "15", word: "help", syllables: ["help"], chinese: "幫忙", example: "Can I help?" },
     { week: "15", word: "now", syllables: ["now"], chinese: "現在", example: "Do it now." },
-    { week: "15", word: "ate", syllables: ["ate"], chinese: "吃(過去式)", example: "I ate dinner." },
+    { week: "15", word: "ate", syllables: ["ate"], chinese: "吃", example: "I ate dinner." },
     { week: "15", word: "all", syllables: ["all"], chinese: "全部", example: "All together." },
     { week: "15", word: "blue", syllables: ["blue"], chinese: "藍色", example: "Blue sky." },
     { week: "15", word: "out", syllables: ["out"], chinese: "外面", example: "Inside out." },
@@ -315,7 +307,7 @@ const rawData = [
     { week: "16", word: "window", syllables: ["win", "dow"], chinese: "窗戶", example: "Open window." },
     { week: "16", word: "wing", syllables: ["wing"], chinese: "翅膀", example: "Bird wing." },
     { week: "16", word: "worm", syllables: ["worm"], chinese: "蠕蟲", example: "Earth worm." },
-    { week: "16", word: "valentine", syllables: ["val", "en", "tine"], chinese: "情人節禮物", example: "Be my valentine." },
+    { week: "16", word: "valentine", syllables: ["val", "en", "tine"], chinese: "情人禮物", example: "Be my valentine." },
     { week: "16", word: "vase", syllables: ["vase"], chinese: "花瓶", example: "Glass vase." },
     { week: "16", word: "vest", syllables: ["vest"], chinese: "背心", example: "Yellow vest." },
     { week: "16", word: "vine", syllables: ["vine"], chinese: "藤蔓", example: "Green vine." },
@@ -362,10 +354,10 @@ const rawData = [
     { week: "17", word: "road", syllables: ["road"], chinese: "道路", example: "Long road." },
     { week: "17", word: "bread", syllables: ["bread"], chinese: "麵包", example: "Fresh bread." },
     { week: "17", word: "salad", syllables: ["sal", "ad"], chinese: "沙拉", example: "Fruit salad." },
-    { week: "17", word: "began", syllables: ["be", "gan"], chinese: "開始(過去式)", example: "Show began." },
+    { week: "17", word: "began", syllables: ["be", "gan"], chinese: "開始", example: "Show began." },
     { week: "17", word: "away", syllables: ["a", "way"], chinese: "離開", example: "Go away." },
     { week: "17", word: "glass", syllables: ["glass"], chinese: "玻璃", example: "Glass cup." },
-    { week: "17", word: "blew", syllables: ["blew"], chinese: "吹(過去式)", example: "Blew bubbles." },
+    { week: "17", word: "blew", syllables: ["blew"], chinese: "吹", example: "Blew bubbles." },
     { week: "17", word: "wet", syllables: ["wet"], chinese: "濕的", example: "Get wet." },
     { week: "17", word: "these", syllables: ["these"], chinese: "這些", example: "These are cool." },
     { week: "17", word: "everything", syllables: ["ev", "ery", "thing"], chinese: "每件事", example: "Love everything." },
@@ -417,21 +409,15 @@ let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
+
 function initWeekSelector() {
     const c = document.getElementById('weekSelector');
-    // 只保留 Week 10 到 Week 18 的範圍
     const weeks = ["10", "11", "12", "13", "14", "15", "16", "17", "18"];
-    
-    // 清空目前的內容，避免重複產生
     c.innerHTML = ''; 
-
     weeks.forEach(val => {
         const div = document.createElement('div');
         const display = "W" + val;
-        
-        // 預設勾選最新的 W18，讓練習更直覺
         const isChecked = (val === '18') ? 'checked' : '';
-        
         div.innerHTML = `
             <input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${isChecked}>
             <label for="wk${val}" class="week-label">${display}</label>
@@ -440,25 +426,29 @@ function initWeekSelector() {
     });
 }
 
-
-
 function refresh() {
     const checked = Array.from(document.querySelectorAll('.week-checkbox:checked')).map(cb => cb.value);
     if (checked.length === 0) { 
         wordListOrdered = []; 
+        currentWordObj = null;
     } else {
         const m = new Map();
         rawData.filter(i => checked.includes(i.week)).forEach(i => { if (!m.has(i.word)) m.set(i.word, i); });
         wordListOrdered = Array.from(m.values());
     }
     wordListShuffled = [...wordListOrdered].sort(() => Math.random() - 0.5);
-    idxOrdered = 0; idxShuffled = 0; load();
+    idxOrdered = 0; idxShuffled = 0; 
+    load();
 }
 
 function load() {
     const list = (activeTab === 'modeA' || activeTab === 'modeList') ? wordListOrdered : wordListShuffled;
     const index = (activeTab === 'modeA' || activeTab === 'modeList') ? idxOrdered : idxShuffled;
-    currentWordObj = list[index]; if (!currentWordObj) return;
+    currentWordObj = list[index]; 
+    if (!currentWordObj) {
+        clearUI();
+        return;
+    }
     if(activeTab==='modeA') {
         document.getElementById('progressA').innerText=`${index+1}/${list.length}`;
         document.getElementById('exampleText').innerText = currentWordObj.example || "No example provided.";
@@ -469,7 +459,17 @@ function load() {
     document.getElementById('chineseHintC').innerText=currentWordObj.chinese;
     document.getElementById('dictationInput').value="";
     ['fbB','fbC'].forEach(id => document.getElementById(id).innerText="");
-    renderWord(); initPuzzle(); renderList();
+    renderWord(); 
+    initPuzzle(); 
+    renderList();
+}
+
+function clearUI() {
+    ['wordDisplay', 'chineseDisplay', 'syllableBox', 'exampleText', 'chineseHintB', 'puzzleAnswer', 'puzzlePieces', 'fbB', 'chineseHintC', 'fbC', 'progressA'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerText = "";
+    });
+    if(document.getElementById('dictationInput')) document.getElementById('dictationInput').value = "";
 }
 
 function next() { 
@@ -501,6 +501,7 @@ function switchTab(id) {
 
 let puzzleAns = [];
 function initPuzzle() {
+    if(!currentWordObj) return;
     const w=currentWordObj.word, c=document.getElementById('puzzlePieces'), a=document.getElementById('puzzleAnswer');
     c.innerHTML=''; a.innerHTML=''; puzzleAns=[];
     w.split('').sort(()=>Math.random()-0.5).forEach(char=>{
@@ -529,12 +530,14 @@ function checkPuzzle() {
 }
 
 function initKeyboard() { 
+    const kb = document.getElementById('keyboard');
+    kb.innerHTML = "";
     "qwertyuiopasdfghjklzxcvbnm- ".split("").forEach(k=>{ 
         const b=document.createElement('button'); 
         b.className='key'; 
         b.innerText=k===" "?"Space":k; 
         b.onclick=()=>{document.getElementById('dictationInput').value+=k;}; 
-        document.getElementById('keyboard').appendChild(b); 
+        kb.appendChild(b); 
     }); 
 }
 
