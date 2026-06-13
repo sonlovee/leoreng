@@ -9,7 +9,8 @@
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--t-d); text-align: center; }
         .app-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 4px solid var(--p-y); }
         .selector-box { background: #E0F7FA; padding: 10px; border-radius: 15px; margin-bottom: 10px; }
-        .week-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 5px; }
+        /* 調整為 5 等分，讓 10 個按鈕完美呈現兩排 */
+        .week-options { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 5px; }
         .week-label { padding: 8px 0; background: white; border: 2px solid var(--p-b); border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: block;}
         .week-checkbox:checked + .week-label { background: var(--p-b); color: white; }
         .week-checkbox { display: none; }
@@ -133,7 +134,7 @@ const rawData = [
     { week: "10", word: "ask", syllables: ["ask"], chinese: "詢問", example: "Ask the teacher for help." },
     { week: "10", word: "teacher", syllables: ["teach", "er"], chinese: "老師", example: "His mother was a school teacher." },
 
-    // --- Week 11 (精確校對共 35 個) ---
+    // --- Week 11 (根據 image_11.png 精確校對) ---
     { week: "11", word: "jeep", syllables: ["jeep"], chinese: "吉普車", example: "We ride in the jeep." },
     { week: "11", word: "jacket", syllables: ["jack", "et"], chinese: "夾克", example: "Put on your jacket." },
     { week: "11", word: "jewelry", syllables: ["jew", "el", "ry"], chinese: "珠寶", example: "Mom wears jewelry." },
@@ -402,7 +403,39 @@ const rawData = [
     { week: "18", word: "drink", syllables: ["drink"], chinese: "喝", example: "Drink juice." },
     { week: "18", word: "must", syllables: ["must"], chinese: "必須", example: "Must go home." },
     { week: "18", word: "soon", syllables: ["soon"], chinese: "很快", example: "See you soon." },
-    { week: "18", word: "water", syllables: ["wa", "ter"], chinese: "水", example: "Fresh water." }
+    { week: "18", word: "water", syllables: ["wa", "ter"], chinese: "水", example: "Fresh water." },
+
+    // --- B Final 期末重點單字 (根據 image_12.png 校對共 30 個) ---
+    { week: "F", word: "win", syllables: ["win"], chinese: "贏", example: "I want to win the game." },
+    { week: "F", word: "hop", syllables: ["hop"], chinese: "跳躍", example: "The bunny can hop." },
+    { week: "F", word: "flat", syllables: ["flat"], chinese: "平坦的", example: "The road is flat." },
+    { week: "F", word: "stone", syllables: ["stone"], chinese: "石頭", example: "This is a magic stone." },
+    { week: "F", word: "him", syllables: ["him"], chinese: "他(受格)", example: "Give the ball to him." },
+    { week: "F", word: "pet", syllables: ["pet"], chinese: "寵物", example: "I have a cute pet." },
+    { week: "F", word: "dig", syllables: ["dig"], chinese: "挖掘", example: "Dogs like to dig holes." },
+    { week: "F", word: "snake", syllables: ["snake"], chinese: "蛇", example: "The snake is very long." },
+    { week: "F", word: "bug", syllables: ["bug"], chinese: "小蟲", example: "Look at the small bug." },
+    { week: "F", word: "class", syllables: ["class"], chinese: "班級/課", example: "Our english class is fun." },
+    { week: "F", word: "helmet", syllables: ["hel", "met"], chinese: "頭盔/安全帽", example: "Wear a helmet when riding." },
+    { week: "F", word: "worm", syllables: ["worm"], chinese: "蠕蟲/蚯蚓", example: "The worm lives in soil." },
+    { week: "F", word: "ladder", syllables: ["lad", "der"], chinese: "梯子", example: "Climb up the ladder." },
+    { week: "F", word: "doctor", syllables: ["doc", "tor"], chinese: "醫生", example: "The doctor checks me." },
+    { week: "F", word: "zipper", syllables: ["zip", "per"], chinese: "拉鍊", example: "Fix your jacket zipper." },
+    { week: "F", word: "yawn", syllables: ["yawn"], chinese: "打哈欠", example: "I give a big yawn." },
+    { week: "F", word: "guitar", syllables: ["gui", "tar"], chinese: "吉他", example: "He plays the guitar." },
+    { week: "F", word: "volcano", syllables: ["vol", "ca", "no"], chinese: "火山", example: "The volcano is huge." },
+    { week: "F", word: "feather", syllables: ["feath", "er"], chinese: "羽毛", example: "The feather is light." },
+    { week: "F", word: "jacket", syllables: ["jack", "et"], chinese: "夾克", example: "Put on your warm jacket." },
+    { week: "F", word: "log", syllables: ["log"], chinese: "木頭", example: "A heavy wood log." },
+    { week: "F", word: "hook", syllables: ["hook"], chinese: "掛勾", example: "Hang it on the hook." },
+    { week: "F", word: "scarf", syllables: ["scarf"], chinese: "圍巾", example: "Wear a soft scarf." },
+    { week: "F", word: "horn", syllables: ["horn"], chinese: "喇叭/角", example: "Blow the car horn." },
+    { week: "F", word: "yard", syllables: ["yard"], chinese: "院子", example: "We play in the backyard." },
+    { week: "F", word: "vase", syllables: ["vase"], chinese: "花瓶", example: "Put flowers in the vase." },
+    { week: "F", word: "stay", syllables: ["stay"], chinese: "留下/待著", example: "Please stay here." },
+    { week: "F", word: "windmill", syllables: ["wind", "mill"], chinese: "風車", example: "I see a big windmill." },
+    { week: "F", word: "club", syllables: ["club"], chinese: "俱樂部/社團", example: "Join our sports club." },
+    { week: "F", word: "step", syllables: ["step"], chinese: "腳步/步驟", example: "Take it step by step." }
 ];
 
 let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
@@ -412,12 +445,15 @@ window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 
 function initWeekSelector() {
     const c = document.getElementById('weekSelector');
-    const weeks = ["10", "11", "12", "13", "14", "15", "16", "17", "18"];
+    // 加入 F 分類
+    const weeks = ["10", "11", "12", "13", "14", "15", "16", "17", "18", "F"];
     c.innerHTML = ''; 
     weeks.forEach(val => {
         const div = document.createElement('div');
-        const display = "W" + val;
-        const isChecked = (val === '18') ? 'checked' : '';
+        // 遇到 F 就顯示 期末，其他顯示 W+數字
+        const display = (val === "F") ? "期末" : "W" + val;
+        // 預設打勾最新的「期末」來直接練習
+        const isChecked = (val === 'F') ? 'checked' : '';
         div.innerHTML = `
             <input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${isChecked}>
             <label for="wk${val}" class="week-label">${display}</label>
@@ -455,6 +491,7 @@ function load() {
     }
     document.getElementById('chineseDisplay').innerText=currentWordObj.chinese;
     document.getElementById('syllableBox').innerText=currentWordObj.syllables.join("-");
+    document.getElementById('chineseHintB').innerText=currentWordObj.chinese;
     document.getElementById('chineseHintB').innerText=currentWordObj.chinese;
     document.getElementById('chineseHintC').innerText=currentWordObj.chinese;
     document.getElementById('dictationInput').value="";
