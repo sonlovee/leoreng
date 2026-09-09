@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>兒童英文拼字學習機 Pro 🐝</title>
     <style>
+        * { box-sizing: border-box; }
+        html, body { max-width: 100%; overflow-x: hidden; }
         :root { --p-y: #FFD700; --p-b: #40E0D0; --t-d: #2C3E50; --bg: #F0F4F8; --v: #FF4500; --c: #1E90FF; --i: #9932CC; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--t-d); text-align: center; }
-        .app-container { max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 4px solid var(--p-y); }
+        .app-container { width: 100%; max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 4px solid var(--p-y); }
         .selector-box { background: #E0F7FA; padding: 10px; border-radius: 15px; margin-bottom: 10px; }
         .week-options { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-top: 5px; }
         .week-label { padding: 8px 0; background: white; border: 2px solid var(--p-b); border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; display: block;}
@@ -45,6 +47,18 @@
         .import-textarea { width:100%; height:220px; font-family: monospace; font-size: 0.78rem; padding: 10px; border-radius: 12px; border: 2px solid var(--p-b); box-sizing: border-box; resize: vertical; }
         .import-hint { font-size: 0.85rem; color: #666; text-align: left; margin-bottom: 8px; line-height: 1.4; }
         .import-preview { margin-top: 10px; font-size: 0.9rem; min-height: 24px; text-align: left; }
+
+        @media (max-width: 400px) {
+            body { padding: 6px; }
+            .app-container { padding: 10px; border-width: 3px; }
+            .btn-group { gap: 5px; }
+            .action-btn { font-size: 0.78rem; padding: 10px 3px; }
+            .tab-btn { font-size: 0.72rem; padding: 8px 0; min-width: 50px; }
+            .big-word { font-size: 2.2rem; }
+            .letter-block { width: 34px; height: 34px; font-size: 1.05rem; }
+            .keyboard { gap: 2px; }
+            .key { padding: 8px 0; font-size: 0.72rem; }
+        }
     </style>
 </head>
 <body>
@@ -424,6 +438,7 @@ const rawData = [
 let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
 let customData = JSON.parse(localStorage.getItem('customWordData')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
+let importUnlocked = false; // 匯入頁面是否已通過管理員密碼驗證
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 
@@ -538,6 +553,15 @@ function prev() {
 }
 
 function switchTab(id) {
+    if (id === 'modeImport' && !importUnlocked) {
+        const pwd = prompt('🔒 請輸入管理員密碼以進入匯入頁面：');
+        if (pwd === null) return;
+        if (pwd !== '2026') {
+            alert('❌ 密碼錯誤，無法進入匯入頁面。');
+            return;
+        }
+        importUnlocked = true;
+    }
     activeTab=id;
     document.querySelectorAll('.mode-section').forEach(el=>el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
