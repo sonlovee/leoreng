@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; }
         html, body { max-width: 100%; overflow-x: hidden; }
-        :root { --p-y: #FFD700; --p-b: #40E0D0; --t-d: #2C3E50; --bg: #F0F4F8; --v: #FF4500; --c: #1E90FF; --i: #9932CC; }
+        :root { --p-y: #FFD700; --p-b: #40E0D0; --t-d: #2C3E50; --bg: #F0F4F8; --v: #FF4500; --c: #1E90FF; --i: #9932CC; --lv: #0A9F5B; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 10px; color: var(--t-d); text-align: center; }
         .app-container { width: 100%; max-width: 600px; margin: 0 auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 4px solid var(--p-y); }
         .selector-box { background: #E0F7FA; padding: 10px; border-radius: 15px; margin-bottom: 10px; }
@@ -24,6 +24,9 @@
         .word-card { padding: 20px 10px; background: #FFF9C4; border-radius: 20px; margin-bottom: 10px; min-height: 250px; display: flex; flex-direction: column; justify-content: center; position: relative; }
         .big-word { font-size: 3rem; font-weight: bold; margin: 5px 0; letter-spacing: 1px; word-break: break-all; }
         .char-vowel { color: var(--v); } .char-consonant { color: var(--c); } .char-irregular { color: var(--i); font-weight: 900; }
+        .char-long { color: var(--lv); font-weight: 900; background: #DDF6E8; border-radius: 6px; }
+        .syl-dash { color: #B0B7BF; font-weight: normal; margin: 0 1px; }
+        .legend { font-size: 0.75rem; color: #777; margin: 2px 0 6px; }
         .info-text { font-size: 1.2rem; font-weight: bold; margin: 5px 0; }
         .syllable-box { background: white; padding: 4px 10px; border-radius: 10px; border: 1px dashed #AAA; display: inline-block; font-size: 1rem; color: #E67E22; margin-bottom: 6px; }
         .example-area { background: rgba(255,255,255,0.6); padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 0.95rem; line-height: 1.4; color: #555; text-align: left; position: relative; }
@@ -83,6 +86,7 @@
             <button class="action-btn speak-btn" onclick="speakWord()">🔊 發音</button>
             <div id="wordImage" class="word-image"></div>
             <div id="wordDisplay" class="big-word"></div>
+            <div class="legend"><span class="char-vowel">母音</span> · <span class="char-consonant">子音</span> · <span class="char-long">長母音組合</span></div>
             <div id="chineseDisplay" class="info-text"></div>
             <div id="syllableBox" class="syllable-box"></div>
             <div>
@@ -157,7 +161,7 @@
 
 <script>
 const rawData = [
-    // --- Week 1 (完整 25 個條目) ---
+       // --- Week 1 (完整 25 個條目) ---
     { week: "1", word: "chin", syllables: ["chin"], chinese: "下巴", example: "Touch your chin.", image: "🙂" },
     { week: "1", word: "chop", syllables: ["chop"], chinese: "砍/劈/斬", example: "Chop the wood.", image: "🪓" },
     { week: "1", word: "chop", syllables: ["chop"], chinese: "厚肉片/排骨", example: "A tasty pork chop.", image: "🥩" },
@@ -443,14 +447,11 @@ const rawData = [
 let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
 let customData = JSON.parse(localStorage.getItem('customWordData')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
-let importUnlocked = false; 
+let importUnlocked = false;
 
-// --- 語音庫預載與挑選優化 (優化方案三) ---
 let availableVoices = [];
 function populateVoices() {
-    if (typeof speechSynthesis !== 'undefined') {
-        availableVoices = speechSynthesis.getVoices();
-    }
+    if (typeof speechSynthesis !== 'undefined') availableVoices = speechSynthesis.getVoices();
 }
 populateVoices();
 if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
@@ -498,7 +499,7 @@ function refresh() {
     } else {
         const m = new Map();
         getAllWords().filter(i => checked.includes(i.week)).forEach(i => {
-            const key = i.word + '||' + i.chinese; 
+            const key = i.word + '||' + i.chinese;
             if (!m.has(key)) m.set(key, i);
         });
         wordListOrdered = Array.from(m.values());
@@ -554,7 +555,6 @@ function renderWordImage() {
 
 function openHowManySyllables() {
     if (currentWordObj && currentWordObj.word) {
-        // 將片語空格轉換為連字符 (例如 turn off -> turn-off)
         const cleanWord = currentWordObj.word.trim().toLowerCase().replace(/\s+/g, '-');
         window.open(`https://www.howmanysyllables.com/words/${cleanWord}`, '_blank');
     }
@@ -667,48 +667,93 @@ function renderList() {
     });
 }
 
+// ===== 長母音組合音偵測 =====
+const EXC_E = ['one','once','gone','some','come','done','none','have','love','give','live','above','glove','were','are','there','where','move','prove','lose','whose','dove','shove'];
+const SHORT_EA = ['bread','head','dead','ready','heavy','health','weather'];
+const NOT_OW = ['now','how','cow','wow','brow','plow','vow'];
+const OWN_LONG = ['own','grown','blown','known','shown','flown'];
+
+function longVowelIdx(w) {
+    const V = 'aeiou', set = new Set(), n = w.length;
+    const mark = (i, k) => { for (let j = 0; j < k; j++) set.add(i + j); };
+    const teams = [
+        ['ai', i => w[i+2] !== 'r' && !['said','again','against'].includes(w)],
+        ['ay', () => true], ['ee', () => true],
+        ['ea', i => w[i+2] !== 'r' && !SHORT_EA.includes(w)],
+        ['oa', i => w[i+2] !== 'r'], ['igh', () => true],
+        ['ie', () => w !== 'friend'],
+        ['ue', i => !'qg'.includes(w[i-1] || '#')],
+        ['ew', () => true],
+        ['oo', i => w[i+2] !== 'k' && !['good','wood','foot','stood'].includes(w)]
+    ];
+    teams.forEach(([p, ok]) => {
+        let i = w.indexOf(p);
+        while (i !== -1) { if (ok(i)) mark(i, p.length); i = w.indexOf(p, i + 1); }
+    });
+    if (OWN_LONG.includes(w) || (w.endsWith('ow') && !NOT_OW.includes(w))) mark(w.lastIndexOf('ow'), 2);
+    // magic e：母音 + 單一子音 + 結尾 e
+    if (n >= 3 && w[n-1] === 'e' && !EXC_E.includes(w) && /[a-z]/.test(w[n-2])
+        && !V.includes(w[n-2]) && w[n-2] !== 'r' && V.includes(w[n-3])) { set.add(n-3); set.add(n-1); }
+    return set;
+}
+
+function getLongVowelSet(word) {
+    const all = new Set(); let off = 0;
+    word.toLowerCase().split(' ').forEach(t => {
+        longVowelIdx(t).forEach(i => all.add(off + i));
+        off += t.length + 1;
+    });
+    return all;
+}
+
 function renderWord() {
-    const d=document.getElementById('wordDisplay'); d.innerHTML=''; const v='aeiou';
-    if(!currentWordObj) return;
-    currentWordObj.word.split('').forEach((c,i)=>{
-        let s=document.createElement('span'); s.innerText=c;
-        if(c===' ') s.style.width="12px";
-        else if(currentWordObj.irregularIndices && currentWordObj.irregularIndices.includes(i)) s.className='char-irregular';
-        else if(v.includes(c.toLowerCase())) s.className='char-vowel';
-        else s.className='char-consonant';
+    const d = document.getElementById('wordDisplay'); d.innerHTML = '';
+    if (!currentWordObj) return;
+    const word = currentWordObj.word, v = 'aeiou', longSet = getLongVowelSet(word);
+    // 音節切點（以「不含空格的字母數」計算）；音節與單字對不上時就不顯示 "-"
+    const cuts = new Set(), syl = currentWordObj.syllables || [];
+    if (syl.length > 1 && syl.join('').toLowerCase() === word.replace(/ /g, '').toLowerCase()) {
+        let cnt = 0;
+        syl.slice(0, -1).forEach(s => { cnt += s.length; cuts.add(cnt); });
+    }
+    let seen = 0;
+    word.split('').forEach((c, i) => {
+        const s = document.createElement('span'); s.innerText = c;
+        if (c === ' ') s.style.width = "12px";
+        else if (currentWordObj.irregularIndices && currentWordObj.irregularIndices.includes(i)) s.className = 'char-irregular';
+        else if (longSet.has(i)) s.className = 'char-long';
+        else if (v.includes(c.toLowerCase())) s.className = 'char-vowel';
+        else s.className = 'char-consonant';
         d.appendChild(s);
+        if (c !== ' ') {
+            seen++;
+            if (cuts.has(seen) && word[i+1] !== ' ') {
+                const dash = document.createElement('span');
+                dash.className = 'syl-dash'; dash.innerText = '-';
+                d.appendChild(dash);
+            }
+        }
     });
 }
 
 function speakWord() { if(currentWordObj) playVoice(currentWordObj.word); }
 function speakExample() { if(currentWordObj) playVoice(currentWordObj.example); }
 
-// ===== 高音質語音播放函式 (優化方案三) =====
-function playVoice(t) { 
+function playVoice(t) {
     if(!t) return;
-    synth.cancel(); 
-    const u = new SpeechSynthesisUtterance(t); 
-    
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(t);
     if (availableVoices.length === 0) populateVoices();
-    
-    // 優先挑選自然優質的美式語音人聲
-    const premiumVoice = availableVoices.find(v => 
+    const premiumVoice = availableVoices.find(v =>
         v.lang.startsWith('en') && (
-            v.name.includes('Google') || 
-            v.name.includes('Samantha') || 
-            v.name.includes('Natural') ||
-            v.name.includes('Ava') ||
-            v.name.includes('US')
+            v.name.includes('Google') || v.name.includes('Samantha') ||
+            v.name.includes('Natural') || v.name.includes('Ava') || v.name.includes('US')
         )
     ) || availableVoices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
-
-    if (premiumVoice) {
-        u.voice = premiumVoice;
-    }
-
-    u.lang = 'en-US'; 
-    u.rate = 0.85; // 適合小朋友學習的語速
-    synth.speak(u); 
+    if (premiumVoice) u.voice = premiumVoice;
+    u.lang = 'en-US';
+    u.rate = 0.85;
+    synth.speak(u);
 }
 
 function startWeakness() {
@@ -784,4 +829,3 @@ function saveImport() {
 </script>
 </body>
 </html>
-
