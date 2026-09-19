@@ -25,7 +25,7 @@
         .big-word { font-size: 3rem; font-weight: bold; margin: 5px 0; letter-spacing: 1px; word-break: break-all; }
         .char-vowel { color: var(--v); } .char-consonant { color: var(--c); } .char-irregular { color: var(--i); font-weight: 900; }
         .info-text { font-size: 1.2rem; font-weight: bold; margin: 5px 0; }
-        .syllable-box { background: white; padding: 4px 10px; border-radius: 10px; border: 1px dashed #AAA; display: inline-block; font-size: 1rem; color: #E67E22; margin-bottom: 10px; }
+        .syllable-box { background: white; padding: 4px 10px; border-radius: 10px; border: 1px dashed #AAA; display: inline-block; font-size: 1rem; color: #E67E22; margin-bottom: 6px; }
         .example-area { background: rgba(255,255,255,0.6); padding: 10px; border-radius: 12px; margin-top: 10px; font-size: 0.95rem; line-height: 1.4; color: #555; text-align: left; position: relative; }
         .example-btn { background: #FF8C00; border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; float: right; margin-left: 5px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 5px; }
@@ -34,6 +34,8 @@
         .sec-btn { background: #95A5A6; box-shadow: 0 4px 0 #7F8C8D; }
         .chk-btn { background: #2ECC71; box-shadow: 0 4px 0 #27AE60; }
         .speak-btn { background: #FF8C00; box-shadow: 0 4px 0 #D2691E; font-size: 1.2rem; width: 60%; margin: 0 auto 10px; }
+        .external-btn { background: #8E44AD; box-shadow: 0 3px 0 #6C3483; color: white; border: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: bold; display: inline-block; margin-bottom: 6px; }
+        .external-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #6C3483; }
         .letter-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin: 10px 0; }
         .letter-block { background: white; border: 2px solid var(--p-y); width: 40px; height: 40px; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
         .answer-area { min-height: 40px; border-bottom: 3px solid #333; margin-bottom: 10px; display: flex; justify-content: center; align-items: flex-end; gap: 3px; font-size: 1.8rem; font-family: monospace; }
@@ -83,6 +85,9 @@
             <div id="wordDisplay" class="big-word"></div>
             <div id="chineseDisplay" class="info-text"></div>
             <div id="syllableBox" class="syllable-box"></div>
+            <div>
+                <button class="external-btn" onclick="openHowManySyllables()">🔗 HowManySyllables 查發音與音節</button>
+            </div>
             <div id="exampleArea" class="example-area">
                 <button class="example-btn" onclick="speakExample()">🔊</button>
                 <div id="exampleText"></div>
@@ -153,32 +158,31 @@
 <script>
 const rawData = [
     // --- Week 1 (完整 25 個條目) ---
-{ week: "1", word: "chin", syllables: ["chin"], chinese: "下巴", example: "Touch your chin.", image: "🙂" },
-{ week: "1", word: "chop", syllables: ["chop"], chinese: "砍/劈/斬", example: "Chop the wood.", image: "🪓" },
-{ week: "1", word: "chop", syllables: ["chop"], chinese: "厚肉片/排骨", example: "A tasty pork chop.", image: "🥩" },
-{ week: "1", word: "chain", syllables: ["chain"], chinese: "鏈條", example: "An iron chain.", image: "⛓️" },
-{ week: "1", word: "chase", syllables: ["chase"], chinese: "追逐", example: "Cats chase mice.", image: "🏃" },
-{ week: "1", word: "chat", syllables: ["chat"], chinese: "聊天", example: "We chat together.", image: "💬" },
-{ week: "1", word: "then", syllables: ["then"], chinese: "然後", example: "And then we go.", image: "" },
-{ week: "1", word: "that", syllables: ["that"], chinese: "那個", example: "That is a dog.", image: "" },
-{ week: "1", word: "this", syllables: ["this"], chinese: "這個", example: "This is my book.", image: "" },
-{ week: "1", word: "these", syllables: ["these"], chinese: "這些", example: "These are pens.", image: "" },
-{ week: "1", word: "those", syllables: ["those"], chinese: "那些", example: "Those are stars.", image: "" },
-{ week: "1", word: "basket", syllables: ["bas", "ket"], chinese: "籃子", example: "A fruit basket.", image: "🧺" },
-{ week: "1", word: "bear", syllables: ["bear"], chinese: "熊", example: "A big brown bear.", image: "🐻" },
-{ week: "1", word: "park", syllables: ["park"], chinese: "公園", example: "Play in the park.", image: "🏞️" },
-{ week: "1", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "Sleep in a tent.", image: "⛺" },
-{ week: "1", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球", example: "A red balloon.", image: "🎈" },
-{ week: "1", word: "can't", syllables: ["can't"], chinese: "不能/不會", example: "I can't fly.", image: "🚫" },
-{ week: "1", word: "knew", syllables: ["knew"], chinese: "知道(過去式)", example: "I knew the answer.", image: "💡" },
-{ week: "1", word: "place", syllables: ["place"], chinese: "地方", example: "A nice place.", image: "📍" },
-{ week: "1", word: "show", syllables: ["show"], chinese: "展示/表演", example: "Show me your toy.", image: "🎭" },
-{ week: "1", word: "down", syllables: ["down"], chinese: "向下", example: "Sit down please.", image: "⬇️" },
-{ week: "1", word: "bring", syllables: ["bring"], chinese: "帶來", example: "Bring your bag.", image: "👜" },
-{ week: "1", word: "its", syllables: ["its"], chinese: "它的", example: "The cat licks its paw.", image: "🐾" },
-{ week: "1", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "A bird nest.", image: "🪺" },
-{ week: "1", word: "please", syllables: ["please"], chinese: "請", example: "Please help me.", image: "🙏" },
-
+    { week: "1", word: "chin", syllables: ["chin"], chinese: "下巴", example: "Touch your chin.", image: "🙂" },
+    { week: "1", word: "chop", syllables: ["chop"], chinese: "砍/劈/斬", example: "Chop the wood.", image: "🪓" },
+    { week: "1", word: "chop", syllables: ["chop"], chinese: "厚肉片/排骨", example: "A tasty pork chop.", image: "🥩" },
+    { week: "1", word: "chain", syllables: ["chain"], chinese: "鏈條", example: "An iron chain.", image: "⛓️" },
+    { week: "1", word: "chase", syllables: ["chase"], chinese: "追逐", example: "Cats chase mice.", image: "🏃" },
+    { week: "1", word: "chat", syllables: ["chat"], chinese: "聊天", example: "We chat together.", image: "💬" },
+    { week: "1", word: "then", syllables: ["then"], chinese: "然後", example: "And then we go.", image: "" },
+    { week: "1", word: "that", syllables: ["that"], chinese: "那個", example: "That is a dog.", image: "" },
+    { week: "1", word: "this", syllables: ["this"], chinese: "這個", example: "This is my book.", image: "" },
+    { week: "1", word: "these", syllables: ["these"], chinese: "這些", example: "These are pens.", image: "" },
+    { week: "1", word: "those", syllables: ["those"], chinese: "那些", example: "Those are stars.", image: "" },
+    { week: "1", word: "basket", syllables: ["bas", "ket"], chinese: "籃子", example: "A fruit basket.", image: "🧺" },
+    { week: "1", word: "bear", syllables: ["bear"], chinese: "熊", example: "A big brown bear.", image: "🐻" },
+    { week: "1", word: "park", syllables: ["park"], chinese: "公園", example: "Play in the park.", image: "🏞️" },
+    { week: "1", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "Sleep in a tent.", image: "⛺" },
+    { week: "1", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球", example: "A red balloon.", image: "🎈" },
+    { week: "1", word: "can't", syllables: ["can't"], chinese: "不能/不會", example: "I can't fly.", image: "🚫" },
+    { week: "1", word: "knew", syllables: ["knew"], chinese: "知道(過去式)", example: "I knew the answer.", image: "💡" },
+    { week: "1", word: "place", syllables: ["place"], chinese: "地方", example: "A nice place.", image: "📍" },
+    { week: "1", word: "show", syllables: ["show"], chinese: "展示/表演", example: "Show me your toy.", image: "🎭" },
+    { week: "1", word: "down", syllables: ["down"], chinese: "向下", example: "Sit down please.", image: "⬇️" },
+    { week: "1", word: "bring", syllables: ["bring"], chinese: "帶來", example: "Bring your bag.", image: "👜" },
+    { week: "1", word: "its", syllables: ["its"], chinese: "它的", example: "The cat licks its paw.", image: "🐾" },
+    { week: "1", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "A bird nest.", image: "🪺" },
+    { week: "1", word: "please", syllables: ["please"], chinese: "請", example: "Please help me.", image: "🙏" },
 
     // --- Week 2 (完整 26 個條目) ---
     { week: "2", word: "quack", syllables: ["quack"], chinese: "鴨叫聲", example: "Ducks go quack.", image: "🦆" },
@@ -439,11 +443,22 @@ const rawData = [
 let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
 let customData = JSON.parse(localStorage.getItem('customWordData')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
-let importUnlocked = false; // 匯入頁面是否已通過管理員密碼驗證
+let importUnlocked = false; 
+
+// --- 語音庫預載與挑選優化 (優化方案三) ---
+let availableVoices = [];
+function populateVoices() {
+    if (typeof speechSynthesis !== 'undefined') {
+        availableVoices = speechSynthesis.getVoices();
+    }
+}
+populateVoices();
+if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+}
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 
-// 合併內建資料與使用者匯入的自訂資料。同一個 week 若被匯入過，就整週用匯入的版本取代。
 function getAllWords() {
     const overriddenWeeks = Object.keys(customData);
     const base = rawData.filter(e => !overriddenWeeks.includes(e.week));
@@ -483,7 +498,7 @@ function refresh() {
     } else {
         const m = new Map();
         getAllWords().filter(i => checked.includes(i.week)).forEach(i => {
-            const key = i.word + '||' + i.chinese; // 用「單字+中文意思」當作去重複的依據，避免同單字不同語意被跳過
+            const key = i.word + '||' + i.chinese; 
             if (!m.has(key)) m.set(key, i);
         });
         wordListOrdered = Array.from(m.values());
@@ -525,7 +540,6 @@ function clearUI() {
     if(document.getElementById('dictationInput')) document.getElementById('dictationInput').value = "";
 }
 
-// 顯示單字圖片：若 image 欄位是網址(http開頭或 data:) 就當圖片顯示，否則當成 emoji/文字直接顯示。
 function renderWordImage() {
     const el = document.getElementById('wordImage');
     if (!el) return;
@@ -535,6 +549,14 @@ function renderWordImage() {
         el.innerHTML = `<img src="${img}" alt="${currentWordObj.word}">`;
     } else {
         el.innerText = img;
+    }
+}
+
+function openHowManySyllables() {
+    if (currentWordObj && currentWordObj.word) {
+        // 將片語空格轉換為連字符 (例如 turn off -> turn-off)
+        const cleanWord = currentWordObj.word.trim().toLowerCase().replace(/\s+/g, '-');
+        window.open(`https://www.howmanysyllables.com/words/${cleanWord}`, '_blank');
     }
 }
 
@@ -660,7 +682,34 @@ function renderWord() {
 
 function speakWord() { if(currentWordObj) playVoice(currentWordObj.word); }
 function speakExample() { if(currentWordObj) playVoice(currentWordObj.example); }
-function playVoice(t) { synth.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=0.8; synth.speak(u); }
+
+// ===== 高音質語音播放函式 (優化方案三) =====
+function playVoice(t) { 
+    if(!t) return;
+    synth.cancel(); 
+    const u = new SpeechSynthesisUtterance(t); 
+    
+    if (availableVoices.length === 0) populateVoices();
+    
+    // 優先挑選自然優質的美式語音人聲
+    const premiumVoice = availableVoices.find(v => 
+        v.lang.startsWith('en') && (
+            v.name.includes('Google') || 
+            v.name.includes('Samantha') || 
+            v.name.includes('Natural') ||
+            v.name.includes('Ava') ||
+            v.name.includes('US')
+        )
+    ) || availableVoices.find(v => v.lang === 'en-US' || v.lang.startsWith('en'));
+
+    if (premiumVoice) {
+        u.voice = premiumVoice;
+    }
+
+    u.lang = 'en-US'; 
+    u.rate = 0.85; // 適合小朋友學習的語速
+    synth.speak(u); 
+}
 
 function startWeakness() {
     let errs=wordListOrdered.filter(w=>(errorStats[w.word]||0)>0).sort((a,b)=>(errorStats[b.word]||0)-(errorStats[a.word]||0));
@@ -669,8 +718,6 @@ function startWeakness() {
 }
 
 // ===== 匯入 / 更新功能 =====
-
-// 把貼上的程式碼片段解析成物件陣列。允許貼多筆、含註解列，也允許最後一筆有無逗號。
 function parseImportCode(text) {
     const trimmed = text.trim();
     if (!trimmed) throw new Error("內容是空的，請先貼上程式碼。");
@@ -737,3 +784,4 @@ function saveImport() {
 </script>
 </body>
 </html>
+
