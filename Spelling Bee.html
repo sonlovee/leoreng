@@ -441,7 +441,7 @@ const rawData = [
     { week: "11", word: "work", syllables: ["work"], chinese: "工作", example: "Hard work.", image: "💼" },
     { week: "11", word: "try", syllables: ["try"], chinese: "嘗試", example: "Try your best.", image: "🎯" },
     { week: "11", word: "only", syllables: ["on", "ly"], chinese: "唯一的", example: "The only one." },
-    { week: "11", word: "way", syllables: ["way"], chinese: "道路/方向", example: "The right way.", image: "🛣️" }
+    { week: "11", word: "way", syllables: ["way"], chinese: "道路/方向", example: "The right way.", image: "🛣️" },
 
     // --- bee01 ---
     { week: "bee01", word: "album", syllables: ["al", "bum"], chinese: "相簿", example: "A photo album.", image: "📸" },
@@ -481,7 +481,7 @@ const rawData = [
     { week: "bee02", word: "fellow", syllables: ["fel", "low"], chinese: "同伴", example: "My fellow friends.", image: "🧑‍🤝‍🧑" },
     { week: "bee02", word: "finance", syllables: ["fi", "nance"], chinese: "金融", example: "Learn about finance.", image: "💰" },
     { week: "bee02", word: "freckles", syllables: ["freck", "les"], chinese: "雀斑", example: "Freckles on her face.", image: "👧" },
-    { week: "bee02", word: "government", syllables: ["gov", "ern", "ment"], chinese: "政府", example: "The city government.", image: "🏛️️" },
+    { week: "bee02", word: "government", syllables: ["gov", "ern", "ment"], chinese: "政府", example: "The city government.", image: "🏛️" },
     { week: "bee02", word: "grasshopper", syllables: ["grass", "hop", "per"], chinese: "蚱蜢", example: "A green grasshopper.", image: "🦗" },
     { week: "bee02", word: "gruff", syllables: ["gruff"], chinese: "粗魯的", example: "A gruff voice.", image: "😠" },
     { week: "bee02", word: "gulp", syllables: ["gulp"], chinese: "大口地吸", example: "Gulp some water.", image: "🥤" },
@@ -571,6 +571,14 @@ if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !=
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 
+// 週別排序：數字週在前（1,2,3...），bee01、bee02... 在後
+const cmpWeek = (a, b) => {
+    const na = /^\d+$/.test(a), nb = /^\d+$/.test(b);
+    if (na && nb) return a - b;
+    if (na !== nb) return na ? -1 : 1;
+    return a.localeCompare(b, undefined, { numeric: true });
+};
+
 function getAllWords() {
     const overriddenWeeks = Object.keys(customData);
     const base = rawData.filter(e => !overriddenWeeks.includes(e.week));
@@ -582,7 +590,7 @@ function getAllWeeks() {
     const set = new Set();
     rawData.forEach(e => set.add(e.week));
     Object.keys(customData).forEach(w => set.add(w));
-    return Array.from(set).sort((a, b) => parseInt(a) - parseInt(b));
+    return Array.from(set).sort(cmpWeek);
 }
 
 function initWeekSelector() {
@@ -592,7 +600,7 @@ function initWeekSelector() {
     c.innerHTML = '';
     weeks.forEach(val => {
         const div = document.createElement('div');
-        const display = "W" + val;
+        const display = /^\d+$/.test(val) ? "W" + val : val;
         const isChecked = prevChecked.length ? prevChecked.includes(val) : (val === '11');
         div.innerHTML = `
             <input type="checkbox" class="week-checkbox" id="wk${val}" value="${val}" onchange="refresh()" ${isChecked ? 'checked' : ''}>
@@ -911,7 +919,7 @@ function previewImport() {
     try {
         const arr = parseImportCode(document.getElementById('importTextarea').value);
         const grouped = groupByWeek(arr);
-        const summary = Object.keys(grouped).sort((a,b)=>parseInt(a)-parseInt(b))
+        const summary = Object.keys(grouped).sort(cmpWeek)
             .map(w => `Week ${w}：${grouped[w].length} 個單字${customData[w] || rawData.some(e=>e.week===w) ? '（將覆蓋整週）' : '（新增新週）'}`)
             .join('<br>');
         p.innerHTML = `<span style="color:green;">✅ 解析成功：</span><br>${summary}`;
@@ -927,7 +935,7 @@ function saveImport() {
         const grouped = groupByWeek(arr);
         Object.keys(grouped).forEach(w => { customData[w] = grouped[w]; });
         localStorage.setItem('customWordData', JSON.stringify(customData));
-        const summary = Object.keys(grouped).sort((a,b)=>parseInt(a)-parseInt(b))
+        const summary = Object.keys(grouped).sort(cmpWeek)
             .map(w => `Week ${w}（${grouped[w].length} 個）`).join('、');
         p.innerHTML = `<span style="color:green;">🎉 已更新：${summary}</span>`;
         document.getElementById('importTextarea').value = "";
