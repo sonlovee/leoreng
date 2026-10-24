@@ -25,7 +25,6 @@
         .big-word { font-size: 3rem; font-weight: bold; margin: 5px 0; letter-spacing: 1px; word-break: break-all; }
         .char-vowel { color: var(--v); } .char-consonant { color: var(--c); } .char-irregular { color: var(--i); font-weight: 900; }
         .char-long { color: var(--lv); font-weight: 900; background: #DDF6E8; border-radius: 6px; }
-        .syl-dash { color: #B0B7BF; font-weight: normal; margin: 0 1px; }
         .legend { font-size: 0.75rem; color: #777; margin: 2px 0 6px; }
         .info-text { font-size: 1.2rem; font-weight: bold; margin: 5px 0; }
         .syllable-box { background: white; padding: 4px 10px; border-radius: 10px; border: 1px dashed #AAA; display: inline-block; font-size: 1rem; color: #E67E22; margin-bottom: 6px; }
@@ -49,10 +48,6 @@
         .list-btn { background: white; border: 1px solid #DDD; padding: 5px; border-radius: 8px; font-size: 0.75rem; }
         .word-image { font-size: 3.2rem; line-height: 1; margin-bottom: 4px; min-height: 1.2em; }
         .word-image img { width: 72px; height: 72px; object-fit: contain; }
-        .import-textarea { width:100%; height:220px; font-family: monospace; font-size: 0.78rem; padding: 10px; border-radius: 12px; border: 2px solid var(--p-b); box-sizing: border-box; resize: vertical; }
-        .import-hint { font-size: 0.85rem; color: #666; text-align: left; margin-bottom: 8px; line-height: 1.4; }
-        .import-preview { margin-top: 10px; font-size: 0.9rem; min-height: 24px; text-align: left; }
-
         @media (max-width: 400px) {
             body { padding: 6px; }
             .app-container { padding: 10px; border-width: 3px; }
@@ -77,7 +72,6 @@
         <button class="tab-btn active" id="tab-modeA" onclick="switchTab('modeA')">👀 學習</button>
         <button class="tab-btn" id="tab-modeB" onclick="switchTab('modeB')">🧩 拼圖</button>
         <button class="tab-btn" id="tab-modeC" onclick="switchTab('modeC')">📝 聽寫</button>
-        <button class="tab-btn" id="tab-modeImport" onclick="switchTab('modeImport')">🛠️ 匯入</button>
         <button class="tab-btn" id="tab-modeList" onclick="switchTab('modeList')">📋 列表</button>
     </div>
 
@@ -135,24 +129,6 @@
         <button class="action-btn chk-btn" style="width:100%; margin-top:8px;" onclick="checkDict()">✅ 檢查答案</button>
     </div>
 
-    <div id="modeImport" class="mode-section">
-        <div class="word-card" style="text-align:left; min-height:auto;">
-            <div class="import-hint">
-                📋 直接貼上像下面這樣的 JavaScript 程式碼片段(一列或多列都可以),系統會依每筆的 <code>week</code> 欄位自動判斷:<br>
-                • 如果該週已存在 → <b>整週覆蓋更新</b><br>
-                • 如果該週不存在 → <b>新增一個新的 Week</b><br>
-                資料會保存在這台裝置的瀏覽器中,重新整理頁面也不會消失。<br>
-                💡 想加圖片的話,可以在物件裡多加一個 <code>image</code> 欄位:填 emoji(例如 <code>"🐻"</code>)或圖片網址(例如 <code>"https://.../bear.png"</code>)都可以,不加也沒關係。
-            </div>
-            <textarea id="importTextarea" class="import-textarea" placeholder='{ week: &quot;7&quot;, word: &quot;bride&quot;, syllables: [&quot;bride&quot;], chinese: &quot;新娘&quot;, example: &quot;A beautiful bride.&quot;, image: &quot;👰&quot; },'></textarea>
-            <div id="importPreview" class="import-preview"></div>
-        </div>
-        <div class="btn-group" style="grid-template-columns: 1fr 1fr;">
-            <button class="action-btn sec-btn" onclick="previewImport()">🔍 預覽解析</button>
-            <button class="action-btn chk-btn" onclick="saveImport()">💾 更新/新增</button>
-        </div>
-    </div>
-
     <div id="modeList" class="mode-section">
         <button class="action-btn sec-btn" style="width:100%; margin-bottom:10px;" onclick="clearStats()">🧹 清除數據</button>
         <div id="fullWordList" class="word-list-grid"></div>
@@ -160,405 +136,476 @@
 </div>
 
 <script>
-const rawData = [
-       // --- Week 1 (完整 25 個條目) ---
-    { week: "1", word: "chin", syllables: ["chin"], chinese: "下巴", example: "Touch your chin.", image: "🙂" },
-    { week: "1", word: "chop", syllables: ["chop"], chinese: "砍/劈/斬", example: "Chop the wood.", image: "🪓" },
-    { week: "1", word: "chop", syllables: ["chop"], chinese: "厚肉片/排骨", example: "A tasty pork chop.", image: "🥩" },
-    { week: "1", word: "chain", syllables: ["chain"], chinese: "鏈條", example: "An iron chain.", image: "⛓️" },
-    { week: "1", word: "chase", syllables: ["chase"], chinese: "追逐", example: "Cats chase mice.", image: "🏃" },
-    { week: "1", word: "chat", syllables: ["chat"], chinese: "聊天", example: "We chat together.", image: "💬" },
-    { week: "1", word: "then", syllables: ["then"], chinese: "然後", example: "And then we go.", image: "" },
-    { week: "1", word: "that", syllables: ["that"], chinese: "那個", example: "That is a dog.", image: "" },
-    { week: "1", word: "this", syllables: ["this"], chinese: "這個", example: "This is my book.", image: "" },
-    { week: "1", word: "these", syllables: ["these"], chinese: "這些", example: "These are pens.", image: "" },
-    { week: "1", word: "those", syllables: ["those"], chinese: "那些", example: "Those are stars.", image: "" },
-    { week: "1", word: "basket", syllables: ["bas", "ket"], chinese: "籃子", example: "A fruit basket.", image: "🧺" },
-    { week: "1", word: "bear", syllables: ["bear"], chinese: "熊", example: "A big brown bear.", image: "🐻" },
-    { week: "1", word: "park", syllables: ["park"], chinese: "公園", example: "Play in the park.", image: "🏞️" },
-    { week: "1", word: "tent", syllables: ["tent"], chinese: "帳篷", example: "Sleep in a tent.", image: "⛺" },
-    { week: "1", word: "balloon", syllables: ["bal", "loon"], chinese: "氣球", example: "A red balloon.", image: "🎈" },
-    { week: "1", word: "can't", syllables: ["can't"], chinese: "不能/不會", example: "I can't fly.", image: "🚫" },
-    { week: "1", word: "knew", syllables: ["knew"], chinese: "知道(過去式)", example: "I knew the answer.", image: "💡" },
-    { week: "1", word: "place", syllables: ["place"], chinese: "地方", example: "A nice place.", image: "📍" },
-    { week: "1", word: "show", syllables: ["show"], chinese: "展示/表演", example: "Show me your toy.", image: "🎭" },
-    { week: "1", word: "down", syllables: ["down"], chinese: "向下", example: "Sit down please.", image: "⬇️" },
-    { week: "1", word: "bring", syllables: ["bring"], chinese: "帶來", example: "Bring your bag.", image: "👜" },
-    { week: "1", word: "its", syllables: ["its"], chinese: "它的", example: "The cat licks its paw.", image: "🐾" },
-    { week: "1", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "A bird nest.", image: "🪺" },
-    { week: "1", word: "please", syllables: ["please"], chinese: "請", example: "Please help me.", image: "🙏" },
+// 格式：[單字, "音節-用-連字號", 中文, 例句, 圖片(可空)]
+const WEEKS = {
+"1": [
+["chin","chin","下巴","Touch your chin.","🙂"],
+["chop","chop","砍/劈/斬","Chop the wood.","🪓"],
+["chop","chop","厚肉片/排骨","A tasty pork chop.","🥩"],
+["chain","chain","鏈條","An iron chain.","⛓️"],
+["chase","chase","追逐","Cats chase mice.","🏃"],
+["chat","chat","聊天","We chat together.","💬"],
+["then","then","然後","And then we go.",""],
+["that","that","那個","That is a dog.",""],
+["this","this","這個","This is my book.",""],
+["these","these","這些","These are pens.",""],
+["those","those","那些","Those are stars.",""],
+["basket","bas-ket","籃子","A fruit basket.","🧺"],
+["bear","bear","熊","A big brown bear.","🐻"],
+["park","park","公園","Play in the park.","🏞️"],
+["tent","tent","帳篷","Sleep in a tent.","⛺"],
+["balloon","bal-loon","氣球","A red balloon.","🎈"],
+["can't","can't","不能/不會","I can't fly.","🚫"],
+["knew","knew","知道(過去式)","I knew the answer.","💡"],
+["place","place","地方","A nice place.","📍"],
+["show","show","展示/表演","Show me your toy.","🎭"],
+["down","down","向下","Sit down please.","⬇️"],
+["bring","bring","帶來","Bring your bag.","👜"],
+["its","its","它的","The cat licks its paw.","🐾"],
+["nest","nest","鳥巢","A bird nest.","🪺"],
+["please","please","請","Please help me.","🙏"]
+],
+"2": [
+["quack","quack","鴨叫聲","Ducks go quack.","🦆"],
+["quarter","quar-ter","25分硬幣","A silver quarter.","🪙"],
+["queen","queen","皇后","The royal queen.","👑"],
+["question","ques-tion","問題","Ask a question.","❓"],
+["quilt","quilt","被子","A warm quilt.","🛌"],
+["shop","shop","商店","Go to the shop.","🏪"],
+["shell","shell","貝殼","A sea shell.","🐚"],
+["shark","shark","鯊魚","A big shark.","🦈"],
+["shape","shape","形狀","What shape is it?","🔷"],
+["whale","whale","鯨魚","A blue whale.","🐋"],
+["why","why","為什麼","Why are you late?",""],
+["when","when","何時","When do we eat?",""],
+["which","which","哪一個","Which one do you like?",""],
+["where","where","哪裡","Where is my pen?",""],
+["ship","ship","船","A big ship.","🚢"],
+["call out","call-out","大聲喊","Call out my name.","📢"],
+["cover","cov-er","遮蓋/覆蓋","Cover the bed.",""],
+["top","top","頂部/陀螺","Spin the top.","⬆️"],
+["room","room","房間","Clean your room.","🚪"],
+["let go","let-go","放手","Don't let go.",""],
+["bed","bed","床","Go to bed.","🛏️"],
+["bread","bread","麵包","Eat some bread.","🍞"],
+["let","let","讓","Let us go.",""],
+["chicken","chick-en","雞/雞肉","Tasty chicken.","🐔"],
+["or","or","或者","Red or blue?",""],
+["up","up","向上","Look up.","⬆️"]
+],
+"3": [
+["skip","skip","跳躍","Skip rope.",""],
+["sled","sled","雪橇","Ride a sled.","🛷"],
+["slide","slide","溜滑梯","Play on the slide.","🛝"],
+["smell","smell","聞","Smell the flower.","👃"],
+["smile","smile","微笑","Give a big smile.","😊"],
+["skate","skate","溜冰鞋","I can skate.","⛸️"],
+["stone","stone","石頭","A heavy stone.","🪨"],
+["step","step","台階/腳步","Watch your step.","👣"],
+["stem","stem","莖","A flower stem.","🌿"],
+["smoke","smoke","煙","Black smoke.","💨"],
+["whale","whale","鯨魚","Look at the whale.","🐋"],
+["when","when","何時","When do we go?",""],
+["which","which","哪一個","Which one is yours?",""],
+["then","then","然後","And then we walk.",""],
+["where","where","哪裡","Where are you?",""],
+["chat","chat","聊天","We chat together.","💬"],
+["chin","chin","下巴","Touch your chin.",""],
+["chop","chop","砍/剪/斷","Chop the wood.","🪓"],
+["shape","shape","形狀","A round shape.","🔷"],
+["shark","shark","鯊魚","A big shark.","🦈"],
+["throw","throw","投/擲","Throw the ball.","🤾"],
+["never","nev-er","從不","Never give up.",""],
+["for","for","給/為了","This is for you.",""],
+["hold","hold","握著/抓住","Hold my hand.",""],
+["said","said","說(過去式)","He said hello.",""],
+["out","out","出去/向外","Go out.",""],
+["sleep","sleep","睡覺","Time to sleep.","😴"]
+],
+"4": [
+["scale","scale","磅秤","Stand on the scale.","⚖️"],
+["scare","scare","驚嚇","Don't scare me.","👻"],
+["snake","snake","蛇","A long snake.","🐍"],
+["snap","snap","彈手指","Snap your fingers.","🫰"],
+["snip","snip","剪斷","Snip with scissors.","✂️"],
+["spell","spell","拼字","Spell the word.","🔤"],
+["spill","spill","溢出/潑出","Don't spill milk.","💧"],
+["spin","spin","旋轉","Spin around.","🌀"],
+["swim","swim","游泳","I can swim.","🏊"],
+["spoke","spoke","講話(過去式)","She spoke nicely.","🗣️"],
+["may","may","可能","May I come in?",""],
+["way","way","方向/道路","This way, please.","🛣️"],
+["day","day","一天","A sunny day.","☀️"],
+["clay","clay","黏土","Play with clay.","🏺"],
+["gave","gave","給(過去式)","He gave me a book.","🎁"],
+["name","name","名字","What is your name?","📛"],
+["bake","bake","烘烤","Bake a cake.","🎂"],
+["came","came","來到(過去式)","He came home.",""],
+["take","take","拿取","Take your umbrella.",""],
+["play","play","玩耍","Play games.","🎲"],
+["air","air","空氣","Fresh air.","💨"],
+["cried","cried","哭泣(過去式)","The baby cried.","😢"],
+["even","e-ven","甚至","Even kids can do it.",""],
+["boxes","box-es","箱子(複數)","Many big boxes.","📦"],
+["threw out","threw-out","丟掉","Threw out the trash.","🗑️"],
+["always","al-ways","總是","Always smile.",""],
+["Christmas","Christ-mas","聖誕節","Merry Christmas!","🎄"],
+["Santa Claus","San-ta-Claus","聖誕老人","Santa Claus is coming.","🎅"],
+["don't","don't","不要","Don't worry.","🚫"],
+["about","a-bout","關於","Tell me about it.",""]
+],
+"5": [
+["flag","flag","旗子","Wave the flag.","🚩"],
+["flame","flame","火焰","A bright flame.","🔥"],
+["flat","flat","平坦的","A flat land.",""],
+["flip","flip","輕拋","Flip the coin.","🔄"],
+["flute","flute","長笛","Play the flute.","🪈"],
+["plane","plane","飛機","A fast plane.","✈️"],
+["plate","plate","盤子","Food on a plate.","🍽️"],
+["play","play","玩耍","Play games with friends.","🎲"],
+["plug","plug","插頭","Pull the plug.","🔌"],
+["plum","plum","梅子","A sweet plum.",""],
+["animal","an-i-mal","動物","A wild animal.","🐾"],
+["dark","dark","黑暗的","It is dark outside.","🌑"],
+["hear","hear","聽見","I hear a song.","👂"],
+["hope","hope","希望","I hope so.","🤞"],
+["light","light","燈光","Turn on the light.","💡"],
+["sound","sound","聲音","A loud sound.","🔊"],
+["stuck","stuck","困住","I am stuck.",""],
+["turn off","turn-off","關掉","Turn off the TV.",""],
+["fast","fast","快速的","Run very fast.","💨"],
+["friend","friend","朋友","My best friend.","👫"],
+["of","of","...的","A cup of tea.",""],
+["very","ver-y","非常","Very good!",""],
+["both","both","兩者","Both of us.",""]
+],
+"6": [
+["club","club","社團/俱樂部","Join the club.","🏛️"],
+["clam","clam","蛤蜊","Eat a clam.","🦪"],
+["clap","clap","拍手","Clap your hands.","👏"],
+["class","class","班級","In the class.","🏫"],
+["clip","clip","迴紋針","A paper clip.","📎"],
+["blade","blade","刀片","A sharp blade.","🗡️"],
+["glad","glad","高興的","I am glad.","😄"],
+["globe","globe","地球儀","Look at the globe.","🌍"],
+["glass","glass","玻璃杯","A glass of water.","🥛"],
+["hide","hide","躲藏","Hide and seek.","🙈"],
+["ride","ride","騎/乘","Ride a bike.","🚴"],
+["bike","bike","腳踏車","Ride my bike.","🚲"],
+["dime","dime","一角硬幣","A silver dime.","🪙"],
+["like","like","喜歡","I like apples.","👍"],
+["time","time","時間","What time is it?","⏰"],
+["fine","fine","很好","I am fine.","👌"],
+["kite","kite","風箏","Fly a kite.","🪁"],
+["mine","mine","我的東西","This is mine.",""],
+["size","size","尺寸","What size?","📏"],
+["came off","came-off","脫落","The button came off.",""],
+["much","much","許多","Thank you so much.",""],
+["let's","let's","讓我們","Let's play.",""],
+["wish","wish","希望","Make a wish.","🌠"],
+["farm","farm","農場","Live on a farm.","🚜"],
+["only","on-ly","唯一的","The only one.",""],
+["right now","right-now","就是現在","Do it right now.",""],
+["those","those","那些","Those are yours.",""],
+["long","long","長長的","A long road.",""],
+["ride","ride","騎/搭乘(Reading Plus)","Enjoy the bus ride.","🚌"],
+["keep","keep","保持","Keep quiet.",""],
+["letter","let-ter","信件","Write a letter.","✉️"],
+["one","one","一","Number one.","1️⃣"],
+["tell","tell","告訴","Tell me a story.","🗣️"],
+["story","sto-ry","故事","Read a story.","📖"]
+],
+"7": [
+["bride","bride","新娘","A beautiful bride.","👰"],
+["frame","frame","相框","A photo frame.","🖼️"],
+["frog","frog","青蛙","A green frog.","🐸"],
+["grab","grab","抓取","Grab your bag.","✊"],
+["grade","grade","年級/成績","In grade one.","🎓"],
+["grape","grape","葡萄","A purple grape.","🍇"],
+["grill","grill","烤架","Cook on the grill.","🍖"],
+["grin","grin","露齒笑","A wide grin.","😁"],
+["graze","graze","放牧/吃草","Cows graze here.","🐄"],
+["arms","arms","手臂","Open your arms.","💪"],
+["children","chil-dren","孩子們","Happy children.","🧒"],
+["walk by","walk-by","經過","Walk by the park.","🚶"],
+["pen","pen","欄/圈","A pig pen.","🐷"],
+["thank you","thank-you","謝謝你","Thank you so much.","🙏"],
+["their","their","他們的","It is their house.",""],
+["told","told","告訴(過去式)","He told a joke.",""],
+["everything","ev-ery-thing","每件事","I know everything.",""],
+["coat","coat","大衣/外套","Wear a warm coat.","🧥"],
+["day","day","一天/日子","Have a good day.","☀️"],
+["first","first","第一","First place.","🥇"],
+["green","green","綠色","Green grass.","🟢"],
+["myself","my-self","我自己","I do it myself.",""],
+["own","own","自己的","My own room.",""],
+["party","par-ty","派對","A birthday party.","🎉"],
+["by","by","藉由/在旁邊","Sit by me.",""],
+["clean","clean","清潔的","Keep hands clean.","🧼"],
+["hold","hold","握著/抓住","Hold my hand.",""],
+["may","may","可能","May I come in?",""]
+],
+"8": [
+["pole","pole","柱子","A tall pole.",""],
+["home","home","家","Go back home.","🏠"],
+["bone","bone","骨頭","The dog's bone.","🦴"],
+["rope","rope","繩子","Jump the rope.","🪢"],
+["note","note","筆記","Write a note.","📝"],
+["joke","joke","玩笑","Tell a funny joke.","😂"],
+["go","go","去","Let's go.","▶️"],
+["no","no","沒有/不","No, thanks.","🚫"],
+["hope","hope","希望","I hope so.","🤞"],
+["rode","rode","騎(過去式)","He rode a horse.","🐴"]
+],
+"10": [
+["desk","desk","桌子","On my desk.",""],
+["mask","mask","面具","Wear a mask.","😷"],
+["tusk","tusk","長牙","An elephant tusk.","🐘"],
+["nest","nest","鳥巢","A bird nest.","🪺"],
+["vest","vest","背心","Wear a vest.","🦺"],
+["list","list","清單","A shopping list.","📋"],
+["fist","fist","拳頭","Make a fist.","✊"],
+["chest","chest","箱子/胸膛","A treasure chest.",""],
+["crust","crust","麵包邊","Bread crust.","🥖"],
+["lost","lost","遺失的","I am lost.",""],
+["cost","cost","價值/花費","How much does it cost?","💰"],
+["cast","cast","石膏","Wear a cast.",""],
+["bee","bee","蜜蜂","A busy bee.","🐝"],
+["jeep","jeep","吉普車","Drive a jeep.","🚙"],
+["weed","weed","雜草","Pull out the weed.","🌿"],
+["feet","feet","雙腳","Wash your feet.","🦶"],
+["seed","seed","種子","Plant a seed.","🌱"],
+["me","me","我","Look at me.",""],
+["he","he","他","He is my dad.",""],
+["she","she","她","She is my mom.",""],
+["see","see","看見","I see a bird.","👀"],
+["feel","feel","感覺","I feel happy.",""],
+["about","a-bout","大約/在...的時候","Tell me about it.",""],
+["gone","gone","離開/不見了","The sun is gone.",""],
+["asleep","a-sleep","睡著的","The baby is asleep.","😴"],
+["glad","glad","高興的","I am glad.","😄"],
+["yellow","yel-low","黃色","A yellow duck.","🟡"],
+["eat","eat","吃","Eat an apple.","🍎"],
+["lunch","lunch","午餐","Eat lunch.","🍱"],
+["watching","watch-ing","觀察/看","Watching TV.","📺"],
+["never","nev-er","從不","Never give up.",""],
+["seven","sev-en","七","Seven days.","7️⃣"],
+["start","start","開始","Start the game.","▶️"],
+["time","time","時間","What time is it?","⏰"],
+["write","write","寫","Write a letter.","✍️"]
+],
+"11": [
+["braid","braid","辮子","A long braid.",""],
+["clay","clay","黏土","Play with clay.","🏺"],
+["tray","tray","托盤","A food tray.","🍽️"],
+["mail","mail","郵件","Check the mail.","📧"],
+["nail","nail","釘子","A sharp nail.",""],
+["rail","rail","扶手/鐵軌","Hold the rail.","🛤️"],
+["rain","rain","下雨","Heavy rain.","🌧️"],
+["tail","tail","尾巴","A dog tail.",""],
+["pail","pail","提桶","A water pail.","🪣"],
+["snail","snail","蝸牛","A slow snail.","🐌"],
+["sail","sail","帆/航行","Sail a boat.","⛵"],
+["trail","trail","小道","A mountain trail.","🥾"],
+["bus","bus","公車","Ride the bus.","🚌"],
+["called","called","大喊/呼喚(過去式)","He called my name.","📣"],
+["when","when","何時","When do we go?",""],
+["horse","horse","馬","A fast horse.","🐴"],
+["time","time","時間","What time is it?","⏰"],
+["tail","tail","尾巴(Reading Plus)","The cat wags its tail.",""],
+["could","could","可以/能夠","Could you help me?",""],
+["make","make","製作","Make a cake.","🔨"],
+["work","work","工作","Hard work.","💼"],
+["try","try","嘗試","Try your best.","🎯"],
+["only","on-ly","唯一的","The only one.",""],
+["way","way","道路/方向","The right way.","🛣️"]
+],
+"期中考": [
+["bike","bike","腳踏車","Ride my bike.","🚲"],
+["brick","brick","磚塊","A red brick.","🧱"],
+["bride","bride","新娘","A beautiful bride.","👰"],
+["broom","broom","掃帚","Sweep with a broom.","🧹"],
+["came","came","來到(過去式)","He came home.",""],
+["chain","chain","鏈條","An iron chain.","⛓️"],
+["chat","chat","聊天","We chat together.","💬"],
+["cheek","cheek","臉頰","A rosy cheek.","😊"],
+["chin","chin","下巴","Touch your chin.","🙂"],
+["chop","chop","砍/劈/斬","Chop the wood.","🪓"],
+["clam","clam","蛤蜊","Eat a clam.","🦪"],
+["clap","clap","拍手","Clap your hands.","👏"],
+["clip","clip","迴紋針","A paper clip.","📎"],
+["cloud","cloud","雲","A white cloud.","☁️"],
+["crab","crab","螃蟹","A red crab.","🦀"],
+["day","day","一天","A sunny day.","☀️"],
+["dress","dress","洋裝","A pretty dress.","👗"],
+["feather","feath-er","羽毛","A soft feather.","🪶"],
+["feet","feet","雙腳","Wash your feet.","🦶"],
+["flag","flag","旗子","Wave the flag.","🚩"],
+["flame","flame","火焰","A bright flame.","🔥"],
+["flute","flute","長笛","Play the flute.","🪈"],
+["fork","fork","叉子","Use a fork.","🍴"],
+["Friday","Fri-day","星期五","Today is Friday.","📅"],
+["gate","gate","大門","Open the gate.","🚪"],
+["gave","gave","給(過去式)","He gave me a book.","🎁"],
+["gift","gift","禮物","A birthday gift.","🎁"],
+["globe","globe","地球儀","Look at the globe.","🌍"],
+["grade","grade","年級/成績","In grade one.","🎓"],
+["grapes","grapes","葡萄(複數)","Sweet grapes.","🍇"],
+["grass","grass","草","Green grass.","🌱"],
+["grin","grin","露齒笑","A wide grin.","😁"],
+["hope","hope","希望","I hope so.","🤞"],
+["joke","joke","玩笑","Tell a funny joke.","😂"],
+["mine","mine","我的東西","This is mine.",""],
+["Monday","Mon-day","星期一","Today is Monday.","📅"],
+["plane","plane","飛機","A fast plane.","✈️"],
+["plug","plug","插頭","Pull the plug.","🔌"],
+["quack","quack","鴨叫聲","Ducks go quack.","🦆"],
+["quilt","quilt","被子","A warm quilt.","🛌"],
+["ride","ride","騎/乘","Ride a bike.","🚴"],
+["Saturday","Sat-ur-day","星期六","Today is Saturday.","📅"],
+["scale","scale","磅秤","Stand on the scale.","⚖️"],
+["scare","scare","驚嚇","Don't scare me.","👻"],
+["seed","seed","種子","Plant a seed.","🌱"],
+["shape","shape","形狀","What shape is it?","🔷"],
+["shark","shark","鯊魚","A big shark.","🦈"],
+["skirt","skirt","裙子","A long skirt.","👗"],
+["skunk","skunk","臭鼬","A smelly skunk.","🦨"],
+["sled","sled","雪橇","Ride a sled.","🛷"],
+["slide","slide","溜滑梯","Play on the slide.","🛝"],
+["smell","smell","聞","Smell the flower.","👃"],
+["smoke","smoke","煙","Black smoke.","💨"],
+["snail","snail","蝸牛","A slow snail.","🐌"],
+["snake","snake","蛇","A long snake.","🐍"],
+["spill","spill","溢出/潑出","Don't spill milk.","💧"],
+["spin","spin","旋轉","Spin around.","🌀"],
+["stem","stem","莖","A flower stem.","🌿"],
+["stone","stone","石頭","A heavy stone.","🪨"],
+["Sunday","Sun-day","星期日","Today is Sunday.","📅"],
+["swim","swim","游泳","I can swim.","🏊"],
+["Thursday","Thurs-day","星期四","Today is Thursday.","📅"],
+["tree","tree","樹","A tall tree.","🌳"],
+["Tuesday","Tues-day","星期二","Today is Tuesday.","📅"],
+["Wednesday","Wednes-day","星期三","Today is Wednesday.","📅"]
+],
+"bee01": [
+["album","al-bum","相簿","A photo album.","📸"],
+["anybody","an-y-bod-y","任何人","Is anybody home?","👤"],
+["anything","an-y-thing","任何事","Do you need anything?","📦"],
+["apartment","a-part-ment","公寓","Live in an apartment.","🏢"],
+["armadillo","ar-ma-dil-lo","犰狳","A wild armadillo.","🦔"],
+["belief","be-lief","相信","A strong belief.","💡"],
+["blacktop","black-top","柏油路","Run on the blacktop.","🛣️"],
+["block","block","堵住","Block the road.","🚧"],
+["border","bor-der","邊緣","Cross the border.","🗺️"],
+["brake","brake","煞車","Press the brake.","🛑"],
+["brave","brave","勇敢的","A brave girl.","🦁"],
+["breathe","breathe","呼吸","Breathe fresh air.","🫁"],
+["buffalo","buf-fa-lo","水牛","A big buffalo.","🦬"],
+["bulldog","bull-dog","鬥牛犬","A cute bulldog.","🐶"],
+["bulldozer","bull-doz-er","推土機","A heavy bulldozer.","🚜"],
+["burglar","bur-glar","夜賊","The burglar ran away.","🥷"],
+["button","but-ton","鈕扣","Push the button.","🔘"],
+["campfire","camp-fire","營火","Sit around the campfire.","🏕️"],
+["cellar","cel-lar","地下室","In the cellar.","🏚️"],
+["certainly","cer-tain-ly","當然","I will certainly help.","✅"]
+],
+"bee02": [
+["computer","com-pu-ter","電腦","Use a computer.","💻"],
+["country","coun-try","國家","A beautiful country.","🚩"],
+["crocodile","croc-o-dile","鱷魚","A large crocodile.","🐊"],
+["darkness","dark-ness","黑暗","In total darkness.","🌑"],
+["decide","de-cide","決定","Decide what to do.","🤔"],
+["different","dif-fer-ent","不同的","Many different colors.","🔀"],
+["doubt","doubt","懷疑","I have no doubt.","❓"],
+["downstairs","down-stairs","樓下的","Go downstairs.","📉"],
+["downtown","down-town","市區","Go to downtown.","🏙️"],
+["excellent","ex-cel-lent","傑出的","An excellent job!","🌟"],
+["exercise","ex-er-cise","運動","Do daily exercise.","🏋️"],
+["fearful","fear-ful","可怕的","A fearful sound.","😱"],
+["fellow","fel-low","同伴","My fellow friends.","🧑‍🤝‍🧑"],
+["finance","fi-nance","金融","Learn about finance.","💰"],
+["freckles","freck-les","雀斑","Freckles on her face.","👧"],
+["government","gov-ern-ment","政府","The city government.","🏛️"],
+["grasshopper","grass-hop-per","蚱蜢","A green grasshopper.","🦗"],
+["gruff","gruff","粗魯的","A gruff voice.","😠"],
+["gulp","gulp","大口地吸","Gulp some water.","🥤"],
+["gut","gut","腸子","Listen to your gut.","🥩"]
+],
+"bee03": [
+["handcuffs","hand-cuffs","手銬","Iron handcuffs.","⛓️"],
+["heaven","hea-ven","天堂","Look at heaven.","☁️"],
+["heavy","hea-vy","重的","A heavy box.","🏋️"],
+["hidden","hid-den","隱藏的","A hidden treasure.","🔍"],
+["horrible","hor-ri-ble","可怕的","A horrible movie.","👻"],
+["however","how-ev-er","然而","However, I like it.","🔄"],
+["illegal","il-le-gal","不合法的","It is illegal.","🚫"],
+["important","im-por-tant","重要的","An important lesson.","⚠️"],
+["keyboard","key-board","鍵盤","Type on keyboard.","⌨️"],
+["leather","lea-ther","皮革製的","A leather bag.","🧥"],
+["leopard","leo-pard","美洲豹","A fast leopard.","🐆"],
+["matter","mat-ter","事情","What is the matter?","📝"],
+["mighty","migh-ty","強大的","A mighty king.","⚡"],
+["minute","min-ute","分鐘","Wait a minute.","⏱️"],
+["moment","mo-ment","片刻","Just a moment.","⌛"],
+["mystery","mys-ter-y","神秘的事","Solve a mystery.","🕵️"],
+["nature","na-ture","自然","Love nature.","🌲"],
+["necessary","nec-es-sar-y","必要的","It is necessary.","❗"],
+["newspaper","news-pa-per","報紙","Read newspaper.","📰"],
+["office","of-fice","辦公室","Work in an office.","🏢"]
+],
+"bee04": [
+["oversee","over-see","監督","Oversee the work.","👁️"],
+["panic","pan-ic","驚慌","Don't panic.","🚨"],
+["payment","pay-ment","付款","Make a payment.","💳"],
+["pluck","pluck","採/拉/扯","Pluck a flower.","🤏"],
+["possible","pos-si-ble","可能的","Anything is possible.","🎯"],
+["practice","prac-tice","練習","Practice makes perfect.","🎯"],
+["president","pres-i-dent","總統","The president spoke.","👔"],
+["problem","prob-lem","問題","Solve the problem.","🧩"],
+["purpose","pur-pose","目的","What is your purpose?","🎯"],
+["question","ques-tion","問題","Ask a question.","❓"],
+["rectangle","rec-tan-gle","長方形","Draw a rectangle.","🟩"],
+["remember","re-mem-ber","記得","Remember my name.","🧠"],
+["riding","rid-ing","騎乘","Go horse riding.","🏇"],
+["roundhouse","round-house","圓形火車庫","A train roundhouse.","🚂"],
+["screen","screen","螢幕","Look at the screen.","🖥️"],
+["several","sev-er-al","幾個","Several books.","🔢"],
+["sidewalk","side-walk","人行道","Walk on sidewalk.","🚶"],
+["skateboard","skate-board","滑板","Ride a skateboard.","🛹"],
+["something","some-thing","某些事","Eat something.","🎁"],
+["sometimes","some-times","有時候","Sometimes I run.","⏳"]
+],
+"bee05": [
+["somewhere","some-where","某個地方","Somewhere far away.","📍"],
+["sportsman","sports-man","運動員","A good sportsman.","⚽"],
+["stoplight","stop-light","紅綠燈","Stop at the stoplight.","🚦"],
+["stream","stream","小河流","A small stream.","🌊"],
+["strength","strength","力量","Test your strength.","💪"],
+["struggle","strug-gle","掙扎","Struggle hard.","🧗"],
+["stutter","stut-ter","結巴","Do not stutter.","💬"],
+["surprise","sur-prise","驚喜","A big surprise!","🎁"],
+["swallow","swal-low","吞下","Swallow the food.","🍽"],
+["therefore","there-fore","因此","Therefore, we go.","➡️"],
+["thought","thought","想法","A good thought.","💭"],
+["thousand","thou-sand","一千的","One thousand dollars.","🔢"],
+["together","to-geth-er","一起","Play together.","🧑‍🤝‍🧑"],
+["troublemaker","trou-ble-ma-ker","惹麻煩的人","Don't be a troublemaker.","😈"],
+["typewriter","type-wri-ter","打字機","An old typewriter.","⌨️"],
+["uncertain","un-cer-tain","不確定的","Feel uncertain.","❓"],
+["undertaking","un-der-tak-ing","任務","A big undertaking.","📋"],
+["whether","wheth-er","是否","Whether or not.","⚖️"],
+["without","with-out","沒有","Without you.","🚫"],
+["wonderful","won-der-ful","美好的","A wonderful day!","✨"]
+]
+};
 
-    // --- Week 2 (完整 26 個條目) ---
-    { week: "2", word: "quack", syllables: ["quack"], chinese: "鴨叫聲", example: "Ducks go quack.", image: "🦆" },
-    { week: "2", word: "quarter", syllables: ["quar", "ter"], chinese: "25分硬幣", example: "A silver quarter.", image: "🪙" },
-    { week: "2", word: "queen", syllables: ["queen"], chinese: "皇后", example: "The royal queen.", image: "👑" },
-    { week: "2", word: "question", syllables: ["ques", "tion"], chinese: "問題", example: "Ask a question.", image: "❓" },
-    { week: "2", word: "quilt", syllables: ["quilt"], chinese: "被子", example: "A warm quilt.", image: "🛌" },
-    { week: "2", word: "shop", syllables: ["shop"], chinese: "商店", example: "Go to the shop.", image: "🏪" },
-    { week: "2", word: "shell", syllables: ["shell"], chinese: "貝殼", example: "A sea shell.", image: "🐚" },
-    { week: "2", word: "shark", syllables: ["shark"], chinese: "鯊魚", example: "A big shark.", image: "🦈" },
-    { week: "2", word: "shape", syllables: ["shape"], chinese: "形狀", example: "What shape is it?", image: "🔷" },
-    { week: "2", word: "whale", syllables: ["whale"], chinese: "鯨魚", example: "A blue whale.", image: "🐋" },
-    { week: "2", word: "why", syllables: ["why"], chinese: "為什麼", example: "Why are you late?" },
-    { week: "2", word: "when", syllables: ["when"], chinese: "何時", example: "When do we eat?" },
-    { week: "2", word: "which", syllables: ["which"], chinese: "哪一個", example: "Which one do you like?" },
-    { week: "2", word: "where", syllables: ["where"], chinese: "哪裡", example: "Where is my pen?" },
-    { week: "2", word: "ship", syllables: ["ship"], chinese: "船", example: "A big ship.", image: "🚢" },
-    { week: "2", word: "call out", syllables: ["call", "out"], chinese: "大聲喊", example: "Call out my name.", image: "📢" },
-    { week: "2", word: "cover", syllables: ["cov", "er"], chinese: "遮蓋/覆蓋", example: "Cover the bed." },
-    { week: "2", word: "top", syllables: ["top"], chinese: "頂部/陀螺", example: "Spin the top.", image: "⬆️" },
-    { week: "2", word: "room", syllables: ["room"], chinese: "房間", example: "Clean your room.", image: "🚪" },
-    { week: "2", word: "let go", syllables: ["let", "go"], chinese: "放手", example: "Don't let go." },
-    { week: "2", word: "bed", syllables: ["bed"], chinese: "床", example: "Go to bed.", image: "🛏️" },
-    { week: "2", word: "bread", syllables: ["bread"], chinese: "麵包", example: "Eat some bread.", image: "🍞" },
-    { week: "2", word: "let", syllables: ["let"], chinese: "讓", example: "Let us go." },
-    { week: "2", word: "chicken", syllables: ["chick", "en"], chinese: "雞/雞肉", example: "Tasty chicken.", image: "🐔" },
-    { week: "2", word: "or", syllables: ["or"], chinese: "或者", example: "Red or blue?" },
-    { week: "2", word: "up", syllables: ["up"], chinese: "向上", example: "Look up.", image: "⬆️" },
-
-    // --- Week 3 (完整 27 個條目) ---
-    { week: "3", word: "skip", syllables: ["skip"], chinese: "跳躍", example: "Skip rope." },
-    { week: "3", word: "sled", syllables: ["sled"], chinese: "雪橇", example: "Ride a sled.", image: "🛷" },
-    { week: "3", word: "slide", syllables: ["slide"], chinese: "溜滑梯", example: "Play on the slide.", image: "🛝" },
-    { week: "3", word: "smell", syllables: ["smell"], chinese: "聞", example: "Smell the flower.", image: "👃" },
-    { week: "3", word: "smile", syllables: ["smile"], chinese: "微笑", example: "Give a big smile.", image: "😊" },
-    { week: "3", word: "skate", syllables: ["skate"], chinese: "溜冰鞋", example: "I can skate.", image: "⛸️" },
-    { week: "3", word: "stone", syllables: ["stone"], chinese: "石頭", example: "A heavy stone.", image: "🪨" },
-    { week: "3", word: "step", syllables: ["step"], chinese: "台階/腳步", example: "Watch your step.", image: "👣" },
-    { week: "3", word: "stem", syllables: ["stem"], chinese: "莖", example: "A flower stem.", image: "🌿" },
-    { week: "3", word: "smoke", syllables: ["smoke"], chinese: "煙", example: "Black smoke.", image: "💨" },
-    { week: "3", word: "whale", syllables: ["whale"], chinese: "鯨魚", example: "Look at the whale.", image: "🐋" },
-    { week: "3", word: "when", syllables: ["when"], chinese: "何時", example: "When do we go?" },
-    { week: "3", word: "which", syllables: ["which"], chinese: "哪一個", example: "Which one is yours?" },
-    { week: "3", word: "then", syllables: ["then"], chinese: "然後", example: "And then we walk." },
-    { week: "3", word: "where", syllables: ["where"], chinese: "哪裡", example: "Where are you?" },
-    { week: "3", word: "chat", syllables: ["chat"], chinese: "聊天", example: "We chat together.", image: "💬" },
-    { week: "3", word: "chin", syllables: ["chin"], chinese: "下巴", example: "Touch your chin." },
-    { week: "3", word: "chop", syllables: ["chop"], chinese: "砍/剪/斷", example: "Chop the wood.", image: "🪓" },
-    { week: "3", word: "shape", syllables: ["shape"], chinese: "形狀", example: "A round shape.", image: "🔷" },
-    { week: "3", word: "shark", syllables: ["shark"], chinese: "鯊魚", example: "A big shark.", image: "🦈" },
-    { week: "3", word: "throw", syllables: ["throw"], chinese: "投/擲", example: "Throw the ball.", image: "🤾" },
-    { week: "3", word: "never", syllables: ["nev", "er"], chinese: "從不", example: "Never give up." },
-    { week: "3", word: "for", syllables: ["for"], chinese: "給/為了", example: "This is for you." },
-    { week: "3", word: "hold", syllables: ["hold"], chinese: "握著/抓住", example: "Hold my hand." },
-    { week: "3", word: "said", syllables: ["said"], chinese: "說(過去式)", example: "He said hello." },
-    { week: "3", word: "out", syllables: ["out"], chinese: "出去/向外", example: "Go out." },
-    { week: "3", word: "sleep", syllables: ["sleep"], chinese: "睡覺", example: "Time to sleep.", image: "😴" },
-
-    // --- Week 4 (完整 30 個條目) ---
-    { week: "4", word: "scale", syllables: ["scale"], chinese: "磅秤", example: "Stand on the scale.", image: "⚖️" },
-    { week: "4", word: "scare", syllables: ["scare"], chinese: "驚嚇", example: "Don't scare me.", image: "👻" },
-    { week: "4", word: "snake", syllables: ["snake"], chinese: "蛇", example: "A long snake.", image: "🐍" },
-    { week: "4", word: "snap", syllables: ["snap"], chinese: "彈手指", example: "Snap your fingers.", image: "🫰" },
-    { week: "4", word: "snip", syllables: ["snip"], chinese: "剪斷", example: "Snip with scissors.", image: "✂️" },
-    { week: "4", word: "spell", syllables: ["spell"], chinese: "拼字", example: "Spell the word.", image: "🔤" },
-    { week: "4", word: "spill", syllables: ["spill"], chinese: "溢出/潑出", example: "Don't spill milk.", image: "💧" },
-    { week: "4", word: "spin", syllables: ["spin"], chinese: "旋轉", example: "Spin around.", image: "🌀" },
-    { week: "4", word: "swim", syllables: ["swim"], chinese: "游泳", example: "I can swim.", image: "🏊" },
-    { week: "4", word: "spoke", syllables: ["spoke"], chinese: "講話(過去式)", example: "She spoke nicely.", image: "🗣️" },
-    { week: "4", word: "may", syllables: ["may"], chinese: "可能", example: "May I come in?" },
-    { week: "4", word: "way", syllables: ["way"], chinese: "方向/道路", example: "This way, please.", image: "🛣️" },
-    { week: "4", word: "day", syllables: ["day"], chinese: "一天", example: "A sunny day.", image: "☀️" },
-    { week: "4", word: "clay", syllables: ["clay"], chinese: "黏土", example: "Play with clay.", image: "🏺" },
-    { week: "4", word: "gave", syllables: ["gave"], chinese: "給(過去式)", example: "He gave me a book.", image: "🎁" },
-    { week: "4", word: "name", syllables: ["name"], chinese: "名字", example: "What is your name?", image: "📛" },
-    { week: "4", word: "bake", syllables: ["bake"], chinese: "烘烤", example: "Bake a cake.", image: "🎂" },
-    { week: "4", word: "came", syllables: ["came"], chinese: "來到(過去式)", example: "He came home." },
-    { week: "4", word: "take", syllables: ["take"], chinese: "拿取", example: "Take your umbrella." },
-    { week: "4", word: "play", syllables: ["play"], chinese: "玩耍", example: "Play games.", image: "🎲" },
-    { week: "4", word: "air", syllables: ["air"], chinese: "空氣", example: "Fresh air.", image: "💨" },
-    { week: "4", word: "cried", syllables: ["cried"], chinese: "哭泣(過去式)", example: "The baby cried.", image: "😢" },
-    { week: "4", word: "even", syllables: ["e", "ven"], chinese: "甚至", example: "Even kids can do it." },
-    { week: "4", word: "boxes", syllables: ["box", "es"], chinese: "箱子(複數)", example: "Many big boxes.", image: "📦" },
-    { week: "4", word: "threw out", syllables: ["threw", "out"], chinese: "丟掉", example: "Threw out the trash.", image: "🗑️" },
-    { week: "4", word: "always", syllables: ["al", "ways"], chinese: "總是", example: "Always smile." },
-    { week: "4", word: "Christmas", syllables: ["Christ", "mas"], chinese: "聖誕節", example: "Merry Christmas!", image: "🎄" },
-    { week: "4", word: "Santa Claus", syllables: ["San", "ta", "Claus"], chinese: "聖誕老人", example: "Santa Claus is coming.", image: "🎅" },
-    { week: "4", word: "don't", syllables: ["don't"], chinese: "不要", example: "Don't worry.", image: "🚫" },
-    { week: "4", word: "about", syllables: ["a", "bout"], chinese: "關於", example: "Tell me about it." },
-
-    // --- Week 5 (完整 23 個條目) ---
-    { week: "5", word: "flag", syllables: ["flag"], chinese: "旗子", example: "Wave the flag.", image: "🚩" },
-    { week: "5", word: "flame", syllables: ["flame"], chinese: "火焰", example: "A bright flame.", image: "🔥" },
-    { week: "5", word: "flat", syllables: ["flat"], chinese: "平坦的", example: "A flat land." },
-    { week: "5", word: "flip", syllables: ["flip"], chinese: "輕拋", example: "Flip the coin.", image: "🔄" },
-    { week: "5", word: "flute", syllables: ["flute"], chinese: "長笛", example: "Play the flute.", image: "🪈" },
-    { week: "5", word: "plane", syllables: ["plane"], chinese: "飛機", example: "A fast plane.", image: "✈️" },
-    { week: "5", word: "plate", syllables: ["plate"], chinese: "盤子", example: "Food on a plate.", image: "🍽️" },
-    { week: "5", word: "play", syllables: ["play"], chinese: "玩耍", example: "Play games with friends.", image: "🎲" },
-    { week: "5", word: "plug", syllables: ["plug"], chinese: "插頭", example: "Pull the plug.", image: "🔌" },
-    { week: "5", word: "plum", syllables: ["plum"], chinese: "梅子", example: "A sweet plum." },
-    { week: "5", word: "animal", syllables: ["an", "i", "mal"], chinese: "動物", example: "A wild animal.", image: "🐾" },
-    { week: "5", word: "dark", syllables: ["dark"], chinese: "黑暗的", example: "It is dark outside.", image: "🌑" },
-    { week: "5", word: "hear", syllables: ["hear"], chinese: "聽見", example: "I hear a song.", image: "👂" },
-    { week: "5", word: "hope", syllables: ["hope"], chinese: "希望", example: "I hope so.", image: "🤞" },
-    { week: "5", word: "light", syllables: ["light"], chinese: "燈光", example: "Turn on the light.", image: "💡" },
-    { week: "5", word: "sound", syllables: ["sound"], chinese: "聲音", example: "A loud sound.", image: "🔊" },
-    { week: "5", word: "stuck", syllables: ["stuck"], chinese: "困住", example: "I am stuck." },
-    { week: "5", word: "turn off", syllables: ["turn", "off"], chinese: "關掉", example: "Turn off the TV." },
-    { week: "5", word: "fast", syllables: ["fast"], chinese: "快速的", example: "Run very fast.", image: "💨" },
-    { week: "5", word: "friend", syllables: ["friend"], chinese: "朋友", example: "My best friend.", image: "👫" },
-    { week: "5", word: "of", syllables: ["of"], chinese: "...的", example: "A cup of tea." },
-    { week: "5", word: "very", syllables: ["ver", "y"], chinese: "非常", example: "Very good!" },
-    { week: "5", word: "both", syllables: ["both"], chinese: "兩者", example: "Both of us." },
-
-    // --- Week 6 (完整 34 個條目) ---
-    { week: "6", word: "club", syllables: ["club"], chinese: "社團/俱樂部", example: "Join the club.", image: "🏛️" },
-    { week: "6", word: "clam", syllables: ["clam"], chinese: "蛤蜊", example: "Eat a clam.", image: "🦪" },
-    { week: "6", word: "clap", syllables: ["clap"], chinese: "拍手", example: "Clap your hands.", image: "👏" },
-    { week: "6", word: "class", syllables: ["class"], chinese: "班級", example: "In the class.", image: "🏫" },
-    { week: "6", word: "clip", syllables: ["clip"], chinese: "迴紋針", example: "A paper clip.", image: "📎" },
-    { week: "6", word: "blade", syllables: ["blade"], chinese: "刀片", example: "A sharp blade.", image: "🗡️" },
-    { week: "6", word: "glad", syllables: ["glad"], chinese: "高興的", example: "I am glad.", image: "😄" },
-    { week: "6", word: "globe", syllables: ["globe"], chinese: "地球儀", example: "Look at the globe.", image: "🌍" },
-    { week: "6", word: "glass", syllables: ["glass"], chinese: "玻璃杯", example: "A glass of water.", image: "🥛" },
-    { week: "6", word: "hide", syllables: ["hide"], chinese: "躲藏", example: "Hide and seek.", image: "🙈" },
-    { week: "6", word: "ride", syllables: ["ride"], chinese: "騎/乘", example: "Ride a bike.", image: "🚴" },
-    { week: "6", word: "bike", syllables: ["bike"], chinese: "腳踏車", example: "Ride my bike.", image: "🚲" },
-    { week: "6", word: "dime", syllables: ["dime"], chinese: "一角硬幣", example: "A silver dime.", image: "🪙" },
-    { week: "6", word: "like", syllables: ["like"], chinese: "喜歡", example: "I like apples.", image: "👍" },
-    { week: "6", word: "time", syllables: ["time"], chinese: "時間", example: "What time is it?", image: "⏰" },
-    { week: "6", word: "fine", syllables: ["fine"], chinese: "很好", example: "I am fine.", image: "👌" },
-    { week: "6", word: "kite", syllables: ["kite"], chinese: "風箏", example: "Fly a kite.", image: "🪁" },
-    { week: "6", word: "mine", syllables: ["mine"], chinese: "我的東西", example: "This is mine." },
-    { week: "6", word: "size", syllables: ["size"], chinese: "尺寸", example: "What size?", image: "📏" },
-    { week: "6", word: "came off", syllables: ["came", "off"], chinese: "脫落", example: "The button came off." },
-    { week: "6", word: "much", syllables: ["much"], chinese: "許多", example: "Thank you so much." },
-    { week: "6", word: "let's", syllables: ["let's"], chinese: "讓我們", example: "Let's play." },
-    { week: "6", word: "wish", syllables: ["wish"], chinese: "希望", example: "Make a wish.", image: "🌠" },
-    { week: "6", word: "farm", syllables: ["farm"], chinese: "農場", example: "Live on a farm.", image: "🚜" },
-    { week: "6", word: "only", syllables: ["on", "ly"], chinese: "唯一的", example: "The only one." },
-    { week: "6", word: "right now", syllables: ["right", "now"], chinese: "就是現在", example: "Do it right now." },
-    { week: "6", word: "those", syllables: ["those"], chinese: "那些", example: "Those are yours." },
-    { week: "6", word: "long", syllables: ["long"], chinese: "長長的", example: "A long road." },
-    { week: "6", word: "ride", syllables: ["ride"], chinese: "騎/搭乘(Reading Plus)", example: "Enjoy the bus ride.", image: "🚌" },
-    { week: "6", word: "keep", syllables: ["keep"], chinese: "保持", example: "Keep quiet." },
-    { week: "6", word: "letter", syllables: ["let", "ter"], chinese: "信件", example: "Write a letter.", image: "✉️" },
-    { week: "6", word: "one", syllables: ["one"], chinese: "一", example: "Number one.", image: "1️⃣" },
-    { week: "6", word: "tell", syllables: ["tell"], chinese: "告訴", example: "Tell me a story.", image: "🗣️" },
-    { week: "6", word: "story", syllables: ["sto", "ry"], chinese: "故事", example: "Read a story.", image: "📖" },
-
-    // --- Week 7 (完整 28 個條目) ---
-    { week: "7", word: "bride", syllables: ["bride"], chinese: "新娘", example: "A beautiful bride.", image: "👰" },
-    { week: "7", word: "frame", syllables: ["frame"], chinese: "相框", example: "A photo frame.", image: "🖼️" },
-    { week: "7", word: "frog", syllables: ["frog"], chinese: "青蛙", example: "A green frog.", image: "🐸" },
-    { week: "7", word: "grab", syllables: ["grab"], chinese: "抓取", example: "Grab your bag.", image: "✊" },
-    { week: "7", word: "grade", syllables: ["grade"], chinese: "年級/成績", example: "In grade one.", image: "🎓" },
-    { week: "7", word: "grape", syllables: ["grape"], chinese: "葡萄", example: "A purple grape.", image: "🍇" },
-    { week: "7", word: "grill", syllables: ["grill"], chinese: "烤架", example: "Cook on the grill.", image: "🍖" },
-    { week: "7", word: "grin", syllables: ["grin"], chinese: "露齒笑", example: "A wide grin.", image: "😁" },
-    { week: "7", word: "graze", syllables: ["graze"], chinese: "放牧/吃草", example: "Cows graze here.", image: "🐄" },
-    { week: "7", word: "arms", syllables: ["arms"], chinese: "手臂", example: "Open your arms.", image: "💪" },
-    { week: "7", word: "children", syllables: ["chil", "dren"], chinese: "孩子們", example: "Happy children.", image: "🧒" },
-    { week: "7", word: "walk by", syllables: ["walk", "by"], chinese: "經過", example: "Walk by the park.", image: "🚶" },
-    { week: "7", word: "pen", syllables: ["pen"], chinese: "欄/圈", example: "A pig pen.", image: "🐷" },
-    { week: "7", word: "thank you", syllables: ["thank", "you"], chinese: "謝謝你", example: "Thank you so much.", image: "🙏" },
-    { week: "7", word: "their", syllables: ["their"], chinese: "他們的", example: "It is their house." },
-    { week: "7", word: "told", syllables: ["told"], chinese: "告訴(過去式)", example: "He told a joke." },
-    { week: "7", word: "everything", syllables: ["ev", "ery", "thing"], chinese: "每件事", example: "I know everything." },
-    { week: "7", word: "coat", syllables: ["coat"], chinese: "大衣/外套", example: "Wear a warm coat.", image: "🧥" },
-    { week: "7", word: "day", syllables: ["day"], chinese: "一天/日子", example: "Have a good day.", image: "☀️" },
-    { week: "7", word: "first", syllables: ["first"], chinese: "第一", example: "First place.", image: "🥇" },
-    { week: "7", word: "green", syllables: ["green"], chinese: "綠色", example: "Green grass.", image: "🟢" },
-    { week: "7", word: "myself", syllables: ["my", "self"], chinese: "我自己", example: "I do it myself." },
-    { week: "7", word: "own", syllables: ["own"], chinese: "自己的", example: "My own room." },
-    { week: "7", word: "party", syllables: ["par", "ty"], chinese: "派對", example: "A birthday party.", image: "🎉" },
-    { week: "7", word: "by", syllables: ["by"], chinese: "藉由/在旁邊", example: "Sit by me." },
-    { week: "7", word: "clean", syllables: ["clean"], chinese: "清潔的", example: "Keep hands clean.", image: "🧼" },
-    { week: "7", word: "hold", syllables: ["hold"], chinese: "握著/抓住", example: "Hold my hand." },
-    { week: "7", word: "may", syllables: ["may"], chinese: "可能", example: "May I come in?" },
-
-    // --- Week 8 (完整 10 個條目) ---
-    { week: "8", word: "pole", syllables: ["pole"], chinese: "柱子", example: "A tall pole." },
-    { week: "8", word: "home", syllables: ["home"], chinese: "家", example: "Go back home.", image: "🏠" },
-    { week: "8", word: "bone", syllables: ["bone"], chinese: "骨頭", example: "The dog's bone.", image: "🦴" },
-    { week: "8", word: "rope", syllables: ["rope"], chinese: "繩子", example: "Jump the rope.", image: "🪢" },
-    { week: "8", word: "note", syllables: ["note"], chinese: "筆記", example: "Write a note.", image: "📝" },
-    { week: "8", word: "joke", syllables: ["joke"], chinese: "玩笑", example: "Tell a funny joke.", image: "😂" },
-    { week: "8", word: "go", syllables: ["go"], chinese: "去", example: "Let's go.", image: "▶️" },
-    { week: "8", word: "no", syllables: ["no"], chinese: "沒有/不", example: "No, thanks.", image: "🚫" },
-    { week: "8", word: "hope", syllables: ["hope"], chinese: "希望", example: "I hope so.", image: "🤞" },
-    { week: "8", word: "rode", syllables: ["rode"], chinese: "騎(過去式)", example: "He rode a horse.", image: "🐴" },
-
-    // --- Week 10 (完整 35 個條目) ---
-    { week: "10", word: "desk", syllables: ["desk"], chinese: "桌子", example: "On my desk." },
-    { week: "10", word: "mask", syllables: ["mask"], chinese: "面具", example: "Wear a mask.", image: "😷" },
-    { week: "10", word: "tusk", syllables: ["tusk"], chinese: "長牙", example: "An elephant tusk.", image: "🐘" },
-    { week: "10", word: "nest", syllables: ["nest"], chinese: "鳥巢", example: "A bird nest.", image: "🪺" },
-    { week: "10", word: "vest", syllables: ["vest"], chinese: "背心", example: "Wear a vest.", image: "🦺" },
-    { week: "10", word: "list", syllables: ["list"], chinese: "清單", example: "A shopping list.", image: "📋" },
-    { week: "10", word: "fist", syllables: ["fist"], chinese: "拳頭", example: "Make a fist.", image: "✊" },
-    { week: "10", word: "chest", syllables: ["chest"], chinese: "箱子/胸膛", example: "A treasure chest." },
-    { week: "10", word: "crust", syllables: ["crust"], chinese: "麵包邊", example: "Bread crust.", image: "🥖" },
-    { week: "10", word: "lost", syllables: ["lost"], chinese: "遺失的", example: "I am lost." },
-    { week: "10", word: "cost", syllables: ["cost"], chinese: "價值/花費", example: "How much does it cost?", image: "💰" },
-    { week: "10", word: "cast", syllables: ["cast"], chinese: "石膏", example: "Wear a cast." },
-    { week: "10", word: "bee", syllables: ["bee"], chinese: "蜜蜂", example: "A busy bee.", image: "🐝" },
-    { week: "10", word: "jeep", syllables: ["jeep"], chinese: "吉普車", example: "Drive a jeep.", image: "🚙" },
-    { week: "10", word: "weed", syllables: ["weed"], chinese: "雜草", example: "Pull out the weed.", image: "🌿" },
-    { week: "10", word: "feet", syllables: ["feet"], chinese: "雙腳", example: "Wash your feet.", image: "🦶" },
-    { week: "10", word: "seed", syllables: ["seed"], chinese: "種子", example: "Plant a seed.", image: "🌱" },
-    { week: "10", word: "me", syllables: ["me"], chinese: "我", example: "Look at me." },
-    { week: "10", word: "he", syllables: ["he"], chinese: "他", example: "He is my dad." },
-    { week: "10", word: "she", syllables: ["she"], chinese: "她", example: "She is my mom." },
-    { week: "10", word: "see", syllables: ["see"], chinese: "看見", example: "I see a bird.", image: "👀" },
-    { week: "10", word: "feel", syllables: ["feel"], chinese: "感覺", example: "I feel happy." },
-    { week: "10", word: "about", syllables: ["a", "bout"], chinese: "大約/在...的時候", example: "Tell me about it." },
-    { week: "10", word: "gone", syllables: ["gone"], chinese: "離開/不見了", example: "The sun is gone." },
-    { week: "10", word: "asleep", syllables: ["a", "sleep"], chinese: "睡著的", example: "The baby is asleep.", image: "😴" },
-    { week: "10", word: "glad", syllables: ["glad"], chinese: "高興的", example: "I am glad.", image: "😄" },
-    { week: "10", word: "yellow", syllables: ["yel", "low"], chinese: "黃色", example: "A yellow duck.", image: "🟡" },
-    { week: "10", word: "eat", syllables: ["eat"], chinese: "吃", example: "Eat an apple.", image: "🍎" },
-    { week: "10", word: "lunch", syllables: ["lunch"], chinese: "午餐", example: "Eat lunch.", image: "🍱" },
-    { week: "10", word: "watching", syllables: ["watch", "ing"], chinese: "觀察/看", example: "Watching TV.", image: "📺" },
-    { week: "10", word: "never", syllables: ["nev", "er"], chinese: "從不", example: "Never give up." },
-    { week: "10", word: "seven", syllables: ["sev", "en"], chinese: "七", example: "Seven days.", image: "7️⃣" },
-    { week: "10", word: "start", syllables: ["start"], chinese: "開始", example: "Start the game.", image: "▶️" },
-    { week: "10", word: "time", syllables: ["time"], chinese: "時間", example: "What time is it?", image: "⏰" },
-    { week: "10", word: "write", syllables: ["write"], chinese: "寫", example: "Write a letter.", image: "✍️" },
-
-    // --- Week 11 (完整 24 個條目) ---
-    { week: "11", word: "braid", syllables: ["braid"], chinese: "辮子", example: "A long braid." },
-    { week: "11", word: "clay", syllables: ["clay"], chinese: "黏土", example: "Play with clay.", image: "🏺" },
-    { week: "11", word: "tray", syllables: ["tray"], chinese: "托盤", example: "A food tray.", image: "🍽️" },
-    { week: "11", word: "mail", syllables: ["mail"], chinese: "郵件", example: "Check the mail.", image: "📧" },
-    { week: "11", word: "nail", syllables: ["nail"], chinese: "釘子", example: "A sharp nail." },
-    { week: "11", word: "rail", syllables: ["rail"], chinese: "扶手/鐵軌", example: "Hold the rail.", image: "🛤️" },
-    { week: "11", word: "rain", syllables: ["rain"], chinese: "下雨", example: "Heavy rain.", image: "🌧️" },
-    { week: "11", word: "tail", syllables: ["tail"], chinese: "尾巴", example: "A dog tail." },
-    { week: "11", word: "pail", syllables: ["pail"], chinese: "提桶", example: "A water pail.", image: "🪣" },
-    { week: "11", word: "snail", syllables: ["snail"], chinese: "蝸牛", example: "A slow snail.", image: "🐌" },
-    { week: "11", word: "sail", syllables: ["sail"], chinese: "帆/航行", example: "Sail a boat.", image: "⛵" },
-    { week: "11", word: "trail", syllables: ["trail"], chinese: "小道", example: "A mountain trail.", image: "🥾" },
-    { week: "11", word: "bus", syllables: ["bus"], chinese: "公車", example: "Ride the bus.", image: "🚌" },
-    { week: "11", word: "called", syllables: ["called"], chinese: "大喊/呼喚(過去式)", example: "He called my name.", image: "📣" },
-    { week: "11", word: "when", syllables: ["when"], chinese: "何時", example: "When do we go?" },
-    { week: "11", word: "horse", syllables: ["horse"], chinese: "馬", example: "A fast horse.", image: "🐴" },
-    { week: "11", word: "time", syllables: ["time"], chinese: "時間", example: "What time is it?", image: "⏰" },
-    { week: "11", word: "tail", syllables: ["tail"], chinese: "尾巴(Reading Plus)", example: "The cat wags its tail." },
-    { week: "11", word: "could", syllables: ["could"], chinese: "可以/能夠", example: "Could you help me?" },
-    { week: "11", word: "make", syllables: ["make"], chinese: "製作", example: "Make a cake.", image: "🔨" },
-    { week: "11", word: "work", syllables: ["work"], chinese: "工作", example: "Hard work.", image: "💼" },
-    { week: "11", word: "try", syllables: ["try"], chinese: "嘗試", example: "Try your best.", image: "🎯" },
-    { week: "11", word: "only", syllables: ["on", "ly"], chinese: "唯一的", example: "The only one." },
-    { week: "11", word: "way", syllables: ["way"], chinese: "道路/方向", example: "The right way.", image: "🛣️" },
-
-    // --- bee01 ---
-    { week: "bee01", word: "album", syllables: ["al", "bum"], chinese: "相簿", example: "A photo album.", image: "📸" },
-    { week: "bee01", word: "anybody", syllables: ["an", "y", "bod", "y"], chinese: "任何人", example: "Is anybody home?", image: "👤" },
-    { week: "bee01", word: "anything", syllables: ["an", "y", "thing"], chinese: "任何事", example: "Do you need anything?", image: "📦" },
-    { week: "bee01", word: "apartment", syllables: ["a", "part", "ment"], chinese: "公寓", example: "Live in an apartment.", image: "🏢" },
-    { week: "bee01", word: "armadillo", syllables: ["ar", "ma", "dil", "lo"], chinese: "犰狳", example: "A wild armadillo.", image: "🦔" },
-    { week: "bee01", word: "belief", syllables: ["be", "lief"], chinese: "相信", example: "A strong belief.", image: "💡" },
-    { week: "bee01", word: "blacktop", syllables: ["black", "top"], chinese: "柏油路", example: "Run on the blacktop.", image: "🛣️" },
-    { week: "bee01", word: "block", syllables: ["block"], chinese: "堵住", example: "Block the road.", image: "🚧" },
-    { week: "bee01", word: "border", syllables: ["bor", "der"], chinese: "邊緣", example: "Cross the border.", image: "🗺️" },
-    { week: "bee01", word: "brake", syllables: ["brake"], chinese: "煞車", example: "Press the brake.", image: "🛑" },
-    { week: "bee01", word: "brave", syllables: ["brave"], chinese: "勇敢的", example: "A brave girl.", image: "🦁" },
-    { week: "bee01", word: "breathe", syllables: ["breathe"], chinese: "呼吸", example: "Breathe fresh air.", image: "🫁" },
-    { week: "bee01", word: "buffalo", syllables: ["buf", "fa", "lo"], chinese: "水牛", example: "A big buffalo.", image: "🦬" },
-    { week: "bee01", word: "bulldog", syllables: ["bull", "dog"], chinese: "鬥牛犬", example: "A cute bulldog.", image: "🐶" },
-    { week: "bee01", word: "bulldozer", syllables: ["bull", "doz", "er"], chinese: "推土機", example: "A heavy bulldozer.", image: "🚜" },
-    { week: "bee01", word: "burglar", syllables: ["bur", "glar"], chinese: "夜賊", example: "The burglar ran away.", image: "🥷" },
-    { week: "bee01", word: "button", syllables: ["but", "ton"], chinese: "鈕扣", example: "Push the button.", image: "🔘" },
-    { week: "bee01", word: "campfire", syllables: ["camp", "fire"], chinese: "營火", example: "Sit around the campfire.", image: "🏕️" },
-    { week: "bee01", word: "cellar", syllables: ["cel", "lar"], chinese: "地下室", example: "In the cellar.", image: "🏚️" },
-    { week: "bee01", word: "certainly", syllables: ["cer", "tain", "ly"], chinese: "當然", example: "I will certainly help.", image: "✅" },
-
-    // --- bee02 ---
-    { week: "bee02", word: "computer", syllables: ["com", "pu", "ter"], chinese: "電腦", example: "Use a computer.", image: "💻" },
-    { week: "bee02", word: "country", syllables: ["coun", "try"], chinese: "國家", example: "A beautiful country.", image: "🚩" },
-    { week: "bee02", word: "crocodile", syllables: ["croc", "o", "dile"], chinese: "鱷魚", example: "A large crocodile.", image: "🐊" },
-    { week: "bee02", word: "darkness", syllables: ["dark", "ness"], chinese: "黑暗", example: "In total darkness.", image: "🌑" },
-    { week: "bee02", word: "decide", syllables: ["de", "cide"], chinese: "決定", example: "Decide what to do.", image: "🤔" },
-    { week: "bee02", word: "different", syllables: ["dif", "fer", "ent"], chinese: "不同的", example: "Many different colors.", image: "🔀" },
-    { week: "bee02", word: "doubt", syllables: ["doubt"], chinese: "懷疑", example: "I have no doubt.", image: "❓" },
-    { week: "bee02", word: "downstairs", syllables: ["down", "stairs"], chinese: "樓下的", example: "Go downstairs.", image: "📉" },
-    { week: "bee02", word: "downtown", syllables: ["down", "town"], chinese: "市區", example: "Go to downtown.", image: "🏙️" },
-    { week: "bee02", word: "excellent", syllables: ["ex", "cel", "lent"], chinese: "傑出的", example: "An excellent job!", image: "🌟" },
-    { week: "bee02", word: "exercise", syllables: ["ex", "er", "cise"], chinese: "運動", example: "Do daily exercise.", image: "🏋️" },
-    { week: "bee02", word: "fearful", syllables: ["fear", "ful"], chinese: "可怕的", example: "A fearful sound.", image: "😱" },
-    { week: "bee02", word: "fellow", syllables: ["fel", "low"], chinese: "同伴", example: "My fellow friends.", image: "🧑‍🤝‍🧑" },
-    { week: "bee02", word: "finance", syllables: ["fi", "nance"], chinese: "金融", example: "Learn about finance.", image: "💰" },
-    { week: "bee02", word: "freckles", syllables: ["freck", "les"], chinese: "雀斑", example: "Freckles on her face.", image: "👧" },
-    { week: "bee02", word: "government", syllables: ["gov", "ern", "ment"], chinese: "政府", example: "The city government.", image: "🏛️" },
-    { week: "bee02", word: "grasshopper", syllables: ["grass", "hop", "per"], chinese: "蚱蜢", example: "A green grasshopper.", image: "🦗" },
-    { week: "bee02", word: "gruff", syllables: ["gruff"], chinese: "粗魯的", example: "A gruff voice.", image: "😠" },
-    { week: "bee02", word: "gulp", syllables: ["gulp"], chinese: "大口地吸", example: "Gulp some water.", image: "🥤" },
-    { week: "bee02", word: "gut", syllables: ["gut"], chinese: "腸子", example: "Listen to your gut.", image: "🥩" },
-
-    // --- bee03 ---
-    { week: "bee03", word: "handcuffs", syllables: ["hand", "cuffs"], chinese: "手銬", example: "Iron handcuffs.", image: "⛓️" },
-    { week: "bee03", word: "heaven", syllables: ["hea", "ven"], chinese: "天堂", example: "Look at heaven.", image: "☁️" },
-    { week: "bee03", word: "heavy", syllables: ["hea", "vy"], chinese: "重的", example: "A heavy box.", image: "🏋️" },
-    { week: "bee03", word: "hidden", syllables: ["hid", "den"], chinese: "隱藏的", example: "A hidden treasure.", image: "🔍" },
-    { week: "bee03", word: "horrible", syllables: ["hor", "ri", "ble"], chinese: "可怕的", example: "A horrible movie.", image: "👻" },
-    { week: "bee03", word: "however", syllables: ["how", "ev", "er"], chinese: "然而", example: "However, I like it.", image: "🔄" },
-    { week: "bee03", word: "illegal", syllables: ["il", "le", "gal"], chinese: "不合法的", example: "It is illegal.", image: "🚫" },
-    { week: "bee03", word: "important", syllables: ["im", "por", "tant"], chinese: "重要的", example: "An important lesson.", image: "⚠️" },
-    { week: "bee03", word: "keyboard", syllables: ["key", "board"], chinese: "鍵盤", example: "Type on keyboard.", image: "⌨️" },
-    { week: "bee03", word: "leather", syllables: ["lea", "ther"], chinese: "皮革製的", example: "A leather bag.", image: "🧥" },
-    { week: "bee03", word: "leopard", syllables: ["leo", "pard"], chinese: "美洲豹", example: "A fast leopard.", image: "🐆" },
-    { week: "bee03", word: "matter", syllables: ["mat", "ter"], chinese: "事情", example: "What is the matter?", image: "📝" },
-    { week: "bee03", word: "mighty", syllables: ["migh", "ty"], chinese: "強大的", example: "A mighty king.", image: "⚡" },
-    { week: "bee03", word: "minute", syllables: ["min", "ute"], chinese: "分鐘", example: "Wait a minute.", image: "⏱️" },
-    { week: "bee03", word: "moment", syllables: ["mo", "ment"], chinese: "片刻", example: "Just a moment.", image: "⌛" },
-    { week: "bee03", word: "mystery", syllables: ["mys", "ter", "y"], chinese: "神秘的事", example: "Solve a mystery.", image: "🕵️" },
-    { week: "bee03", word: "nature", syllables: ["na", "ture"], chinese: "自然", example: "Love nature.", image: "🌲" },
-    { week: "bee03", word: "necessary", syllables: ["nec", "es", "sar", "y"], chinese: "必要的", example: "It is necessary.", image: "❗" },
-    { week: "bee03", word: "newspaper", syllables: ["news", "pa", "per"], chinese: "報紙", example: "Read newspaper.", image: "📰" },
-    { week: "bee03", word: "office", syllables: ["of", "fice"], chinese: "辦公室", example: "Work in an office.", image: "🏢" },
-
-    // --- bee04 ---
-    { week: "bee04", word: "oversee", syllables: ["over", "see"], chinese: "監督", example: "Oversee the work.", image: "👁️" },
-    { week: "bee04", word: "panic", syllables: ["pan", "ic"], chinese: "驚慌", example: "Don't panic.", image: "🚨" },
-    { week: "bee04", word: "payment", syllables: ["pay", "ment"], chinese: "付款", example: "Make a payment.", image: "💳" },
-    { week: "bee04", word: "pluck", syllables: ["pluck"], chinese: "採/拉/扯", example: "Pluck a flower.", image: "🤏" },
-    { week: "bee04", word: "possible", syllables: ["pos", "si", "ble"], chinese: "可能的", example: "Anything is possible.", image: "🎯" },
-    { week: "bee04", word: "practice", syllables: ["prac", "tice"], chinese: "練習", example: "Practice makes perfect.", image: "🎯" },
-    { week: "bee04", word: "president", syllables: ["pres", "i", "dent"], chinese: "總統", example: "The president spoke.", image: "👔" },
-    { week: "bee04", word: "problem", syllables: ["prob", "lem"], chinese: "問題", example: "Solve the problem.", image: "🧩" },
-    { week: "bee04", word: "purpose", syllables: ["pur", "pose"], chinese: "目的", example: "What is your purpose?", image: "🎯" },
-    { week: "bee04", word: "question", syllables: ["ques", "tion"], chinese: "問題", example: "Ask a question.", image: "❓" },
-    { week: "bee04", word: "rectangle", syllables: ["rec", "tan", "gle"], chinese: "長方形", example: "Draw a rectangle.", image: "🟩" },
-    { week: "bee04", word: "remember", syllables: ["re", "mem", "ber"], chinese: "記得", example: "Remember my name.", image: "🧠" },
-    { week: "bee04", word: "riding", syllables: ["rid", "ing"], chinese: "騎乘", example: "Go horse riding.", image: "🏇" },
-    { week: "bee04", word: "roundhouse", syllables: ["round", "house"], chinese: "圓形火車庫", example: "A train roundhouse.", image: "🚂" },
-    { week: "bee04", word: "screen", syllables: ["screen"], chinese: "螢幕", example: "Look at the screen.", image: "🖥️" },
-    { week: "bee04", word: "several", syllables: ["sev", "er", "al"], chinese: "幾個", example: "Several books.", image: "🔢" },
-    { week: "bee04", word: "sidewalk", syllables: ["side", "walk"], chinese: "人行道", example: "Walk on sidewalk.", image: "🚶" },
-    { week: "bee04", word: "skateboard", syllables: ["skate", "board"], chinese: "滑板", example: "Ride a skateboard.", image: "🛹" },
-    { week: "bee04", word: "something", syllables: ["some", "thing"], chinese: "某些事", example: "Eat something.", image: "🎁" },
-    { week: "bee04", word: "sometimes", syllables: ["some", "times"], chinese: "有時候", example: "Sometimes I run.", image: "⏳" },
-
-    // --- bee05 ---
-    { week: "bee05", word: "somewhere", syllables: ["some", "where"], chinese: "某個地方", example: "Somewhere far away.", image: "📍" },
-    { week: "bee05", word: "sportsman", syllables: ["sports", "man"], chinese: "運動員", example: "A good sportsman.", image: "⚽" },
-    { week: "bee05", word: "stoplight", syllables: ["stop", "light"], chinese: "紅綠燈", example: "Stop at the stoplight.", image: "🚦" },
-    { week: "bee05", word: "stream", syllables: ["stream"], chinese: "小河流", example: "A small stream.", image: "🌊" },
-    { week: "bee05", word: "strength", syllables: ["strength"], chinese: "力量", example: "Test your strength.", image: "💪" },
-    { week: "bee05", word: "struggle", syllables: ["strug", "gle"], chinese: "掙扎", example: "Struggle hard.", image: "🧗" },
-    { week: "bee05", word: "stutter", syllables: ["stut", "ter"], chinese: "結巴", example: "Do not stutter.", image: "💬" },
-    { week: "bee05", word: "surprise", syllables: ["sur", "prise"], chinese: "驚喜", example: "A big surprise!", image: "🎁" },
-    { week: "bee05", word: "swallow", syllables: ["swal", "low"], chinese: "吞下", example: "Swallow the food.", image: "🍽" },
-    { week: "bee05", word: "therefore", syllables: ["there", "fore"], chinese: "因此", example: "Therefore, we go.", image: "➡️" },
-    { week: "bee05", word: "thought", syllables: ["thought"], chinese: "想法", example: "A good thought.", image: "💭" },
-    { week: "bee05", word: "thousand", syllables: ["thou", "sand"], chinese: "一千的", example: "One thousand dollars.", image: "🔢" },
-    { week: "bee05", word: "together", syllables: ["to", "geth", "er"], chinese: "一起", example: "Play together.", image: "🧑‍🤝‍🧑" },
-    { week: "bee05", word: "troublemaker", syllables: ["trou", "ble", "ma", "ker"], chinese: "惹麻煩的人", example: "Don't be a troublemaker.", image: "😈" },
-    { week: "bee05", word: "typewriter", syllables: ["type", "wri", "ter"], chinese: "打字機", example: "An old typewriter.", image: "⌨️" },
-    { week: "bee05", word: "uncertain", syllables: ["un", "cer", "tain"], chinese: "不確定的", example: "Feel uncertain.", image: "❓" },
-    { week: "bee05", word: "undertaking", syllables: ["un", "der", "tak", "ing"], chinese: "任務", example: "A big undertaking.", image: "📋" },
-    { week: "bee05", word: "whether", syllables: ["wheth", "er"], chinese: "是否", example: "Whether or not.", image: "⚖️" },
-    { week: "bee05", word: "without", syllables: ["with", "out"], chinese: "沒有", example: "Without you.", image: "🚫" },
-    { week: "bee05", word: "wonderful", syllables: ["won", "der", "ful"], chinese: "美好的", example: "A wonderful day!", image: "✨" }
-];
-
+const rawData = [];
+Object.keys(WEEKS).forEach(w => WEEKS[w].forEach(a => rawData.push({
+    week: w, word: a[0], syllables: a[1].split('-'), chinese: a[2], example: a[3], image: a[4]
+})));
 
 let errorStats = JSON.parse(localStorage.getItem('spellingErrors')) || {};
-let customData = JSON.parse(localStorage.getItem('customWordData')) || {};
 let wordListOrdered = [], wordListShuffled = [], idxOrdered = 0, idxShuffled = 0, currentWordObj = null, activeTab = 'modeA', synth = window.speechSynthesis;
-let importUnlocked = false;
 
 let availableVoices = [];
 function populateVoices() {
@@ -571,26 +618,13 @@ if (typeof speechSynthesis !== 'undefined' && speechSynthesis.onvoiceschanged !=
 
 window.onload = () => { initWeekSelector(); initKeyboard(); refresh(); };
 
-// 週別排序：數字週在前（1,2,3...），bee01、bee02... 在後
-const cmpWeek = (a, b) => {
-    const na = /^\d+$/.test(a), nb = /^\d+$/.test(b);
-    if (na && nb) return a - b;
-    if (na !== nb) return na ? -1 : 1;
-    return a.localeCompare(b, undefined, { numeric: true });
-};
-
-function getAllWords() {
-    const overriddenWeeks = Object.keys(customData);
-    const base = rawData.filter(e => !overriddenWeeks.includes(e.week));
-    const custom = Object.values(customData).flat();
-    return base.concat(custom);
-}
+function getAllWords() { return rawData; }
 
 function getAllWeeks() {
-    const set = new Set();
-    rawData.forEach(e => set.add(e.week));
-    Object.keys(customData).forEach(w => set.add(w));
-    return Array.from(set).sort(cmpWeek);
+    const set = new Set(rawData.map(e => e.week));
+    const isNum = s => /^\d+$/.test(s);
+    return Array.from(set).sort((a, b) =>
+        isNum(a) && isNum(b) ? a - b : isNum(a) ? -1 : isNum(b) ? 1 : a.localeCompare(b));
 }
 
 function initWeekSelector() {
@@ -698,15 +732,6 @@ function prev() {
 }
 
 function switchTab(id) {
-    if (id === 'modeImport' && !importUnlocked) {
-        const pwd = prompt('🔒 請輸入管理員密碼以進入匯入頁面：');
-        if (pwd === null) return;
-        if (pwd !== '2026') {
-            alert('❌ 密碼錯誤，無法進入匯入頁面。');
-            return;
-        }
-        importUnlocked = true;
-    }
     activeTab=id;
     document.querySelectorAll('.mode-section').forEach(el=>el.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -825,33 +850,18 @@ function getLongVowelSet(word) {
     return all;
 }
 
+// 主單字只顯示字母（不插入音節 "-"）；音節連字號只出現在下方音節框
 function renderWord() {
     const d = document.getElementById('wordDisplay'); d.innerHTML = '';
     if (!currentWordObj) return;
     const word = currentWordObj.word, v = 'aeiou', longSet = getLongVowelSet(word);
-    // 音節切點（以「不含空格的字母數」計算）；音節與單字對不上時就不顯示 "-"
-    const cuts = new Set(), syl = currentWordObj.syllables || [];
-    if (syl.length > 1 && syl.join('').toLowerCase() === word.replace(/ /g, '').toLowerCase()) {
-        let cnt = 0;
-        syl.slice(0, -1).forEach(s => { cnt += s.length; cuts.add(cnt); });
-    }
-    let seen = 0;
     word.split('').forEach((c, i) => {
         const s = document.createElement('span'); s.innerText = c;
         if (c === ' ') s.style.width = "12px";
-        else if (currentWordObj.irregularIndices && currentWordObj.irregularIndices.includes(i)) s.className = 'char-irregular';
         else if (longSet.has(i)) s.className = 'char-long';
         else if (v.includes(c.toLowerCase())) s.className = 'char-vowel';
         else s.className = 'char-consonant';
         d.appendChild(s);
-        if (c !== ' ') {
-            seen++;
-            if (cuts.has(seen) && word[i+1] !== ' ') {
-                const dash = document.createElement('span');
-                dash.className = 'syl-dash'; dash.innerText = '-';
-                d.appendChild(dash);
-            }
-        }
     });
 }
 
@@ -879,71 +889,6 @@ function startWeakness() {
     let errs=wordListOrdered.filter(w=>(errorStats[w.word]||0)>0).sort((a,b)=>(errorStats[b.word]||0)-(errorStats[a.word]||0));
     if(errs.length===0) {alert("沒有錯題喔！"); return;}
     wordListShuffled=errs.slice(0,15); idxShuffled=0; switchTab('modeC');
-}
-
-// ===== 匯入 / 更新功能 =====
-function parseImportCode(text) {
-    const trimmed = text.trim();
-    if (!trimmed) throw new Error("內容是空的，請先貼上程式碼。");
-    const wrapped = '[' + trimmed.replace(/,\s*$/, '') + ']';
-    let arr;
-    try {
-        arr = Function('"use strict"; return (' + wrapped + ');')();
-    } catch (e) {
-        throw new Error("程式碼格式錯誤，請確認貼上的內容完整、格式正確（例如大括號、引號是否成對）。詳細：" + e.message);
-    }
-    if (!Array.isArray(arr) || arr.length === 0) throw new Error("沒有解析到任何條目。");
-    arr.forEach((item, i) => {
-        if (!item || typeof item !== 'object') throw new Error(`第 ${i + 1} 筆不是有效的物件。`);
-        if (!item.week) throw new Error(`第 ${i + 1} 筆缺少 week 欄位。`);
-        if (!item.word) throw new Error(`第 ${i + 1} 筆缺少 word 欄位。`);
-        item.week = String(item.week);
-        if (!item.syllables) item.syllables = [item.word];
-        if (!item.chinese) item.chinese = "";
-        if (!item.example) item.example = "";
-    });
-    return arr;
-}
-
-function groupByWeek(arr) {
-    const grouped = {};
-    arr.forEach(item => {
-        if (!grouped[item.week]) grouped[item.week] = [];
-        grouped[item.week].push(item);
-    });
-    return grouped;
-}
-
-function previewImport() {
-    const p = document.getElementById('importPreview');
-    try {
-        const arr = parseImportCode(document.getElementById('importTextarea').value);
-        const grouped = groupByWeek(arr);
-        const summary = Object.keys(grouped).sort(cmpWeek)
-            .map(w => `Week ${w}：${grouped[w].length} 個單字${customData[w] || rawData.some(e=>e.week===w) ? '（將覆蓋整週）' : '（新增新週）'}`)
-            .join('<br>');
-        p.innerHTML = `<span style="color:green;">✅ 解析成功：</span><br>${summary}`;
-    } catch (e) {
-        p.innerHTML = `<span style="color:red;">❌ ${e.message}</span>`;
-    }
-}
-
-function saveImport() {
-    const p = document.getElementById('importPreview');
-    try {
-        const arr = parseImportCode(document.getElementById('importTextarea').value);
-        const grouped = groupByWeek(arr);
-        Object.keys(grouped).forEach(w => { customData[w] = grouped[w]; });
-        localStorage.setItem('customWordData', JSON.stringify(customData));
-        const summary = Object.keys(grouped).sort(cmpWeek)
-            .map(w => `Week ${w}（${grouped[w].length} 個）`).join('、');
-        p.innerHTML = `<span style="color:green;">🎉 已更新：${summary}</span>`;
-        document.getElementById('importTextarea').value = "";
-        initWeekSelector();
-        refresh();
-    } catch (e) {
-        p.innerHTML = `<span style="color:red;">❌ ${e.message}</span>`;
-    }
 }
 </script>
 </body>
